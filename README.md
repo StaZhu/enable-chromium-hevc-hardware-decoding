@@ -1,5 +1,5 @@
 # enable-chromium-hevc-hardware-decoding
-A guide that teach you build a custom version of chromium on macOS/Windows/Linux that supporting hardware/software HEVC decoding.
+A guide that teach you build a custom version of chromium on macOS/Windows/Linux that supports hardware/software HEVC decoding.
 
 ## Get release build?
 
@@ -47,9 +47,9 @@ All OS. like Windows 7, macOS 10.12, etc...
 ## How to verify HEVC hardware support is enabled?
 
 1. Open `chrome://gpu`, and search `Video Acceleration Information`, you should see **Decode hevc main** field and **Decode hevc main 10** field present if hardware decoding is supported.
-2. Open `chrome://media-internals` and play some HEVC video's if the decoder is `VDAVideoDecoder` or `D3D11VideoDecoder` or `VaapiVideoDecoder` that means the video is using hardware decoding, and if the decoder is `FFMpegVideoDecoder` that means  the video is using software decoding.
+2. Open `chrome://media-internals` and play some HEVC video if the decoder is `VDAVideoDecoder` or `D3D11VideoDecoder` or `VaapiVideoDecoder` that means the video is using hardware decoding, and if the decoder is `FFMpegVideoDecoder` that means  the video is using software decoding.
 3. Open `Activity Monitor` on Mac and search `VTDecoderXPCService`, if the cpu usage larger than 0 when playing video, that means hardware decoding is being used.
-4. Open `Windows Task Manager` on Windows and swtich to `Performance` -`GPU`, if `Video Decoding` usage larger than 0 when playing video,  that means hardware decoding is being used.
+4. Open `Windows Task Manager` on Windows and switch to `Performance` -`GPU`, if `Video Decoding` usage larger than 0 when playing video,  that means hardware decoding is being used.
 
 ## How to Build?
 
@@ -64,9 +64,17 @@ All OS. like Windows 7, macOS 10.12, etc...
 
 ## Change Log
 
-`2022-4-20` modify readme
+`2022-4-21` Add Crbug trace
+
+`2022-4-20` Modify readme
 
 `2022-4-19` Initial commit
+
+## Trace Crbug
+
+#### Windows:  https://crbug.com/1286132
+
+#### macOS:  https://crbug.com/1300444
 
 ## License
 
