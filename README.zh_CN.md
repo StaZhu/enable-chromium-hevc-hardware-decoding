@@ -13,8 +13,8 @@
 
 #### 硬解支持
 
-1. HEVC Main (Up to 8192x8192 pixels)
-2. HEVC Main10 (Up to 8192x8192 pixels)
+1. HEVC Main (最高支持 8192x8192 px)
+2. HEVC Main10 (最高支持 8192x8192 px)
 
 #### 软解支持
 
@@ -66,7 +66,7 @@ Linux + Vaapi (Not tested)
 7. 如果是Mac，执行 `./out/Release64/Chromium.app/Contents/MacOS/Chromium --args --enable-clear-hevc-for-testing --enable-features=VideoToolboxHEVCDecoding` 打开编译好的Chromium并开启HEVC硬解。
 8. 如果是Windows，在桌面创建一个快捷方式，并改为类似如下的路径： `C:\Users\Admin\Desktop\Chromium\chrome.exe --enable-clear-hevc-for-testing --enable-features=D3D11HEVCDecoding` 然后双击打开快捷方式，即可打开编译好的Chromium并开启HEVC硬解。
 
-## Change Log
+## 更新历史
 
 `2022-4-24` 支持中文
 
@@ -76,7 +76,7 @@ Linux + Vaapi (Not tested)
 
 `2022-4-19` 首次提交
 
-## Trace Crbug
+## 追踪Crbug后续进度
 
 #### Windows:  https://crbug.com/1286132
 
