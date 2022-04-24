@@ -1,5 +1,9 @@
 # enable-chromium-hevc-hardware-decoding
+
 A guide that teach you build a custom version of chromium on macOS/Windows/Linux that supports hardware/software HEVC decoding.
+
+
+##### English | [简体中文](./README.zh_CN.md)
 
 ## Get release build?
 
@@ -37,12 +41,12 @@ All OS. like Windows 7, macOS 10.12, etc...
 ## HDR Supports? (Compared with Edge/Safari) 
 
 |                  | PQ (SDR Screen) | PQ (HDR Screen) | HLG (SDR Screen) | HLG (HDR Screen) |
-| :--------------: | :-------------: | :-------------: | :--------------: | :--------------: |
-|  Chromium macOS  |        ✅        |        ✅        |        ✅         |        ✅         |
+| :-------------- | :------------- | :------------- | :-------------- | :-------------- |
+|  Chromium macOS  |     ✅(EDR)      |        ✅        |      ✅(EDR)      |        ✅         |
 | Chromium Windows |        ✅        |        ✅        |        ✅         |        ✅         |
 |  Chromium Linux  |   Not Tested    |   Not Tested    |    Not Tested    |    Not Tested    |
 |   Edge Windows   |        ❌        |        ✅        |        ✅         |        ❌         |
-|   Safari macOS   |        ✅        |        ✅        |        ✅         |        ✅         |
+|   Safari macOS   |     ✅(EDR)      |        ✅        |      ✅(EDR)      |        ✅         |
 
 ## How to verify HEVC hardware support is enabled?
 
@@ -63,6 +67,8 @@ All OS. like Windows 7, macOS 10.12, etc...
 8. Create a desktop shortcut and passing the args like `C:\Users\Admin\Desktop\Chromium\chrome.exe --enable-clear-hevc-for-testing --enable-features=D3D11HEVCDecoding` then double click the desktop shortcut to open chromium if you are using Windows.
 
 ## Change Log
+
+`2022-4-24` Support chinese readme
 
 `2022-4-21` Add Crbug trace
 
