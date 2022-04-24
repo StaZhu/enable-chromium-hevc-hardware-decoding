@@ -40,13 +40,15 @@ Linux + Vaapi (Not tested)
 
 ## HDR 支持? (与Edge/Safari的对比) 
 
+详细测试结果参见：https://juejin.cn/post/7089795059737952287/#heading-41
+
 |                  | PQ (SDR Screen) | PQ (HDR Screen) | HLG (SDR Screen) | HLG (HDR Screen) |
 | :-------------- | :------------- | :------------- | :-------------- | :-------------- |
-|  Chromium macOS  |     ✅(EDR)      |        ✅        |      ✅(EDR)      |        ✅         |
+|  Chromium macOS  |     ✅ (EDR)     |        ✅        |      ✅ (EDR)      |        ✅         |
 | Chromium Windows |        ✅        |        ✅        |        ✅         |        ✅         |
 |  Chromium Linux  |    暂未测试     |    暂未测试     |     暂未测试     |     暂未测试     |
 |   Edge Windows   |        ❌        |        ✅        |        ✅         |        ❌         |
-|   Safari macOS   |     ✅(EDR)      |        ✅        |      ✅(EDR)      |        ✅         |
+|   Safari macOS   |     ✅ (EDR)     |        ✅        |      ✅ (EDR)      |        ✅         |
 
 ## 如何验证视频播放是否走硬解？
 
