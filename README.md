@@ -1,6 +1,6 @@
 # enable-chromium-hevc-hardware-decoding
 
-A guide that teach you build a custom version of chromium on macOS/Windows/Linux that supports hardware/software HEVC decoding.
+A guide that teach you build a custom version of chrome on macOS/Windows/Linux that supports hardware / software HEVC decoding.
 
 
 ##### English | [简体中文](./README.zh_CN.md)

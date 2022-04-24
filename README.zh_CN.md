@@ -1,6 +1,6 @@
 # enable-chromium-hevc-hardware-decoding
 
-一个教你编译Chromium使其支持 Windows / macOS / Linux 硬解功能的教程。
+一个教你编译 Chrome 使其支持 Windows / macOS / Linux 三个平台 HEVC 硬 / 软解功能的教程。
 
 
 ##### 简体中文 | [English](./README.md)
