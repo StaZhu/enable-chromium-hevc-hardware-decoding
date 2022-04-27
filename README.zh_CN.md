@@ -59,7 +59,7 @@ Linux + Vaapi (暂未测试)
 
 ## 如何编译？
 
-1. 请参考Chrome编译手册 https://www.chromium.org/developers/how-tos/get-the-code/ 配置环境并拉取`main` 分支的代码。
+1. 请参考Chrome编译手册 https://www.chromium.org/developers/how-tos/get-the-code/ 配置环境并拉取`103.0.5011.0` tag的代码（更新的版本，比如`main`分支，在没有代码冲突的情况, 理论上也可以)。
 2. (可选) 支持HEVC软解：切换到`src/third_party/ffmpeg`目录，执行`git am /path/to/add-hevc-ffmpeg-decoder-parser.patch`。
 3. (可选) 支持Main / Main10 以外的其他HEVC Profile： 切换到`src`目录，执行`git am /path/to/remove-main-main10-profile-limit.patch`。
 4. (可选) 默认启用硬解：切换到`src`目录，执行`git am /path/to/enable-hevc-hardware-decoding-by-default.patch`。

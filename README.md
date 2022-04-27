@@ -57,7 +57,7 @@ All OS. like Windows 7, macOS 10.12, etc...
 
 ## How to Build?
 
-1. Follow the official build doc https://www.chromium.org/developers/how-tos/get-the-code/ to prepare the build environment then fetch the source code in `main` branch.
+1. Follow the official build doc https://www.chromium.org/developers/how-tos/get-the-code/ to prepare the build environment then fetch the source code to tag `103.0.5011.0` (newer tag or `main` branch should also work if no code conflict with the following patch).
 2. (Optional) To enable HEVC software decoding: switch to `src/third_party/ffmpeg` dir, then execute `git am /path/to/add-hevc-ffmpeg-decoder-parser.patch`.
 3. (Optional) To enable other HEVC profiles (non main / main10 profiles): switch to `src` dir, then execute `git am /path/to/remove-main-main10-profile-limit.patch`.
 4. (Optional) To default enable hardware decode: switch to `src` dir, then execute `git am /path/to/enable-hevc-hardware-decoding-by-default.patch`.
