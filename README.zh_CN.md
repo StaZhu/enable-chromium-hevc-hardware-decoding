@@ -7,7 +7,7 @@
 
 ## 下载预编译版本？
 
-点击链接下载 https://github.com/StaZhu/enable-chromium-hevc-hardware-decoding/releases/tag/103.0.5011.0
+[点击下载](https://github.com/StaZhu/enable-chromium-hevc-hardware-decoding/releases/tag/103.0.5011.0)
 
 ## 支持哪些Profile？
 
@@ -40,7 +40,7 @@ Linux + Vaapi (暂未测试)
 
 ## HDR 支持? (与Edge/Safari的对比) 
 
-详细测试结果参见：https://juejin.cn/post/7089795059737952287/#heading-41
+[点击查看详细测试](https://juejin.cn/post/7089795059737952287/#heading-41)
 
 |                  | PQ (SDR Screen) | PQ (HDR Screen) | HLG (SDR Screen) | HLG (HDR Screen) |
 | :-------------- | :------------- | :------------- | :-------------- | :-------------- |
@@ -59,12 +59,12 @@ Linux + Vaapi (暂未测试)
 
 ## 如何编译？
 
-1. 请参考Chrome编译手册 https://www.chromium.org/developers/how-tos/get-the-code/ 配置环境并拉取`103.0.5011.0` tag的代码（更新的版本，比如`main`分支，在没有代码冲突的情况, 理论上也可以)。
-2. (可选) 支持HEVC软解：切换到`src/third_party/ffmpeg`目录，执行`git am /path/to/add-hevc-ffmpeg-decoder-parser.patch`。
-3. (可选) 支持Main / Main10 以外的其他HEVC Profile： 切换到`src`目录，执行`git am /path/to/remove-main-main10-profile-limit.patch`。
-4. (可选) 默认启用硬解：切换到`src`目录，执行`git am /path/to/enable-hevc-hardware-decoding-by-default.patch`。
-5. (可选) 去除启动参数：切换到`src`目录，执行`git am /path/to/remove-clear-testing-args-passing.patch`。
-6. 假设你想编译 `x64` 架构的Chromium，请执行  `gn gen out/Release64 --args="is_component_build = false is_official_build = true is_debug = false ffmpeg_branding = \"Chrome\" target_cpu = \"x64\" proprietary_codecs = true media_use_ffmpeg = true enable_platform_encrypted_hevc = true enable_platform_hevc = true enable_platform_hevc_decoding = true"`，其他可选的架构有： `x86` , `arm64` , `arm` 等。
+1. 请参考 [Chrome编译手册](https://www.chromium.org/developers/how-tos/get-the-code/) 配置环境并拉取`103.0.5011.0` tag的代码（更新的版本，比如 `main` 分支，在没有代码冲突的情况, 理论上也可以)。
+2. (可选) 支持HEVC软解：切换到 `src/third_party/ffmpeg` 目录，执行 `git am /path/to/add-hevc-ffmpeg-decoder-parser.patch`。
+3. (可选) 支持Main / Main10 以外的其他HEVC Profile： 切换到 `src` 目录，执行 `git am /path/to/remove-main-main10-profile-limit.patch`。
+4. (可选) 默认启用硬解：切换到 `src` 目录，执行 `git am /path/to/enable-hevc-hardware-decoding-by-default.patch`。
+5. (可选) 去除启动参数：切换到 `src` 目录，执行 `git am /path/to/remove-clear-testing-args-passing.patch`。
+6. 假设你想编译 `x64` 架构的Chromium，请执行 `gn gen out/Release64 --args="is_component_build = false is_official_build = true is_debug = false ffmpeg_branding = \"Chrome\" target_cpu = \"x64\" proprietary_codecs = true media_use_ffmpeg = true enable_platform_encrypted_hevc = true enable_platform_hevc = true enable_platform_hevc_decoding = true"`，其他可选的架构有： `x86` , `arm64` , `arm` 等。
 7. 执行 `autoninja -C out/Release64 chrome` 以开始编译。
 8. 如果是Mac，执行 `./out/Release64/Chromium.app/Contents/MacOS/Chromium --args --enable-clear-hevc-for-testing --enable-features=VideoToolboxHEVCDecoding` 打开编译好的Chromium并开启HEVC硬解。
 9. 如果是Windows，在桌面创建一个快捷方式，并改为类似如下的路径： `C:\Users\Admin\Desktop\Chromium\chrome.exe --enable-clear-hevc-for-testing --enable-features=D3D11HEVCDecoding` 然后双击打开快捷方式，即可打开编译好的Chromium并开启HEVC硬解。
@@ -83,9 +83,9 @@ Linux + Vaapi (暂未测试)
 
 ## 追踪进度
 
-#### Windows:  https://crbug.com/1286132
+##### [Windows](https://crbug.com/1286132)
 
-#### macOS:  https://crbug.com/1300444
+##### [macOS](https://crbug.com/1300444)
 
 ## License
 
