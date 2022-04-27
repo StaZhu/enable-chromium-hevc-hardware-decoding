@@ -32,7 +32,7 @@ macOS 11.0+
 
 Windows 8+
 
-Linux + Vaapi (Not tested)
+Linux + Vaapi (暂未测试)
 
 #### 软解要求
 
@@ -60,15 +60,18 @@ Linux + Vaapi (Not tested)
 ## 如何编译？
 
 1. 请参考Chrome编译手册 https://www.chromium.org/developers/how-tos/get-the-code/ 配置环境并拉取`main` 分支的代码。
-2. 为了开启软解功能，请手动将文件  `enable-chromium-hevc-hardware-decoding.diff` 内的变更同步到`src/third_party/ffmpeg`目录。（可选) 如果电脑里有NodeJS，可以直接拷贝  ` enable-chromium-hevc-hardware-decoding.js`  到Chromium根目录 ( `src` 目录的父级) ，然后执行 `node enable-chromium-hevc-hardware-decoding.js ` 即可自动patch diff。
-3. (可选) 如果你希望解锁Rext Profile的软解能力，请手动将文件  `release-decoder-switch-limit.diff`  内的变更同步到 `src` 目录，这样可以保证所有HEVC Profile都能正确Demux和软解Decode。
-4. (可选) 如果不喜欢传入Chrome参数，请手动将文件 `release-clear-hevc-testing-limit.diff` 和文件 `release-decoder-switch-limit.diff` 内的变更同步到 `src` 目录。
-5. 假设你想编译 `x64` 架构的Chromium，请执行  `gn gen out/Release64 --args="is_component_build = false is_official_build = true is_debug = false symbol_level = 1 enable_nacl = false blink_symbol_level = 0 v8_symbol_level = 0 ffmpeg_branding = \"Chrome\" target_cpu = \"x64\" proprietary_codecs = true media_use_ffmpeg = true enable_platform_encrypted_hevc = true enable_platform_hevc = true enable_platform_hevc_decoding = true"`，其他可选的架构有： `x86` , `arm64` , `arm` 。
-6. 执行 `autoninja -C out/Release64 chrome` 以开始编译
-7. 如果是Mac，执行 `./out/Release64/Chromium.app/Contents/MacOS/Chromium --args --enable-clear-hevc-for-testing --enable-features=VideoToolboxHEVCDecoding` 打开编译好的Chromium并开启HEVC硬解。
-8. 如果是Windows，在桌面创建一个快捷方式，并改为类似如下的路径： `C:\Users\Admin\Desktop\Chromium\chrome.exe --enable-clear-hevc-for-testing --enable-features=D3D11HEVCDecoding` 然后双击打开快捷方式，即可打开编译好的Chromium并开启HEVC硬解。
+2. (可选) 支持HEVC软解：切换到`src/third_party/ffmpeg`目录，执行`git am /path/to/add-hevc-ffmpeg-decoder-parser.patch`。
+3. (可选) 支持Main / Main10 以外的其他HEVC Profile： 切换到`src`目录，执行`git am /path/to/remove-main-main10-profile-limit.patch`。
+4. (可选) 默认启用硬解：切换到`src`目录，执行`git am /path/to/enable-hevc-hardware-decoding-by-default.patch`。
+5. (可选) 去除启动参数：切换到`src`目录，执行`git am /path/to/remove-clear-testing-args-passing.patch`。
+6. 假设你想编译 `x64` 架构的Chromium，请执行  `gn gen out/Release64 --args="is_component_build = false is_official_build = true is_debug = false ffmpeg_branding = \"Chrome\" target_cpu = \"x64\" proprietary_codecs = true media_use_ffmpeg = true enable_platform_encrypted_hevc = true enable_platform_hevc = true enable_platform_hevc_decoding = true"`，其他可选的架构有： `x86` , `arm64` , `arm` 等。
+7. 执行 `autoninja -C out/Release64 chrome` 以开始编译。
+8. 如果是Mac，执行 `./out/Release64/Chromium.app/Contents/MacOS/Chromium --args --enable-clear-hevc-for-testing --enable-features=VideoToolboxHEVCDecoding` 打开编译好的Chromium并开启HEVC硬解。
+9. 如果是Windows，在桌面创建一个快捷方式，并改为类似如下的路径： `C:\Users\Admin\Desktop\Chromium\chrome.exe --enable-clear-hevc-for-testing --enable-features=D3D11HEVCDecoding` 然后双击打开快捷方式，即可打开编译好的Chromium并开启HEVC硬解。
 
 ## 更新历史
+
+`2022-4-27` 切换为 `git am` patch
 
 `2022-4-24` 支持中文
 
@@ -78,7 +81,7 @@ Linux + Vaapi (Not tested)
 
 `2022-4-19` 首次提交
 
-## 追踪Crbug后续进度
+## 追踪进度
 
 #### Windows:  https://crbug.com/1286132
 

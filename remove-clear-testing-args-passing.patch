@@ -1,8 +1,11 @@
-commit d95987575f656a2cc96ae493476cc503b2e7fc2a
-Author: Sida Zhu <zhusidayoyo@hotmail.com>
-Date:   Tue Apr 19 17:22:07 2022 +0800
-
-    video: release clear hevc testing switch limit
+From 40d4efeb0713b530ec1e8e38cd0091ba6e8c17d7 Mon Sep 17 00:00:00 2001
+From: Sta Zhu <zhusidayoyo@hotmail.com>
+Date: Wed, 27 Apr 2022 15:24:08 +0800
+Subject: [PATCH] Video: Remove clear testing args passing
+---
+ media/filters/source_buffer_state.cc   | 31 --------------------------
+ media/gpu/vaapi/vaapi_video_decoder.cc |  8 -------
+ 2 files changed, 39 deletions(-)
 
 diff --git a/media/filters/source_buffer_state.cc b/media/filters/source_buffer_state.cc
 index 74814c3be0057..9b1b37b0d8bc0 100644
@@ -65,3 +68,6 @@ index 47c682edbc464..67f01a22f55eb 100644
  #endif
    }
  
+-- 
+2.32.0 (Apple Git-132)
+

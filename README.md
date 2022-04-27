@@ -1,6 +1,6 @@
 # enable-chromium-hevc-hardware-decoding
 
-A guide that teach you build a custom version of chrome on macOS/Windows/Linux that supports hardware / software HEVC decoding.
+A guide that teach you build a custom version of chrome on macOS / Windows / Linux that supports hardware / software HEVC decoding.
 
 
 ##### English | [简体中文](./README.zh_CN.md)
@@ -42,11 +42,11 @@ All OS. like Windows 7, macOS 10.12, etc...
 
 |                  | PQ (SDR Screen) | PQ (HDR Screen) | HLG (SDR Screen) | HLG (HDR Screen) |
 | :-------------- | :------------- | :------------- | :-------------- | :-------------- |
-|  Chromium macOS  |     ✅(EDR)      |        ✅        |      ✅(EDR)      |        ✅         |
+|  Chromium macOS  |     ✅ (EDR)      |        ✅        |      ✅ (EDR)      |        ✅         |
 | Chromium Windows |        ✅        |        ✅        |        ✅         |        ✅         |
 |  Chromium Linux  |   Not Tested    |   Not Tested    |    Not Tested    |    Not Tested    |
 |   Edge Windows   |        ❌        |        ✅        |        ✅         |        ❌         |
-|   Safari macOS   |     ✅(EDR)      |        ✅        |      ✅(EDR)      |        ✅         |
+|   Safari macOS   |     ✅ (EDR)      |        ✅        |      ✅ (EDR)      |        ✅         |
 
 ## How to verify HEVC hardware support is enabled?
 
@@ -58,15 +58,18 @@ All OS. like Windows 7, macOS 10.12, etc...
 ## How to Build?
 
 1. Follow the official build doc https://www.chromium.org/developers/how-tos/get-the-code/ to prepare the build environment then fetch the source code in `main` branch.
-2. To enable software decoding feature, you can patch  `enable-chromium-hevc-hardware-decoding.diff` to `src/third_party/ffmpeg` . （Optional)  if node.js has been installed on your machine, then you can copy  ` enable-chromium-hevc-hardware-decoding.js`  to the root dir (the parent dir of `src` folder) and run `node enable-chromium-hevc-hardware-decoding.js ` without those manual steps. 
-3. (Optional) If you need HEVC range extension profile software decoding ability, you can patch  `release-decoder-switch-limit.diff`  to `src` to make sure HEVC Rext profile can be properly demuxed and software decoded.
-4. (Optional) If you don't like those chrome switch passing, patch `release-clear-hevc-testing-limit.diff` and `release-decoder-switch-limit.diff` to build a non-params passing version.
-5. If you are using `x64` arch cpu, run  `gn gen out/Release64 --args="is_component_build = false is_official_build = true is_debug = false symbol_level = 1 enable_nacl = false blink_symbol_level = 0 v8_symbol_level = 0 ffmpeg_branding = \"Chrome\" target_cpu = \"x64\" proprietary_codecs = true media_use_ffmpeg = true enable_platform_encrypted_hevc = true enable_platform_hevc = true enable_platform_hevc_decoding = true"`,  you can change target_cpu to `x86` , `arm64` , `arm` if you want to build other cpu archs.
-6. Run `autoninja -C out/Release64 chrome` to start the build.
-7. Run `./out/Release64/Chromium.app/Contents/MacOS/Chromium --args --enable-clear-hevc-for-testing --enable-features=VideoToolboxHEVCDecoding` to open chromium if you are using macOS.
-8. Create a desktop shortcut and passing the args like `C:\Users\Admin\Desktop\Chromium\chrome.exe --enable-clear-hevc-for-testing --enable-features=D3D11HEVCDecoding` then double click the desktop shortcut to open chromium if you are using Windows.
+2. (Optional) To enable HEVC software decoding: switch to `src/third_party/ffmpeg` dir, then execute `git am /path/to/add-hevc-ffmpeg-decoder-parser.patch`.
+3. (Optional) To enable other HEVC profiles (non main / main10 profiles): switch to `src` dir, then execute `git am /path/to/remove-main-main10-profile-limit.patch`.
+4. (Optional) To default enable hardware decode: switch to `src` dir, then execute `git am /path/to/enable-hevc-hardware-decoding-by-default.patch`.
+5. (Optional) To remove chrome switch passing: switch to `src` dir, then execute `git am /path/to/remove-clear-testing-args-passing.patch`.
+6. If you are using `x64` arch cpu, run  `gn gen out/Release64 --args="is_component_build = false is_official_build = true is_debug = false ffmpeg_branding = \"Chrome\" target_cpu = \"x64\" proprietary_codecs = true media_use_ffmpeg = true enable_platform_encrypted_hevc = true enable_platform_hevc = true enable_platform_hevc_decoding = true"`,  you can change target_cpu to `x86` , `arm64` , `arm` if you want to build other cpu archs.
+7. Run `autoninja -C out/Release64 chrome` to start the build.
+8. Run `./out/Release64/Chromium.app/Contents/MacOS/Chromium --args --enable-clear-hevc-for-testing --enable-features=VideoToolboxHEVCDecoding` to open chromium if you are using macOS.
+9. Create a desktop shortcut and passing the args like `C:\Users\Admin\Desktop\Chromium\chrome.exe --enable-clear-hevc-for-testing --enable-features=D3D11HEVCDecoding` then double click the desktop shortcut to open chromium if you are using Windows.
 
 ## Change Log
+
+`2022-4-27` Replace to `git am` patch
 
 `2022-4-24` Support chinese readme
 

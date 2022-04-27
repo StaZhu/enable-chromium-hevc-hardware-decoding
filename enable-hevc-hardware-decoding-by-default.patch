@@ -1,8 +1,10 @@
-commit 2a350d879ad0786bd7de4e7ddbf0e92f6cda1b0a
-Author: Sida Zhu <zhusidayoyo@hotmail.com>
-Date:   Tue Apr 19 17:21:07 2022 +0800
-
-    video: release decoder switch limit
+From 68eaad948f07cf30c49f22e5d11aa24a10a07923 Mon Sep 17 00:00:00 2001
+From: Sta Zhu <zhusidayoyo@hotmail.com>
+Date: Wed, 27 Apr 2022 15:21:11 +0800
+Subject: [PATCH] Video: Enable HEVC hardware decoding by default
+---
+ media/base/media_switches.cc | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/media/base/media_switches.cc b/media/base/media_switches.cc
 index 7cf785f96b3fb..26cd4db5735ae 100644
@@ -26,3 +28,6 @@ index 7cf785f96b3fb..26cd4db5735ae 100644
  
  // Enable VP9 kSVC decoding with HW decoder for webrtc use case on Windows.
  const base::Feature kD3D11Vp9kSVCHWDecoding{"D3D11Vp9kSVCHWDecoding",
+-- 
+2.32.0 (Apple Git-132)
+
