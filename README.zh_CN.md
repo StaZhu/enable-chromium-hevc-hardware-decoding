@@ -15,6 +15,8 @@
 
 1. HEVC Main (最高支持 8192x8192 px)
 2. HEVC Main10 (最高支持 8192x8192 px)
+3. HEVC Main Still Picture (仅macOS)
+4. HEVC Rext (仅macOS)
 
 #### 软解支持
 
@@ -59,7 +61,7 @@ Linux + Vaapi (暂未测试)
 
 ## 如何编译？
 
-1. 请参考 [Chrome编译手册](https://www.chromium.org/developers/how-tos/get-the-code/) 配置环境并拉取`103.0.5011.0` tag的代码（更新的版本，比如 `main` 分支，在没有代码冲突的情况, 理论上也可以)。
+1. 请参考 [Chrome编译手册](https://www.chromium.org/developers/how-tos/get-the-code/) 配置环境并拉取`103.0.5044.1` tag的代码（更新的版本，比如 `main` 分支，在没有代码冲突的情况, 理论上也可以)。
 2. (可选) 支持HEVC软解：切换到 `src/third_party/ffmpeg` 目录，执行 `git am /path/to/add-hevc-ffmpeg-decoder-parser.patch`。
 3. (可选) 支持Main / Main10 以外的其他HEVC Profile： 切换到 `src` 目录，执行 `git am /path/to/remove-main-main10-profile-limit.patch`。
 4. (可选) 默认启用硬解：切换到 `src` 目录，执行 `git am /path/to/enable-hevc-hardware-decoding-by-default.patch`。
@@ -70,6 +72,8 @@ Linux + Vaapi (暂未测试)
 9. 如果是Windows，在桌面创建一个快捷方式，并改为类似如下的路径： `C:\Users\Admin\Desktop\Chromium\chrome.exe --enable-clear-hevc-for-testing --enable-features=D3D11HEVCDecoding` 然后双击打开快捷方式，即可打开编译好的Chromium并开启HEVC硬解。
 
 ## 更新历史
+
+`2022-5-5` 为 macOS 添加了 MSP & Rext VideoToolbox 硬解支持，修复了 Windows 下部分 HDR, Main10 Rec709 视频硬解失败的问题
 
 `2022-4-27` 切换为 `git am` patch
 

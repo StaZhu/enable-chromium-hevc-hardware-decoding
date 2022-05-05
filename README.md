@@ -15,6 +15,8 @@ A guide that teach you build a custom version of chrome on macOS / Windows / Lin
 
 1. HEVC Main (Up to 8192x8192 pixels)
 2. HEVC Main10 (Up to 8192x8192 pixels)
+3. HEVC Main Still Picture (macOS only)
+4. HEVC Rext (macOS only)
 
 #### Software Decoding Support
 
@@ -57,7 +59,7 @@ All OS. like Windows 7, macOS 10.12, etc...
 
 ## How to Build?
 
-1. Follow [the official build doc](https://www.chromium.org/developers/how-tos/get-the-code/) to prepare the build environment then fetch the source code to tag `103.0.5011.0` (newer tag or `main` branch should also work if no code conflict with the following patch).
+1. Follow [the official build doc](https://www.chromium.org/developers/how-tos/get-the-code/) to prepare the build environment then fetch the source code to tag `103.0.5044.1` (newer tag or `main` branch should also work if no code conflict with the following patch).
 2. (Optional) To enable HEVC software decoding: switch to `src/third_party/ffmpeg` dir, then execute `git am /path/to/add-hevc-ffmpeg-decoder-parser.patch`.
 3. (Optional) To enable other HEVC profiles (non main / main10 profiles): switch to `src` dir, then execute `git am /path/to/remove-main-main10-profile-limit.patch`.
 4. (Optional) To default enable hardware decode: switch to `src` dir, then execute `git am /path/to/enable-hevc-hardware-decoding-by-default.patch`.
@@ -68,6 +70,8 @@ All OS. like Windows 7, macOS 10.12, etc...
 9. Create a desktop shortcut and passing the args like `C:\Users\Admin\Desktop\Chromium\chrome.exe --enable-clear-hevc-for-testing --enable-features=D3D11HEVCDecoding` then double click the desktop shortcut to open chromium if you are using Windows.
 
 ## Change Log
+
+`2022-5-5` Add support for MSP & Rext on macOS, and fix the issue that some HDR & Rec709 Main10 video can't be hw decoded on Windows
 
 `2022-4-27` Replace to `git am` patch
 
