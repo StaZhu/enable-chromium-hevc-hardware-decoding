@@ -7,7 +7,7 @@ A guide that teach you build a custom version of chrome on macOS / Windows / Lin
 
 ## Get release build?
 
-[Click here get pre-built release](https://github.com/StaZhu/enable-chromium-hevc-hardware-decoding/releases/tag/103.0.5011.0)
+[Click here get pre-built release](https://github.com/StaZhu/enable-chromium-hevc-hardware-decoding/releases/tag/103.0.5045.0)
 
 ## What's the supported HEVC profile?
 

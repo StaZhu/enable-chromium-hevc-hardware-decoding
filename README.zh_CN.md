@@ -7,7 +7,7 @@
 
 ## 下载预编译版本？
 
-[点击下载](https://github.com/StaZhu/enable-chromium-hevc-hardware-decoding/releases/tag/103.0.5011.0)
+[点击下载](https://github.com/StaZhu/enable-chromium-hevc-hardware-decoding/releases/tag/103.0.5045.0)
 
 ## 支持哪些Profile？
 
