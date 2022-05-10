@@ -4,13 +4,9 @@ Date: Wed, 27 Apr 2022 14:42:01 +0800
 Subject: [PATCH] Video: Add HEVC ffmpeg decoder & parser
 
 Add ffmpeg software decoder and parser for HEVC, this will make
-sure those not supported GPU or macOS version < 11 or Windows < 8
-or those users who disabled gpu acceleration to have software HEVC
-decoding ability.
-
-The new added HEVC parser will also fix a incorrect color space
-recognition issue on some hdr video and these videos not able to
-be properly hardware decoded because of this.
+sure those users using macOS version < 11 or Windows < 8 or those 
+users who disabled gpu acceleration or hardware not supported
+profiles to have software HEVC decoding ability.
 ---
  .../config/Chrome/linux-noasm/x64/config.h    |  8 ++---
  .../linux-noasm/x64/config_components.h       |  4 +--
