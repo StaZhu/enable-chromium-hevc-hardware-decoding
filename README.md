@@ -9,36 +9,23 @@ A guide that teach you build a custom version of chrome on macOS / Windows / Lin
 
 [Click here get pre-built release](https://github.com/StaZhu/enable-chromium-hevc-hardware-decoding/releases/tag/103.0.5045.0)
 
-## What's the supported HEVC profile?
+## What's the hardware supported HEVC profile?
 
-#### Hardware Decoding Support
+HEVC Main (Up to 8192x8192 pixels)
 
-1. HEVC Main (Up to 8192x8192 pixels)
-2. HEVC Main 10 (Up to 8192x8192 pixels)
-3. HEVC Main Still Picture (macOS only, Up to 8192x8192 pixels)
-4. HEVC Rext (macOS only, Up to 8192x8192 pixels)
+HEVC Main 10 (Up to 8192x8192 pixels)
 
-#### Software Decoding Support
+HEVC Main Still Picture (macOS only, Up to 8192x8192 pixels)
 
-Actually all the profile that FFMPEG supports should be supported here, like:
-
-1. HEVC Main Still Picture
-2. HEVC Rext
-3. HEVC SCC
+HEVC Rext (macOS only, Up to 8192x8192 pixels)
 
 ## What's the OS requirement?
-
-#### Hardware Decoding Requirement
 
 macOS Big Sur (11.0) and above
 
 Windows 8 and above
 
 Linux + Vaapi (Not tested)
-
-#### Software Decoding Requirement
-
-All OS. like Windows 7, macOS 10.12, etc...
 
 ## What's the GPU requirement?
 
@@ -77,7 +64,7 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra and above
 ## How to verify HEVC hardware support is enabled?
 
 1. Open `chrome://gpu`, and search `Video Acceleration Information`, you should see **Decode hevc main** field and **Decode hevc main 10** field  (macOS will show **Decode hevc main still-picture** and **Decode hevc range extensions** as well)  present if hardware decoding is supported (macOS is an exception here, you see this field doesn't means the decode will use hardware, it actually depends on your GPU).
-2. Open `chrome://media-internals` and play some HEVC video if the decoder is `VDAVideoDecoder` or `D3D11VideoDecoder` or `VaapiVideoDecoder` that means the video is using hardware decoding (macOS is an exception here, if the OS >= Big Sur, and the GPU doesn't support HEVC, VideoToolbox will fallback to software decode which has a better performance compared with FFMPEG, the decoder is `VDAVideoDecoder` in this case indeed), and if the decoder is `FFMpegVideoDecoder` that means  the video is using software decoding.
+2. Open `chrome://media-internals` and play some HEVC video ([Test Page](https://lf-tk-sg.ibytedtos.com/obj/tcs-client-sg/resources/video_demo_hevc.html)) if the decoder is `VDAVideoDecoder` or `D3D11VideoDecoder` or `VaapiVideoDecoder` that means the video is using hardware decoding (macOS is an exception here, if the OS >= Big Sur, and the GPU doesn't support HEVC, VideoToolbox will fallback to software decode which has a better performance compared with FFMPEG, the decoder is `VDAVideoDecoder` in this case indeed), and if the decoder is `FFMpegVideoDecoder` that means  the video is using software decoding.
 3. Open `Activity Monitor` on Mac and search `VTDecoderXPCService`, if the cpu usage larger than 0 when playing video, that means hardware (or software) decoding is being used.
 4. Open `Windows Task Manager` on Windows and switch to `Performance` - `GPU`, if `Video Decoding` usage larger than 0 when playing video,  that means hardware decoding is being used.
 
@@ -103,7 +90,7 @@ Some GPU hardware may has bug which will cause `D3D11VideoDecoder` forbidden to 
 
 ## Will HEVC decoding feature be enabled in chrome by default in the future?
 
-Very likely, but one thing is sure, only platform decoder (hardware decoder) will be supported in chrome, and FFMPEG software decoder will never get a change to be supported in the official Chrome.
+Very likely, but one thing is sure, only platform decoder that provided by the  OS will be supported in chrome thus this will be optional depends on the GPU and OS support.
 
 ## How to Build?
 
@@ -119,17 +106,19 @@ Very likely, but one thing is sure, only platform decoder (hardware decoder) wil
 
 ## Change Log
 
-`2022-05-10` Update Readme, add more special of the hardware support and GPU models
+`2022-05-13` Add HEVC Test page
 
-`2022-05-05` Add support for MSP & Rext on macOS, and fix the issue that some HDR & rec709 Main10 video can't be hw decoded on Windows
+`2022-05-10` Update README, add more special detail of the hardware support and GPU models
+
+`2022-05-05` Add support for MSP & Rext on macOS, and fix the issue that some HDR & Rec.709 Main10 video can't be hw decoded on Windows
 
 `2022-04-27` Replace to `git am` patch
 
-`2022-04-24` Support chinese readme
+`2022-04-24` Support chinese README
 
 `2022-04-21` Add Crbug trace
 
-`2022-04-20` Modify readme
+`2022-04-20` Modify README
 
 `2022-04-19` Initial commit
 

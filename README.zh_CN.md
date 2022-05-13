@@ -9,36 +9,23 @@
 
 [点击下载](https://github.com/StaZhu/enable-chromium-hevc-hardware-decoding/releases/tag/103.0.5045.0)
 
-## 支持哪些Profile？
+## 支持硬解哪些Profile？
 
-#### 硬解支持
+HEVC Main (最高支持 8192x8192 px)
 
-1. HEVC Main (最高支持 8192x8192 px)
-2. HEVC Main 10 (最高支持 8192x8192 px)
-3. HEVC Main Still Picture (仅 macOS，最高支持 8192x8192 px)
-4. HEVC Rext (仅 macOS，最高支持 8192x8192 px)
+HEVC Main 10 (最高支持 8192x8192 px)
 
-#### 软解支持
+HEVC Main Still Picture (仅 macOS，最高支持 8192x8192 px)
 
-所有 FFMPEG 支持的 Profile 软解都支持，比如：
-
-1. HEVC Main Still Picture
-2. HEVC Rext
-3. HEVC SCC
+HEVC Rext (仅 macOS，最高支持 8192x8192 px)
 
 ## 操作系统要求？
-
-#### 硬解要求
 
 macOS Big Sur (11.0) 及以上
 
 Windows 8 及以上
 
 Linux + Vaapi (暂未测试)
-
-#### 软解要求
-
-所有操作系统版本。比如 Windows 7, macOS 10.12, 等等...
 
 ## GPU要求？
 
@@ -66,8 +53,6 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra 及以上
 
 ## HDR 支持? (与Edge / Safari的对比) 
 
-[点击查看详细测试](https://juejin.cn/post/7089795059737952287/#heading-41)
-
 |                  | PQ (SDR Screen) | PQ (HDR Screen) | HLG (SDR Screen) | HLG (HDR Screen) |
 | :--------------- | :------------- | :------------- | :-------------- | :-------------- |
 |  Chromium macOS  |     ✅ (EDR)     |        ✅        |      ✅ (EDR)      |        ✅         |
@@ -79,7 +64,7 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra 及以上
 ## 如何验证视频播放是否走硬解？
 
 1. 打开 `chrome://gpu`, 搜索 `Video Acceleration Information`, 如果能看到 **Decode hevc main**  和 **Decode hevc main 10**  (macOS 还会显示 **Decode hevc main still-picture** 和 **Decode hevc range extensions**) 说明支持硬解（这里 macOS 是个例外，显示仅代表支持 VideoToolbox 解码，至于是否硬解取决于 GPU 支持情况)。
-2. 打开 `chrome://media-internals` 并尝试播放一些 HEVC 视频，如果最终使用的 Decoder 是 `VDAVideoDecoder` 或 `D3D11VideoDecoder` 或 `VaapiVideoDecoder` 说明走了硬解（这里 macOS 是个例外，macOS Big Sur 以上版本，在不支持的 GPU 上，VideoToolbox 会自动 fallback 到软解，性能相比 FFMPEG 软解更好，Decoder 同样为 `VDAVideoDecoder`）, 如果 Decoder 是 `FFMpegVideoDecoder` 说明走的是软解。
+2. 打开 `chrome://media-internals` 并尝试播放一些 HEVC 视频 ([测试页面](https://lf3-cdn-tos.bytegoofy.com/obj/tcs-client/resources/video_demo_hevc.html))，如果最终使用的 Decoder 是 `VDAVideoDecoder` 或 `D3D11VideoDecoder` 或 `VaapiVideoDecoder` 说明走了硬解（这里 macOS 是个例外，macOS Big Sur 以上版本，在不支持的 GPU 上，VideoToolbox 会自动 fallback 到软解，性能相比 FFMPEG 软解更好，Decoder 同样为 `VDAVideoDecoder`）, 如果 Decoder 是 `FFMpegVideoDecoder` 说明走的是软解。
 3. 如果是 Mac，请打开 `活动监视器`并搜索 `VTDecoderXPCService`, 如果播放时进程的 CPU 利用率大于0说明走了硬解（或软解)。
 4. 如果是 Windows，请打开 `任务管理器` 并切换到 `性能` - `GPU` 面板，如果 `Video Decoding` 的利用率大于0说明走了硬解。
 
@@ -105,12 +90,12 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra 及以上
 
 ## HEVC 支持将来是否会包含在 Chrome 内并默认启用？
 
-很有可能，但会只包含平台提供的解码器（硬解码），FFMPEG 软解功能不会被包含在内。
+很有可能，但会只包含操作系统提供的解码器，功能为可选支持，不支持的GPU和操作系统将无法使用。
 
 ## 如何编译？
 
 1. 请参考 [Chrome编译手册](https://www.chromium.org/developers/how-tos/get-the-code/) 配置环境并拉取 `103.0.5044.1` tag 的代码（更新的版本，比如 `main` 分支，在没有代码冲突的情况, 理论上也可以，这里我争取定期更新最新的)。
-2. (可选) 支持 HEVC 软解：切换到 `src/third_party/ffmpeg` 目录，执行 `git am /path/to/add-hevc-ffmpeg-decoder-parser.patch`。
+2. (可选) 支持 HEVC 软解：切换到 `src/third_party/ffmpeg` 目录，执行 `git am /path/to/add-hevc-ffmpeg-decoder-parser.patch` 。
 3. (可选) 支持 Main / Main10 以外的其他 HEVC Profile： 切换到 `src` 目录，执行 `git am /path/to/remove-main-main10-profile-limit.patch`。
 4. (可选) 默认启用硬解：切换到 `src` 目录，执行 `git am /path/to/enable-hevc-hardware-decoding-by-default.patch`。
 5. (可选) 去除启动参数：切换到 `src` 目录，执行 `git am /path/to/remove-clear-testing-args-passing.patch`。
@@ -121,17 +106,19 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra 及以上
 
 ## 更新历史
 
-`2022-05-10` 更新 Readme，明确硬解范围和支持型号
+`2022-05-13` 添加HEVC测试页面
 
-`2022-05-05` 为 macOS 添加了 MSP & Rext VideoToolbox 硬解支持，修复了 Windows 下部分 Main10 hdr, rec709 视频硬解失败的问题
+`2022-05-10` 更新 README，明确硬解范围和支持型号
+
+`2022-05-05` 为 macOS 添加了 MSP & Rext VideoToolbox 硬解支持，修复了 Windows 下部分 Main10 hdr, Rec.709 视频硬解失败的问题
 
 `2022-04-27` 切换为 `git am` patch
 
-`2022-04-24` 支持中文
+`2022-04-24` 支持中文 README
 
 `2022-04-21` 添加 Crbug 链接
 
-`2022-04-20` 修改 ReadMe
+`2022-04-20` 修改 README
 
 `2022-04-19` 首次提交
 
