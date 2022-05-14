@@ -94,19 +94,21 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra 及以上
 
 ## 如何编译？
 
-1. 请参考 [Chrome编译手册](https://www.chromium.org/developers/how-tos/get-the-code/) 配置环境并拉取 `103.0.5044.1` tag 的代码（更新的版本，比如 `main` 分支，在没有代码冲突的情况, 理论上也可以，这里我争取定期更新最新的)。
+1. 请参考 [Chrome编译手册](https://www.chromium.org/developers/how-tos/get-the-code/) 配置环境并拉取 `main` 分支的代码。
 2. (可选) 支持 HEVC 软解：切换到 `src/third_party/ffmpeg` 目录，执行 `git am /path/to/add-hevc-ffmpeg-decoder-parser.patch` 。
 3. (可选) 支持 Main / Main10 以外的其他 HEVC Profile： 切换到 `src` 目录，执行 `git am /path/to/remove-main-main10-profile-limit.patch`。
 4. (可选) 默认启用硬解：切换到 `src` 目录，执行 `git am /path/to/enable-hevc-hardware-decoding-by-default.patch`。
 5. (可选) 去除启动参数：切换到 `src` 目录，执行 `git am /path/to/remove-clear-testing-args-passing.patch`。
 6. 假设你想编译 `x64` 架构的 Chromium，请执行 `gn gen out/Release64 --args="is_component_build = false is_official_build = true is_debug = false ffmpeg_branding = \"Chrome\" target_cpu = \"x64\" proprietary_codecs = true media_use_ffmpeg = true enable_platform_encrypted_hevc = true enable_platform_hevc = true enable_platform_hevc_decoding = true"`，其他可选的架构有： `x86` , `arm64` , `arm` 等。
 7. 执行 `autoninja -C out/Release64 chrome` 以开始编译。
-8. 如果是 Mac，执行 `./out/Release64/Chromium.app/Contents/MacOS/Chromium --args --enable-clear-hevc-for-testing --enable-features=VideoToolboxHEVCDecoding` 打开编译好的 Chromium 并开启 HEVC 硬解。
-9. 如果是 Windows，在桌面创建一个快捷方式，并改为类似如下的路径： `C:\Users\Admin\Desktop\Chromium\chrome.exe --enable-clear-hevc-for-testing --enable-features=D3D11HEVCDecoding` 然后双击打开快捷方式，即可打开编译好的 Chromium 并开启 HEVC 硬解。
+8. 如果是 Mac，执行 `./out/Release64/Chromium.app/Contents/MacOS/Chromium --args --enable-clear-hevc-for-testing --enable-features=PlatformHEVCDecoderSupport` 打开编译好的 Chromium 并开启 HEVC 硬解。
+9. 如果是 Windows，在桌面创建一个快捷方式，并改为类似如下的路径： `C:\Users\Admin\Desktop\Chromium\chrome.exe --enable-clear-hevc-for-testing --enable-features=PlatformHEVCDecoderSupport` 然后双击打开快捷方式，即可打开编译好的 Chromium 并开启 HEVC 硬解。
 
 ## 更新历史
 
-`2022-05-13` 添加HEVC测试页面
+`2022-05-14` 更新 Patch 到 `104.0.5061.1`
+
+`2022-05-13` 添加 HEVC 测试页面
 
 `2022-05-10` 更新 README，明确硬解范围和支持型号
 

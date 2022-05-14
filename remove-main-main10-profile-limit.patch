@@ -1,28 +1,29 @@
-From 7e2522b7627c85168eb4c05d68a4e7edc61af336 Mon Sep 17 00:00:00 2001
+From b35024f4b2ee639ba3116a7a24c2e3d3943d4277 Mon Sep 17 00:00:00 2001
 From: Sta Zhu <zhusidayoyo@hotmail.com>
-Date: Thu, 5 May 2022 15:55:52 +0800
+Date: Sat, 14 May 2022 12:07:34 +0800
 Subject: [PATCH] Video: Remove Main/Main10 profile limit
 
 This will consider all HEVC profile as to supported, and
 help you be able to play video's like HEVC Rext, SCC etc...
 ---
- media/base/supported_types.cc | 30 ------------------------------
- 1 file changed, 30 deletions(-)
+ media/base/supported_types.cc | 31 -------------------------------
+ 1 file changed, 31 deletions(-)
 
 diff --git a/media/base/supported_types.cc b/media/base/supported_types.cc
-index 3953324666dbe..75c439fdd3c6c 100644
+index e6b9a1cd524ec..b0d667690ea4f 100644
 --- a/media/base/supported_types.cc
 +++ b/media/base/supported_types.cc
-@@ -205,37 +205,7 @@ bool IsHevcProfileSupported(const VideoType& type) {
+@@ -203,38 +203,7 @@ bool IsAudioCodecProprietary(AudioCodec codec) {
+ bool IsHevcProfileSupported(const VideoType& type) {
    if (!IsColorSpaceSupported(type.color_space))
      return false;
- 
+-
 -#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 -#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 -  return GetSupplementalProfileCache()->IsProfileSupported(type.profile);
 -#elif BUILDFLAG(IS_MAC)
 -  if (__builtin_available(macOS 11.0, *))
--    return base::FeatureList::IsEnabled(kVideoToolboxHEVCDecoding) &&
+-    return base::FeatureList::IsEnabled(kPlatformHEVCDecoderSupport) &&
 -           (type.profile == HEVCPROFILE_MAIN ||
 -            type.profile == HEVCPROFILE_MAIN10 ||
 -            type.profile == HEVCPROFILE_MAIN_STILL_PICTURE ||
@@ -32,7 +33,7 @@ index 3953324666dbe..75c439fdd3c6c 100644
 -  // Technically android 5.0 mandates support for only HEVC main profile,
 -  // however some platforms (like chromecast) have had more profiles supported
 -  // so we'll see what happens if we just enable them all.
--  return base::FeatureList::IsEnabled(kMediaCodecHEVC);
+-  return base::FeatureList::IsEnabled(kPlatformHEVCDecoderSupport);
 -#else
    return true;
 -#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
