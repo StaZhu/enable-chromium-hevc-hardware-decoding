@@ -1,13 +1,13 @@
 # enable-chromium-hevc-hardware-decoding
 
-A guide that teach you build a custom version of chrome on macOS / Windows / Linux that supports hardware / software HEVC decoding.
+A guide that teach you build a custom version of Chrome / Electron on macOS / Windows / Linux that supports hardware / software HEVC decoding.
 
 
 ##### English | [简体中文](./README.zh_CN.md)
 
 ## Get release build?
 
-[Click here get pre-built release](https://github.com/StaZhu/enable-chromium-hevc-hardware-decoding/releases/tag/103.0.5045.0)
+[Click to download](https://github.com/StaZhu/enable-chromium-hevc-hardware-decoding/releases/tag/103.0.5045.0)
 
 ## What's the hardware supported HEVC profile?
 
@@ -51,7 +51,7 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra and above
 
 [NVIDIA](https://bluesky-soft.com/en/dxvac/deviceInfo/decoder/nvidia.html)
 
-## HDR Supports? (Compared with Edge / Safari) 
+## HDR Supports? (Compared with Edge / Safari)
 
 |                  | PQ (SDR Screen) | PQ (HDR Screen) | HLG (SDR Screen) | HLG (HDR Screen) |
 | :-------------- | :------------- | :------------- | :-------------- | :-------------- |
@@ -60,6 +60,18 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra and above
 |  Chromium Linux  |   Not Tested    |   Not Tested    |    Not Tested    |    Not Tested    |
 |   Edge Windows   |        ❌        |        ✅        |        ✅         |        ❌         |
 |   Safari macOS   |     ✅ (EDR)      |        ✅        |      ✅ (EDR)      |        ✅         |
+
+## What's the tech diff? (Compared with Edge / Safari)
+
+#### Windows
+
+Edge uses `VDAVideoDecoder` to call `MediaFoundation` (need to install `HEVC Video Extension`) to finish the HEVC HW decoding which is the same tech behind `Movies and TV` builtin system app.
+
+Chromium uses `D3D11VideoDecoder` to call `D3D11VA` (no need to install anything) to finish the HEVC HW decoding which is the same tech behind video players like `VLC`.
+
+#### macOS
+
+Safari and Chromium use the same `VideoToolbox` to finish the HEVC HW decoding.
 
 ## How to verify HEVC hardware support is enabled?
 
@@ -94,7 +106,7 @@ Very likely, but one thing is sure, only platform decoder that provided by the  
 
 ## How to Build?
 
-1. Follow [the official build doc](https://www.chromium.org/developers/how-tos/get-the-code/) to prepare the build environment then fetch the source code from `main` branch.
+1. Follow [the official build doc](https://www.chromium.org/developers/how-tos/get-the-code/) to prepare the build environment then fetch the source code from `main` branch (HEVC HW codes has been merged).
 2. (Optional) To enable HEVC software decoding: switch to `src/third_party/ffmpeg` dir, then execute `git am /path/to/add-hevc-ffmpeg-decoder-parser.patch`.
 3. (Optional) To enable other HEVC profiles (non main / main 10 profiles): switch to `src` dir, then execute `git am /path/to/remove-main-main10-profile-limit.patch`.
 4. (Optional) To default enable hardware decode: switch to `src` dir, then execute `git am /path/to/enable-hevc-hardware-decoding-by-default.patch`.
@@ -104,7 +116,15 @@ Very likely, but one thing is sure, only platform decoder that provided by the  
 8. Run `./out/Release64/Chromium.app/Contents/MacOS/Chromium --args --enable-clear-hevc-for-testing --enable-features=PlatformHEVCDecoderSupport` to open chromium if you are using macOS.
 9. Create a desktop shortcut and passing the args like `C:\Users\Admin\Desktop\Chromium\chrome.exe --enable-clear-hevc-for-testing --enable-features=PlatformHEVCDecoderSupport` then double click the desktop shortcut to open chromium if you are using Windows.
 
+## How to integrate this into Chromium based project like Electron?
+
+If Electron = 20 (Chromium 104), directly add `enable_platform_encrypted_hevc = true enable_platform_hevc = true enable_platform_hevc_decoding = true` to `build/args/release.gn`, then compile yourself, and you will get a hardware supported electron, other part should be the same with chromium.
+
+If Electron < 20, please follow the CL in `Trace Crbug` to manually integrate HEVC features, pull request of the patch code wecome.
+
 ## Change Log
+
+`2022-05-17` Update detail of tech implement and guide to integrate into electron
 
 `2022-05-14` Update Patch to `104.0.5061.1`
 

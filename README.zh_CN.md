@@ -1,6 +1,6 @@
 # enable-chromium-hevc-hardware-decoding
 
-一个教你编译 Chrome 使其支持 Windows / macOS / Linux 三个平台 HEVC 硬 / 软解功能的教程。
+一个教你编译 Chrome / Electron 使其支持 Windows / macOS / Linux 三个平台 HEVC 硬 / 软解功能的教程。
 
 
 ##### 简体中文 | [English](./README.md)
@@ -51,7 +51,7 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra 及以上
 
 [NVIDIA](https://bluesky-soft.com/en/dxvac/deviceInfo/decoder/nvidia.html)
 
-## HDR 支持? (与Edge / Safari的对比) 
+## HDR 支持? (与Edge / Safari的对比)
 
 |                  | PQ (SDR Screen) | PQ (HDR Screen) | HLG (SDR Screen) | HLG (HDR Screen) |
 | :--------------- | :------------- | :------------- | :-------------- | :-------------- |
@@ -60,6 +60,18 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra 及以上
 |  Chromium Linux  |    暂未测试     |    暂未测试     |     暂未测试     |     暂未测试     |
 |   Edge Windows   |        ❌        |        ✅        |        ✅         |        ❌         |
 |   Safari macOS   |     ✅ (EDR)     |        ✅        |      ✅ (EDR)      |        ✅         |
+
+## 技术实现区别？(与Edge / Safari的对比)
+
+#### Windows
+
+Edge 使用 `VDAVideoDecoder` 调用 `MediaFoundation`（需要安装`HEVC视频扩展`插件）完成硬解，和系统自带的 `电影与电视` 用的解码器相同。
+
+Chromium 使用 `D3D11VideoDecoder` 调用 `D3D11VA` （无需安装插件）完成硬解，和 `VLC` 等视频播放器用的解码器相同。
+
+#### macOS
+
+Safari 和 Chromium 二者均使用 `VideoToolbox` 解码器完成硬解。
 
 ## 如何验证视频播放是否走硬解？
 
@@ -94,7 +106,7 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra 及以上
 
 ## 如何编译？
 
-1. 请参考 [Chrome编译手册](https://www.chromium.org/developers/how-tos/get-the-code/) 配置环境并拉取 `main` 分支的代码。
+1. 请参考 [Chrome编译手册](https://www.chromium.org/developers/how-tos/get-the-code/) 配置环境并拉取 `main` 分支（硬解代码已合入）的代码。
 2. (可选) 支持 HEVC 软解：切换到 `src/third_party/ffmpeg` 目录，执行 `git am /path/to/add-hevc-ffmpeg-decoder-parser.patch` 。
 3. (可选) 支持 Main / Main10 以外的其他 HEVC Profile： 切换到 `src` 目录，执行 `git am /path/to/remove-main-main10-profile-limit.patch`。
 4. (可选) 默认启用硬解：切换到 `src` 目录，执行 `git am /path/to/enable-hevc-hardware-decoding-by-default.patch`。
@@ -104,7 +116,15 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra 及以上
 8. 如果是 Mac，执行 `./out/Release64/Chromium.app/Contents/MacOS/Chromium --args --enable-clear-hevc-for-testing --enable-features=PlatformHEVCDecoderSupport` 打开编译好的 Chromium 并开启 HEVC 硬解。
 9. 如果是 Windows，在桌面创建一个快捷方式，并改为类似如下的路径： `C:\Users\Admin\Desktop\Chromium\chrome.exe --enable-clear-hevc-for-testing --enable-features=PlatformHEVCDecoderSupport` 然后双击打开快捷方式，即可打开编译好的 Chromium 并开启 HEVC 硬解。
 
+## 如何集成到 Electron 等基于 Chromium 的项目？
+
+如果是 Electron 20 (内置 Chromium 104)，则直接在 `build/args/release.gn` 添加`enable_platform_encrypted_hevc = true enable_platform_hevc = true enable_platform_hevc_decoding = true` 三个参数，自行编译，即可支持硬解，其他部分同上述 Chromium 教程类似。
+
+如果是 Electron 20 以下版本，请点开 `追踪进度` 内的提交，手动CV大法集成，欢迎提交 Pull Request 到本项目。
+
 ## 更新历史
+
+`2022-05-17` 更新实现细节和 Electron 集成指南
 
 `2022-05-14` 更新 Patch 到 `104.0.5061.1`
 
