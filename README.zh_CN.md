@@ -7,7 +7,7 @@
 
 ## 下载预编译版本？
 
-[点击下载](https://github.com/StaZhu/enable-chromium-hevc-hardware-decoding/releases/tag/103.0.5045.0)
+[点击下载](https://github.com/StaZhu/enable-chromium-hevc-hardware-decoding/releases)
 
 ## 支持硬解哪些Profile？
 
@@ -110,19 +110,21 @@ Safari 和 Chromium 二者均使用 `VideoToolbox` 解码器完成硬解。
 2. (可选) 支持 HEVC 软解：切换到 `src/third_party/ffmpeg` 目录，执行 `git am /path/to/add-hevc-ffmpeg-decoder-parser.patch` 。
 3. (可选) 支持 Main / Main10 以外的其他 HEVC Profile： 切换到 `src` 目录，执行 `git am /path/to/remove-main-main10-profile-limit.patch`。
 4. (可选) 默认启用硬解：切换到 `src` 目录，执行 `git am /path/to/enable-hevc-hardware-decoding-by-default.patch`。
-5. (可选) 去除启动参数：切换到 `src` 目录，执行 `git am /path/to/remove-clear-testing-args-passing.patch`。
-6. 假设你想编译 `x64` 架构的 Chromium，请执行 `gn gen out/Release64 --args="is_component_build = false is_official_build = true is_debug = false ffmpeg_branding = \"Chrome\" target_cpu = \"x64\" proprietary_codecs = true media_use_ffmpeg = true enable_platform_encrypted_hevc = true enable_platform_hevc = true enable_platform_hevc_decoding = true"`，其他可选的架构有： `x86` , `arm64` , `arm` 等。
-7. 执行 `autoninja -C out/Release64 chrome` 以开始编译。
-8. 如果是 Mac，执行 `./out/Release64/Chromium.app/Contents/MacOS/Chromium --args --enable-clear-hevc-for-testing --enable-features=PlatformHEVCDecoderSupport` 打开编译好的 Chromium 并开启 HEVC 硬解。
-9. 如果是 Windows，在桌面创建一个快捷方式，并改为类似如下的路径： `C:\Users\Admin\Desktop\Chromium\chrome.exe --enable-clear-hevc-for-testing --enable-features=PlatformHEVCDecoderSupport` 然后双击打开快捷方式，即可打开编译好的 Chromium 并开启 HEVC 硬解。
+5. (可选) 集成 Widevine CDM，以支持 EME 加密视频 (例：Netflix) 播放：切换到 `src` 目录，执行 `cp -R /path/to/widevine/* third_party/widevine/cdm` (Windows 请执行: `xcopy /path/to/widevine third_party\widevine\cdm /E/H`)。
+6. 假设你想编译 `Mac` + `x64` 架构（其他可选的架构有：`x86`, `arm64`, `arm`）+ 支持 CDM 的 Chromium，请执行 `gn gen out/Release64 --args="is_component_build = false is_official_build = true is_debug = false ffmpeg_branding = \"Chrome\" target_cpu = \"x64\" proprietary_codecs = true media_use_ffmpeg = true enable_widevine = true bundle_widevine_cdm = true enable_platform_hevc = true enable_platform_hevc_decoding = true"`，如果想编译 `Windows`，请额外添加 `enable_media_foundation_widevine_cdm = true`，如果想编译 `Windows` 且目标架构为 `arm64`，请将 `bundle_widevine_cdm` 改为 `false`, 如果想编译 `Linux` 且架构不是 `x64`，请将 `enable_widevine` 改为 `false`，`bundle_widevine_cdm` 改为 `false`。
+6. 执行 `autoninja -C out/Release64 chrome` 以开始编译。
+7. 如果是 Mac，执行 `./out/Release64/Chromium.app/Contents/MacOS/Chromium --args --enable-features=PlatformHEVCDecoderSupport` 打开编译好的 Chromium 并开启 HEVC 硬解。
+8. 如果是 Windows，在桌面创建一个快捷方式，并改为类似如下的路径： `C:\Users\Admin\Desktop\Chromium\chrome.exe --enable-features=PlatformHEVCDecoderSupport` 然后双击打开快捷方式，即可打开编译好的 Chromium 并开启 HEVC 硬解。
 
 ## 如何集成到 Electron 等基于 Chromium 的项目？
 
-如果是 Electron 20 (内置 Chromium 104)，则直接在 `build/args/release.gn` 添加`enable_platform_encrypted_hevc = true enable_platform_hevc = true enable_platform_hevc_decoding = true` 三个参数，自行编译，即可支持硬解，其他部分同上述 Chromium 教程类似。
+如果是 Electron 20 (内置 Chromium 104)，则直接在 `build/args/release.gn` 添加`enable_platform_hevc = true enable_platform_hevc_decoding = true` 三个参数，自行编译，即可支持硬解，其他部分同上述 Chromium 教程类似。
 
 如果是 Electron 20 以下版本，请点开 `追踪进度` 内的提交，手动CV大法集成，欢迎提交 Pull Request 到本项目。
 
 ## 更新历史
+
+`2022-05-23` 添加 CDM 编译步骤，更新 Patch 到 `104.0.5077.1`
 
 `2022-05-17` 更新实现细节和 Electron 集成指南
 
