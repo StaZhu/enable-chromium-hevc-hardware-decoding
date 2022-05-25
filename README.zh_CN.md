@@ -102,7 +102,7 @@ Safari 和 Chromium 二者均使用 `VideoToolbox` 解码器完成硬解。
 
 ## HEVC 支持将来是否会包含在 Chrome 内并默认启用？
 
-很有可能，但会只包含操作系统提供的解码器，功能为可选支持，不支持的GPU和操作系统将无法使用。
+Chrome 104 将集成 ChromeOS, Mac, Windows 的 HEVC 硬解支持，默认关闭，并允许通过 `--enable-features=PlatformHEVCDecoderSupport` 启用，待未来版本稳定后会默认启用。（Chrome 只包含操作系统提供的解码器，功能为可选支持，不支持的GPU和操作系统将无法使用）
 
 ## 如何编译？
 
@@ -118,11 +118,13 @@ Safari 和 Chromium 二者均使用 `VideoToolbox` 解码器完成硬解。
 
 ## 如何集成到 Electron 等基于 Chromium 的项目？
 
-如果是 Electron 20 (内置 Chromium 104)，则直接在 `build/args/release.gn` 添加`enable_platform_hevc = true enable_hevc_parser_and_hw_decoder = true` 三个参数，自行编译，即可支持硬解，其他部分同上述 Chromium 教程类似。
+如果是 Electron 20 (Chromium 104)，则已集成好 Mac, Windows 平台的 HEVC 硬解功能，在启动时执行 `app.commandLine.appendSwitch('enable-features', 'PlatformHEVCDecoderSupport')` 即可启用硬解。若要集成软解，方法同上述 Chromium 教程相同。
 
-如果是 Electron 20 以下版本，请点开 `追踪进度` 内的提交，手动CV大法集成，欢迎提交 Pull Request 到本项目。
+如果是 Electron 20 以下版本，请点开 `追踪进度` 内的提交，手动 CV 大法集成，欢迎提交 Pull Request 到本项目。
 
 ## 更新历史
+
+`2022-05-25` 更新 Chrome 104 支持情况，以及 Electron 20 开启方法
 
 `2022-05-24` 更新 Patch 到 `104.0.5080.1`
 

@@ -100,9 +100,9 @@ Some GPU driver may has bug which will cause `D3D11VideoDecoder` forbidden to us
 
 Some GPU hardware may has bug which will cause `D3D11VideoDecoder` forbidden to use. in this case, we can't do anything else but to use the FFMPEG software decode. [See reference](https://source.chromium.org/chromium/chromium/src/+/main:gpu/config/gpu_driver_bug_list.json?q=disable_d3d11_video_decoder)
 
-## Will HEVC decoding feature be enabled in chrome by default in the future?
+## Will HEVC decoding be enabled in Chrome by default in the future?
 
-Very likely, but one thing is sure, only platform decoder that provided by the  OS will be supported in chrome thus this will be optional depends on the GPU and OS support.
+Chrome 104 will integrate HEVC hw support for ChromeOS, Mac and Windows, disabled by default, and you can enable it by passing `--enable-features=PlatformHEVCDecoderSupport` when opening. it should be enabled by default in the future version when stable. (only platform decoder that provided by the OS will be supported in chrome, thus this will be optional depends on the GPU and OS support)
 
 ## How to Build?
 
@@ -118,11 +118,13 @@ Very likely, but one thing is sure, only platform decoder that provided by the  
 
 ## How to integrate this into Chromium based project like Electron?
 
-If Electron = 20 (Chromium 104), directly add `enable_platform_hevc = true enable_hevc_parser_and_hw_decoder = true` to `build/args/release.gn`, then compile yourself, and you will get a hardware supported electron, other part should be the same with chromium.
+If Electron = 20 (Chromium 104), then the HEVC hw decoding feature for Mac and Windows should have already been integrated, and you can use `app.commandLine.appendSwitch('enable-features', 'PlatformHEVCDecoderSupport')` to enable HEVC hw decoding. to add HEVC ffmpeg sw decoding, the method should be the same with Chromium guide above.
 
 If Electron < 20, please follow the CL in `Trace Crbug` to manually integrate HEVC features, pull request of the patch code wecome.
 
 ## Change Log
+
+`2022-05-25` Update Chrome 104 support status, and Electron 20 enable method
 
 `2022-05-24` Update Patch to `104.0.5080.1`
 
