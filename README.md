@@ -5,9 +5,13 @@ A guide that teach you build a custom version of Chrome / Electron on macOS / Wi
 
 ##### English | [简体中文](./README.zh_CN.md)
 
-## Get release build?
+## Download Link
 
-[Click to download](https://github.com/StaZhu/enable-chromium-hevc-hardware-decoding/releases)
+#### Chromium with HW + SW HEVC support
+[Click to Download](https://github.com/StaZhu/enable-chromium-hevc-hardware-decoding/releases) then launch.
+
+#### Chrome Canary with HW HEVC support
+[Click to Download](https://www.google.com/chrome/canary/) then passing `--enable-features=PlatformHEVCDecoderSupport` and launch.
 
 ## What's the hardware supported HEVC profile?
 
@@ -120,9 +124,11 @@ Chrome 104 will integrate HEVC hw support for ChromeOS, Mac and Windows, disable
 
 If Electron = 20 (Chromium 104), then the HEVC hw decoding feature for Mac and Windows should have already been integrated, and you can use `app.commandLine.appendSwitch('enable-features', 'PlatformHEVCDecoderSupport')` to enable HEVC hw decoding. to add HEVC ffmpeg sw decoding, the method should be the same with Chromium guide above.
 
-If Electron < 20, please follow the CL in `Trace Crbug` to manually integrate HEVC features, pull request of the patch code wecome.
+If Electron < 20, please follow the CL in `Trace Crbug` to manually integrate HEVC features, pull request of the patch code welcome.
 
 ## Change Log
+
+`2022-05-26` Update Chrome Canary HEVC feature test guide
 
 `2022-05-25` Update Chrome 104 support status, and Electron 20 enable method
 

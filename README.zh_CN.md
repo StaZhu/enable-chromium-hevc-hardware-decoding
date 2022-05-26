@@ -5,9 +5,13 @@
 
 ##### 简体中文 | [English](./README.md)
 
-## 下载预编译版本？
+## 下载地址
 
-[点击下载](https://github.com/StaZhu/enable-chromium-hevc-hardware-decoding/releases)
+#### 支持 HEVC 硬 + 软解的 Chromium
+[点击下载](https://github.com/StaZhu/enable-chromium-hevc-hardware-decoding/releases)后，双击打开。
+
+#### 支持 HEVC 硬解的 Chrome Canery
+[点击下载](https://www.google.com/chrome/canary/)后，启动时传入 `--enable-features=PlatformHEVCDecoderSupport` 并双击打开。
 
 ## 支持硬解哪些Profile？
 
@@ -123,6 +127,8 @@ Chrome 104 将集成 ChromeOS, Mac, Windows 的 HEVC 硬解支持，默认关闭
 如果是 Electron 20 以下版本，请点开 `追踪进度` 内的提交，手动 CV 大法集成，欢迎提交 Pull Request 到本项目。
 
 ## 更新历史
+
+`2022-05-26` 更新 Chrome Canary 测试 HEVC 功能的方法
 
 `2022-05-25` 更新 Chrome 104 支持情况，以及 Electron 20 开启方法
 
