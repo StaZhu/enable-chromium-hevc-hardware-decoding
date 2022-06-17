@@ -1,6 +1,6 @@
 # enable-chromium-hevc-hardware-decoding
 
-一个教你编译 Chrome / Electron 使其支持 Windows / macOS / Linux 三个平台 HEVC 硬 / 软解功能的教程。
+一个教你编译 Chrome / Electron 使其支持 Windows / macOS 三个平台 HEVC 硬 / 软解功能的教程。
 
 
 ##### 简体中文 | [English](./README.md)
@@ -29,7 +29,13 @@ macOS Big Sur (11.0) 及以上
 
 Windows 8 及以上
 
-Linux + Vaapi (暂未测试)
+Android (已支持，暂未测试)
+
+ChromeOS (已支持，暂未测试)
+
+## 支持哪些 API?
+
+目前支持 HTML Video Element，MSE，以及 Clearkey EME，不支持 WebRTC 和 HEVC 编码。
 
 ## GPU要求？
 
@@ -59,11 +65,10 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra 及以上
 
 |                  | PQ (SDR Screen) | PQ (HDR Screen) | HLG (SDR Screen) | HLG (HDR Screen) |
 | :--------------- | :------------- | :------------- | :-------------- | :-------------- |
-|  Chromium macOS  |     ✅ (EDR)     |        ✅        |      ✅ (EDR)      |        ✅         |
-| Chromium Windows |        ✅        |        ✅        |        ✅         |        ✅         |
-|  Chromium Linux  |    暂未测试     |    暂未测试     |     暂未测试     |     暂未测试     |
-|   Edge Windows   |        ❌        |        ✅        |        ✅         |        ❌         |
-|   Safari macOS   |     ✅ (EDR)     |        ✅        |      ✅ (EDR)      |        ✅         |
+|  Chromium 105 macOS  |     ✅ (EDR)     |        ✅        |      ✅ (EDR)      |        ✅         |
+| Chromium 105 Windows |        ✅        |        ✅        |        ✅         |        ✅         |
+|   Edge 103 Windows   |        ❌        |        部分支持        |        部分支持         |        ❌         |
+|   Safari 15.3 macOS   |     ✅ (EDR)     |        ✅        |      ✅ (EDR)      |        ✅         |
 
 ## 技术实现区别？(与Edge / Safari的对比)
 
@@ -106,7 +111,7 @@ Safari 和 Chromium 二者均使用 `VideoToolbox` 解码器完成硬解。
 
 ## HEVC 支持将来是否会包含在 Chrome 内并默认启用？
 
-Chrome 104 将集成 ChromeOS, Mac, Windows 的 HEVC 硬解支持，默认关闭，并允许通过 `--enable-features=PlatformHEVCDecoderSupport` 启用，待未来版本稳定后会默认启用。（Chrome 只包含操作系统提供的解码器，功能为可选支持，不支持的GPU和操作系统将无法使用）
+Chrome 104 及以上版本 将集成 ChromeOS, Mac, Windows, Android 的 HEVC 硬解支持，默认关闭，并允许通过 `--enable-features=PlatformHEVCDecoderSupport` 启用，待未来版本稳定后会默认启用。（Chrome 只包含操作系统提供的解码器，功能为可选支持，不支持的GPU和操作系统将无法使用）
 
 ## 如何编译？
 
@@ -115,7 +120,7 @@ Chrome 104 将集成 ChromeOS, Mac, Windows 的 HEVC 硬解支持，默认关闭
 3. (可选) 支持 Main / Main10 以外的其他 HEVC Profile： 切换到 `src` 目录，执行 `git am /path/to/remove-main-main10-profile-limit.patch`。
 4. (可选) 默认启用硬解：切换到 `src` 目录，执行 `git am /path/to/enable-hevc-hardware-decoding-by-default.patch`。
 5. (可选) 集成 Widevine CDM，以支持 EME 加密视频 (例：Netflix) 播放：切换到 `src` 目录，执行 `cp -R /path/to/widevine/* third_party/widevine/cdm` (Windows 请执行: `xcopy /path/to/widevine third_party\widevine\cdm /E/H`)。
-6. 假设你想编译 `Mac` + `x64` 架构（其他可选的架构有：`x86`, `arm64`, `arm`）+ 支持 CDM 的 Chromium，请执行 `gn gen out/Release64 --args="is_component_build = true is_official_build = false is_debug = false ffmpeg_branding = \"Chrome\" target_cpu = \"x64\" proprietary_codecs = true media_use_ffmpeg = true enable_widevine = true bundle_widevine_cdm = true enable_platform_hevc = true enable_hevc_parser_and_hw_decoder = true"`，如果想编译 `Windows`，请额外添加 `enable_media_foundation_widevine_cdm = true`，如果想编译 `Windows` 且目标架构为 `arm64`，请将 `bundle_widevine_cdm` 改为 `false`, 如果想编译 `Linux` 且架构不是 `x64`，请将 `enable_widevine` 改为 `false`，`bundle_widevine_cdm` 改为 `false`。
+6. 假设你想编译 `Mac` + `x64` 架构（其他可选的架构有：`x86`, `arm64`, `arm`）+ 支持 CDM 的 Chromium，请执行 `gn gen out/Release64 --args="is_component_build = false is_official_build = true is_debug = false ffmpeg_branding = \"Chrome\" target_cpu = \"x64\" proprietary_codecs = true media_use_ffmpeg = true enable_widevine = true bundle_widevine_cdm = true enable_platform_hevc = true enable_hevc_parser_and_hw_decoder = true"`，如果想编译 `Windows`，请额外添加 `enable_media_foundation_widevine_cdm = true`，如果想编译 `Windows` 且目标架构为 `arm64`，请将 `bundle_widevine_cdm` 改为 `false`。
 6. 执行 `autoninja -C out/Release64 chrome` 以开始编译。
 7. 如果是 Mac，执行 `./out/Release64/Chromium.app/Contents/MacOS/Chromium --args --enable-features=PlatformHEVCDecoderSupport` 打开编译好的 Chromium 并开启 HEVC 硬解。
 8. 如果是 Windows，在桌面创建一个快捷方式，并改为类似如下的路径： `C:\Users\Admin\Desktop\Chromium\chrome.exe --enable-features=PlatformHEVCDecoderSupport` 然后双击打开快捷方式，即可打开编译好的 Chromium 并开启 HEVC 硬解。
@@ -127,6 +132,8 @@ Chrome 104 将集成 ChromeOS, Mac, Windows 的 HEVC 硬解支持，默认关闭
 如果是 Electron 20 以下版本，请点开 `追踪进度` 内的提交，手动 CV 大法集成，欢迎提交 Pull Request 到本项目。
 
 ## 更新历史
+
+`2022-06-17` 去除 Linux 支持，更新其他平台与 HDR 功能支持情况
 
 `2022-05-26` 更新 Chrome Canary 测试 HEVC 功能的方法
 
