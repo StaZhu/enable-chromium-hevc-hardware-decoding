@@ -1,24 +1,24 @@
-From 54a0d672c2ada9628b12a695ebfc215934180ab4 Mon Sep 17 00:00:00 2001
+From 26005539a105c818ba1f090f87e677831136c4b0 Mon Sep 17 00:00:00 2001
 From: Sta Zhu <zhusidayoyo@hotmail.com>
-Date: Sat, 14 May 2022 12:09:53 +0800
+Date: Sat, 18 Jun 2022 11:11:46 +0800
 Subject: [PATCH] Video: Enable HEVC hardware decoding by default
 ---
  media/base/media_switches.cc | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/media/base/media_switches.cc b/media/base/media_switches.cc
-index 0c8b45e55dd23..11637073d4fdc 100644
+index 566f1754e7040..e0029f3acf838 100644
 --- a/media/base/media_switches.cc
 +++ b/media/base/media_switches.cc
-@@ -279,7 +279,7 @@ const base::Feature kPictureInPicture {
-      BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
+@@ -275,7 +275,7 @@ const base::Feature kPictureInPicture {
+ #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
  // Enables HEVC hardware accelerated decoding.
  const base::Feature kPlatformHEVCDecoderSupport{
 -    "PlatformHEVCDecoderSupport", base::FEATURE_DISABLED_BY_DEFAULT};
 +    "PlatformHEVCDecoderSupport", base::FEATURE_ENABLED_BY_DEFAULT};
- #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC) && (IS_ANDROID || IS_WIN || IS_CROS
-         // || IS_MAC || IS_LINUX)
+ #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
  
+ // Only decode preload=metadata elements upon visibility.
 -- 
-2.32.0 (Apple Git-132)
+2.36.1.windows.1
 

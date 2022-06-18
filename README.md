@@ -133,6 +133,8 @@ If Electron < 20, please follow the CL in `Trace Crbug` to manually integrate HE
 
 ## Change Log
 
+`2022-06-18` Fix HLG/PQ tone mapping, and update Patch to `105.0.5127.0`
+
 `2022-06-17` Remove Linux Support, Update Other Platform and HDR support status
 
 `2022-05-26` Update Chrome Canary HEVC feature test guide

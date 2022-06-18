@@ -133,6 +133,8 @@ Chrome 104 及以上版本 将集成 ChromeOS, Mac, Windows, Android 的 HEVC �
 
 ## 更新历史
 
+`2022-06-18` 修复 HLG/PQ tone mapping 问题, 更新 Patch 到 `105.0.5127.0`
+
 `2022-06-17` 去除 Linux 支持，更新其他平台与 HDR 功能支持情况
 
 `2022-05-26` 更新 Chrome Canary 测试 HEVC 功能的方法
