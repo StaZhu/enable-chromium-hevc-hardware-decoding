@@ -1,6 +1,6 @@
 # enable-chromium-hevc-hardware-decoding
 
-一个教你编译 Chrome / Electron 使其支持 Windows / macOS 三个平台 HEVC 硬 / 软解功能的教程。
+一个教你编译 Chrome / Electron 使其支持 Windows / macOS 平台 HEVC 硬 / 软解功能的教程。
 
 
 ##### 简体中文 | [English](./README.md)
@@ -11,7 +11,10 @@
 [点击下载](https://github.com/StaZhu/enable-chromium-hevc-hardware-decoding/releases)后，双击打开。
 
 #### 支持 HEVC 硬解的 Chrome Canery
-[点击下载](https://www.google.com/chrome/canary/)后，启动时传入 `--enable-features=PlatformHEVCDecoderSupport` 并双击打开。
+[点击下载](https://www.google.com/chrome/canary/)后，启动时传入 `--enable-features=PlatformHEVCDecoderSupport` 并双击打开 (版本号 >= 104.0.5084.0)。
+
+#### 支持 HEVC 硬解的 Edge Canery (Mac版本)
+[点击下载](https://www.microsoftedgeinsider.com/download/canary/)后，启动时传入 `--enable-features=PlatformHEVCDecoderSupport` 并双击打开 (版本号 >= 104.0.1293.0)。
 
 ## 支持硬解哪些Profile？
 
@@ -67,7 +70,7 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra 及以上
 | :--------------- | :------------- | :------------- | :-------------- | :-------------- |
 |  Chromium 105 macOS  |     ✅ (EDR)     |        ✅        |      ✅ (EDR)      |        ✅         |
 | Chromium 105 Windows |        ✅        |        ✅        |        ✅         |        ✅         |
-|   Edge 103 Windows   |        ❌        |        部分支持        |        部分支持         |        ❌         |
+|   Edge 102 Windows   |        ❌        |        部分支持        |        部分支持         |        ❌         |
 |   Safari 15.3 macOS   |     ✅ (EDR)     |        ✅        |      ✅ (EDR)      |        ✅         |
 
 ## 技术实现区别？(与Edge / Safari的对比)
@@ -132,6 +135,8 @@ Chrome 104 及以上版本 将集成 ChromeOS, Mac, Windows, Android 的 HEVC �
 如果是 Electron 20 以下版本，请点开 `追踪进度` 内的提交，手动 CV 大法集成，欢迎提交 Pull Request 到本项目。
 
 ## 更新历史
+
+`2022-06-21` 更新 Microsoft Edge (Mac) 测试 HEVC 功能的方法
 
 `2022-06-18` 修复 HLG/PQ tone mapping 问题, 更新 Patch 到 `105.0.5127.0`
 

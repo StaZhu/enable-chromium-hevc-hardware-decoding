@@ -11,7 +11,10 @@ A guide that teach you build a custom version of Chrome / Electron on macOS / Wi
 [Click to Download](https://github.com/StaZhu/enable-chromium-hevc-hardware-decoding/releases) then launch.
 
 #### Chrome Canary with HW HEVC support
-[Click to Download](https://www.google.com/chrome/canary/) then passing `--enable-features=PlatformHEVCDecoderSupport` and launch.
+[Click to Download](https://www.google.com/chrome/canary/) then passing `--enable-features=PlatformHEVCDecoderSupport` and launch (version >= 104.0.5084.0).
+
+#### Edge (Mac) Canary with HW HEVC support
+[Click to Download](https://www.microsoftedgeinsider.com/download/canary) then passing `--enable-features=PlatformHEVCDecoderSupport` and launch (version >= 104.0.1293.0).
 
 ## What's the hardware supported HEVC profile?
 
@@ -132,6 +135,8 @@ If Electron = 20 (Chromium 104), then the HEVC hw decoding feature for Mac and W
 If Electron < 20, please follow the CL in `Trace Crbug` to manually integrate HEVC features, pull request of the patch code welcome.
 
 ## Change Log
+
+`2022-06-21` Update Microsoft Edge (Mac) feature test guide
 
 `2022-06-18` Fix HLG/PQ tone mapping, and update Patch to `105.0.5127.0`
 
