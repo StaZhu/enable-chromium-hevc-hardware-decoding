@@ -130,17 +130,19 @@ Chrome 104 and above version will integrate HEVC hw support for ChromeOS, Mac, W
 
 ## How to integrate this into Chromium based project like Electron?
 
-If Electron = 20 (Chromium 104), then the HEVC hw decoding feature for Mac and Windows should have already been integrated, and you can use `app.commandLine.appendSwitch('enable-features', 'PlatformHEVCDecoderSupport')` to enable HEVC hw decoding. to add HEVC ffmpeg sw decoding, the method should be the same with Chromium guide above.
+If Electron >= v20.0.0-beta.9 (Chromium >= v104.0.5084.0), the HEVC hw decoding feature for Mac and Windows should have already been integrated, and you can use `app.commandLine.appendSwitch('enable-features', 'PlatformHEVCDecoderSupport')` to enable HEVC hw decoding. To add HEVC ffmpeg sw decoding, the method should be the same with Chromium guide above.
 
-If Electron < 20, please follow the CL in `Trace Crbug` to manually integrate HEVC features, pull request of the patch code welcome.
+If Electron < v20.0.0-beta.9, please follow the CL in `Trace Crbug` to manually integrate HEVC features. Pull request of Patches for different version of Electron are welcome.
 
 ## Change Log
+
+`2022-07-15` Update Electron v20.0.0-beta.9 and above version support status
 
 `2022-06-21` Update Microsoft Edge (Mac) feature test guide
 
 `2022-06-18` Fix HLG/PQ tone mapping, and update Patch to `105.0.5127.0`
 
-`2022-06-17` Remove Linux Support, Update Other Platform and HDR support status
+`2022-06-17` Remove Linux support, Update Other Platform and HDR support status
 
 `2022-05-26` Update Chrome Canary HEVC feature test guide
 

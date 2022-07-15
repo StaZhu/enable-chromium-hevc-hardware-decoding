@@ -130,11 +130,13 @@ Chrome 104 及以上版本 将集成 ChromeOS, Mac, Windows, Android 的 HEVC �
 
 ## 如何集成到 Electron 等基于 Chromium 的项目？
 
-如果是 Electron 20 (Chromium 104)，则已集成好 Mac, Windows 平台的 HEVC 硬解功能，在启动时执行 `app.commandLine.appendSwitch('enable-features', 'PlatformHEVCDecoderSupport')` 即可启用硬解。若要集成软解，方法同上述 Chromium 教程相同。
+Electron >= v20.0.0-beta.9 (Chromium >= v104.0.5084.0) 已集成好 Mac, Windows 平台的 HEVC 硬解功能，在启动时执行 `app.commandLine.appendSwitch('enable-features', 'PlatformHEVCDecoderSupport')` 即可启用硬解。若要集成软解，方法同上述 Chromium 教程相同。
 
-如果是 Electron 20 以下版本，请点开 `追踪进度` 内的提交，手动 CV 大法集成，欢迎提交 Pull Request 到本项目。
+Electron < v20.0.0-beta.9 版本，请点开 `追踪进度` 内的提交记录，自己手动 CV 大法集成，欢迎提交不同版本的 Patch PR到本项目。
 
 ## 更新历史
+
+`2022-07-15` 更新 Electron v20.0.0-beta.9 及以上版本支持情况
 
 `2022-06-21` 更新 Microsoft Edge (Mac) 测试 HEVC 功能的方法
 
