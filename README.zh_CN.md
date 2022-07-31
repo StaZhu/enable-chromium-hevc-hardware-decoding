@@ -36,7 +36,7 @@ HEVC Rext (部分支持，细节见下表，最高支持 8192x8192 px)
 ⭕：显卡支持，软件未实现
 ❌：显卡不支持
 
-#### 注1：Intel CPU 的 Mac 支持软解 HEVC Rext，8 ~ 12b 非 444 的内容均可正常解码，444 也能解码但存在绿条纹问题。
+#### 注1：Intel CPU 的 Mac 支持 VideoToolbox 软解 HEVC Rext，8 ~ 12b 非 444 的内容均可正常解码，444 也能解码但存在绿条纹问题。
 #### 注2：Intel 10代及以后的 GPU 支持硬解 HEVC Rext，如果需要使用这部分能力，须确保 Chromium 版本号 >= 106.0.5210.0。有一些Profile并不是很常见因此暂时没有支持，如果你有支持他们的需要且确保显卡支持，可以在 `crbug.com` 提交issue。
 #### 注3：尽管 NVIDIA GPU 支持 8 ~ 12b 非 422 HEVC Rext CUVIA 或 NVDEC 硬解码，但由于NVIDIA 没有给 D3D11 接口暴露这部分能力，因此 Chromium 以后也不会支持它们。
 

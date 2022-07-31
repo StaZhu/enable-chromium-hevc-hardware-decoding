@@ -36,8 +36,8 @@ HEVC Rext (Partial support, see the table below for details, up to 8192x8192 pix
 ⭕：GPU support, software not support
 ❌：GPU not support
 
-#### Note 1：Intel CPU Mac supports HEVC Rext software decoding of 8 ~ 12b non-444 contents via VideoToolbox, 444 is decodeable but has a green stripe issue.
-#### Note 2：Specific Intel GPU supports HEVC Rext hardware decoding on Windows, so if you want to use these profiles then Chromium version must be >= 106.0.5210.0.Some profiles are not common so we only implement part of them, if you need those unsupported profile that GPU do supports, then you can submit a issue to `crbug.com`.
+#### Note 1：Intel CPU Mac supports HEVC Rext software decoding of 8 ~ 12b non-444 contents via VideoToolbox, 444 is decodable but has a green stripe issue.
+#### Note 2：Specific Intel GPU supports HEVC Rext hardware decoding on Windows, so if you want to use these profiles then Chromium version must be >= 106.0.5210.0. Some profiles are not common so we only implement part of them, if you need those unsupported profile that GPU do supports, then you can submit a issue to `crbug.com`.
 #### Note 3：Although NVIDIA GPU supports HEVC Rext hardware decoding of 8 ~ 12b non-422 contents via CUVIA or NVDEC, but because they did not provide a D3D11 interface, thus Chromium will not support it in the future.
 
 ## What's the OS requirement?
