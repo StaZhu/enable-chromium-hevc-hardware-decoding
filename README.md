@@ -22,9 +22,23 @@ HEVC Main (Up to 8192x8192 pixels)
 
 HEVC Main 10 (Up to 8192x8192 pixels)
 
-HEVC Main Still Picture (macOS only, Up to 8192x8192 pixels)
+HEVC Main Still Picture (macOS only, up to 8192x8192 pixels)
 
-HEVC Rext (macOS only, Up to 8192x8192 pixels)
+HEVC Rext (Partial support, see the table below for details, up to 8192x8192 pixels)
+
+|        GPU             | 8b 420 | 8b 422 | 8b 444 | 10b 420 | 10b 422 | 10b 444 | 12b 420 | 12b 422 | 12b 444 |
+| :--------------------- | :----- | :----- | :----- | :------ | :------ | :------ | :------ | :------ | :------ |
+|  Apple Silicon (macOS) |   ✅  |   ✅   |   ✅  |    ✅   |   ✅   |   ✅    |   ❌   |   ❌    |   ❌   |
+| Intel ICL ~ TGLx (Win) |   ✅  |   ⭕   |   ⭕  |    ✅   |   ✅   |   ✅    |   ❌   |   ❌    |   ❌   |
+|    Intel TGLx+ (Win)   |   ✅  |   ⭕   |   ⭕  |    ✅   |   ✅   |   ✅    |   ✅   |   ⭕    |   ⭕   |
+
+✅：GPU + software support
+⭕：GPU support, software not support
+❌：GPU not support
+
+#### Note 1：Intel CPU Mac supports HEVC Rext software decoding of 8 ~ 12b non-444 contents via VideoToolbox, 444 is decodeable but has a green stripe issue.
+#### Note 2：Specific Intel GPU supports HEVC Rext hardware decoding on Windows, so if you want to use these profiles then Chromium version must be >= 106.0.5210.0.Some profiles are not common so we only implement part of them, if you need those unsupported profile that GPU do supports, then you can submit a issue to `crbug.com`.
+#### Note 3：Although NVIDIA GPU supports HEVC Rext hardware decoding of 8 ~ 12b non-422 contents via CUVIA or NVDEC, but because they did not provide a D3D11 interface, thus Chromium will not support it in the future.
 
 ## What's the OS requirement?
 
@@ -72,6 +86,9 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra and above
 | Chromium 105 Windows |        ✅        |        ✅        |        ✅         |        ✅         |
 |   Edge 102 Windows   |        ❌        |        Partial        |        Partial         |        ❌         |
 |   Safari 15.3 macOS   |     ✅ (EDR)      |        ✅        |      ✅ (EDR)      |        ✅         |
+
+## Dolby Vision Supports?
+Support HLG、PQ backward compatibility dolby vision (Profile 4,7,8), not support IPTPQc2 dolby vision (Profile 5), and dolby atmos audio (E-AC3)。
 
 ## What's the tech diff? (Compared with Edge / Safari)
 
@@ -135,6 +152,8 @@ If Electron >= v20.0.0-beta.9 (Chromium >= v104.0.5084.0), the HEVC hw decoding 
 If Electron < v20.0.0-beta.9, please follow the CL in `Trace Crbug` to manually integrate HEVC features. Pull request of Patches for different version of Electron are welcome.
 
 ## Change Log
+
+`2022-07-31` Intel GPU support HEVC Rext Profile hw decoding on Windows, Update Patch to `106.0.5211.0`
 
 `2022-07-15` Update Electron v20.0.0-beta.9 and above version support status
 

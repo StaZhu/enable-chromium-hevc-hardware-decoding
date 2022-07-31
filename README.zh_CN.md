@@ -24,7 +24,21 @@ HEVC Main 10 (最高支持 8192x8192 px)
 
 HEVC Main Still Picture (仅 macOS，最高支持 8192x8192 px)
 
-HEVC Rext (仅 macOS，最高支持 8192x8192 px)
+HEVC Rext (部分支持，细节见下表，最高支持 8192x8192 px)
+
+|        GPU             | 8b 420 | 8b 422 | 8b 444 | 10b 420 | 10b 422 | 10b 444 | 12b 420 | 12b 422 | 12b 444 |
+| :--------------------- | :----- | :----- | :----- | :------ | :------ | :------ | :------ | :------ | :------ |
+|  Apple Silicon (macOS) |   ✅  |   ✅   |   ✅  |    ✅   |   ✅   |   ✅    |   ❌   |   ❌    |   ❌   |
+| Intel ICL ~ TGLx (Win) |   ✅  |   ⭕   |   ⭕  |    ✅   |   ✅   |   ✅    |   ❌   |   ❌    |   ❌   |
+|    Intel TGLx+ (Win)   |   ✅  |   ⭕   |   ⭕  |    ✅   |   ✅   |   ✅    |   ✅   |   ⭕    |   ⭕   |
+
+✅：显卡+软件都支持
+⭕：显卡支持，软件未实现
+❌：显卡不支持
+
+#### 注1：Intel CPU 的 Mac 支持软解 HEVC Rext，8 ~ 12b 非 444 的内容均可正常解码，444 也能解码但存在绿条纹问题。
+#### 注2：Intel 10代及以后的 GPU 支持硬解 HEVC Rext，如果需要使用这部分能力，须确保 Chromium 版本号 >= 106.0.5210.0。有一些Profile并不是很常见因此暂时没有支持，如果你有支持他们的需要且确保显卡支持，可以在 `crbug.com` 提交issue。
+#### 注3：尽管 NVIDIA GPU 支持 8 ~ 12b 非 422 HEVC Rext CUVIA 或 NVDEC 硬解码，但由于NVIDIA 没有给 D3D11 接口暴露这部分能力，因此 Chromium 以后也不会支持它们。
 
 ## 操作系统要求？
 
@@ -36,7 +50,7 @@ Android (已支持，暂未测试)
 
 ChromeOS (已支持，暂未测试)
 
-## 支持哪些 API?
+## 支持哪些 API？
 
 目前支持 HTML Video Element，MSE，以及 Clearkey EME，不支持 WebRTC 和 HEVC 编码。
 
@@ -64,7 +78,7 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra 及以上
 
 [NVIDIA](https://bluesky-soft.com/en/dxvac/deviceInfo/decoder/nvidia.html)
 
-## HDR 支持? (与Edge / Safari的对比)
+## HDR 支持？(与Edge / Safari的对比)
 
 |                  | PQ (SDR Screen) | PQ (HDR Screen) | HLG (SDR Screen) | HLG (HDR Screen) |
 | :--------------- | :------------- | :------------- | :-------------- | :-------------- |
@@ -72,6 +86,9 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra 及以上
 | Chromium 105 Windows |        ✅        |        ✅        |        ✅         |        ✅         |
 |   Edge 102 Windows   |        ❌        |        部分支持        |        部分支持         |        ❌         |
 |   Safari 15.3 macOS   |     ✅ (EDR)     |        ✅        |      ✅ (EDR)      |        ✅         |
+
+## 杜比视界支持？
+支持兼容HLG、PQ的杜比视界（Profile 4,7,8)，不支持 IPTPQc2 的杜比视界（Profile 5）以及杜比视界全景声（E-AC3）。
 
 ## 技术实现区别？(与Edge / Safari的对比)
 
@@ -135,6 +152,8 @@ Electron >= v20.0.0-beta.9 (Chromium >= v104.0.5084.0) 已集成好 Mac, Windows
 Electron < v20.0.0-beta.9 版本，请点开 `追踪进度` 内的提交记录，自己手动 CV 大法集成，欢迎提交不同版本的 Patch PR到本项目。
 
 ## 更新历史
+
+`2022-07-31` Windows 平台 Intel 显卡支持硬解 HEVC Rext Profile, 更新 Patch 到 `106.0.5211.0`
 
 `2022-07-15` 更新 Electron v20.0.0-beta.9 及以上版本支持情况
 
