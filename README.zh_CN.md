@@ -8,13 +8,29 @@
 ## 下载地址
 
 #### 支持 HEVC 硬 + 软解的 Chromium
-[点击下载](https://github.com/StaZhu/enable-chromium-hevc-hardware-decoding/releases)后，双击打开。
+[点击下载](https://github.com/StaZhu/enable-chromium-hevc-hardware-decoding/releases)。
 
 #### 支持 HEVC 硬解的 Chrome Canery
-[点击下载](https://www.google.com/chrome/canary/)后，启动时传入 `--enable-features=PlatformHEVCDecoderSupport` 并双击打开 (版本号 >= 104.0.5084.0)。
+[点击下载](https://www.google.com/chrome/canary/) (版本号 >= 104.0.5084.0)。
 
 #### 支持 HEVC 硬解的 Edge Canery (Mac版本)
-[点击下载](https://www.microsoftedgeinsider.com/download/canary/)后，启动时传入 `--enable-features=PlatformHEVCDecoderSupport` 并双击打开 (版本号 >= 104.0.1293.0)。
+[点击下载](https://www.microsoftedgeinsider.com/download/canary/) (版本号 >= 104.0.1293.0)。
+
+## 启动方式
+
+### Chromium
+直接双击打开。
+
+### Chrome Canary (Windows)
+在桌面快捷方式添加启动参数 `--enable-features=PlatformHEVCDecoderSupport` 如下图，并双击打开。
+
+<img src="./resources/chrome_canary_switch_zh.jpg" style="width: 450px;" />
+
+### Chrome Canary (Mac)
+解压缩引导文件 [Google Chrome Canary with HEVC.app.zip](./resources/Google%20Chrome%20Canary%20with%20HEVC.app.zip)，并拖拽 `Google Chrome Canary with HEVC.app` 到 `应用程序` 目录后，双击打开。
+
+### Edge Canary (Mac)
+解压缩引导文件 [Microsoft Edge Canary with HEVC.app.zip](./resources/Microsoft%20Edge%20Canary%20with%20HEVC.app.zip)，并拖拽 `Microsoft Edge Canary with HEVC.app` 到 `应用程序` 目录后，双击打开。
 
 ## 支持硬解哪些Profile？
 
@@ -152,6 +168,8 @@ Electron >= v20.0.0-beta.9 (Chromium >= v104.0.5084.0) 已集成好 Mac, Windows
 Electron < v20.0.0-beta.9 版本，请点开 `追踪进度` 内的提交记录，自己手动 CV 大法集成，欢迎提交不同版本的 Patch PR到本项目。
 
 ## 更新历史
+
+`2022-08-01` 添加 Chrome / Edge 使用说明
 
 `2022-07-31` Windows 平台 Intel 显卡支持硬解 HEVC Rext Profile, 更新 Patch 到 `106.0.5211.0`
 

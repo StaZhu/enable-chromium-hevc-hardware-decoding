@@ -8,13 +8,29 @@ A guide that teach you build a custom version of Chrome / Electron on macOS / Wi
 ## Download Link
 
 #### Chromium with HW + SW HEVC support
-[Click to Download](https://github.com/StaZhu/enable-chromium-hevc-hardware-decoding/releases) then launch.
+[Click to Download](https://github.com/StaZhu/enable-chromium-hevc-hardware-decoding/releases).
 
 #### Chrome Canary with HW HEVC support
-[Click to Download](https://www.google.com/chrome/canary/) then passing `--enable-features=PlatformHEVCDecoderSupport` and launch (version >= 104.0.5084.0).
+[Click to Download](https://www.google.com/chrome/canary/)(version >= 104.0.5084.0).
 
 #### Edge (Mac) Canary with HW HEVC support
-[Click to Download](https://www.microsoftedgeinsider.com/download/canary) then passing `--enable-features=PlatformHEVCDecoderSupport` and launch (version >= 104.0.1293.0).
+[Click to Download](https://www.microsoftedgeinsider.com/download/canary)(version >= 104.0.1293.0).
+
+## Usage
+
+#### Chromium
+Open directly.
+
+#### Chrome Canary (Windows)
+Append switch `--enable-features=PlatformHEVCDecoderSupport` to desktop shortcut and open directly.
+
+<img src="./resources/chrome_canary_switch_en.jpg" style="width: 450px;" />
+
+#### Chrome Canary (Mac)
+Unzip the file [Google Chrome Canary with HEVC.app.zip](./resources/Google%20Chrome%20Canary%20with%20HEVC.app.zip), then drag `Google Chrome Canary with HEVC.app` to `Applications` directory and open directly.
+
+### Edge Canary (Mac)
+Unzip the file [Microsoft Edge Canary with HEVC.app.zip](./resources/Microsoft%20Edge%20Canary%20with%20HEVC.app.zip), then drag `Microsoft Edge Canary with HEVC.app` to `Applications` directory and open directly.
 
 ## What's the hardware supported HEVC profile?
 
@@ -152,6 +168,8 @@ If Electron >= v20.0.0-beta.9 (Chromium >= v104.0.5084.0), the HEVC hw decoding 
 If Electron < v20.0.0-beta.9, please follow the CL in `Trace Crbug` to manually integrate HEVC features. Pull request of Patches for different version of Electron are welcome.
 
 ## Change Log
+
+`2022-08-01` Add Chrome / Edge Usage
 
 `2022-07-31` Intel GPU support HEVC Rext Profile hw decoding on Windows, Update Patch to `106.0.5211.0`
 
