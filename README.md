@@ -7,30 +7,42 @@ A guide that teach you build a custom version of Chrome / Electron on macOS / Wi
 
 ## Download Link
 
-#### Chromium with HW + SW HEVC support
-[Click to Download](https://github.com/StaZhu/enable-chromium-hevc-hardware-decoding/releases).
+### Release Version
 
-#### Chrome Canary with HW HEVC support
-[Click to Download](https://www.google.com/chrome/canary/)(version >= 104.0.5084.0).
+#### Chrome
+[Click to Download](https://www.google.com/chrome/) (version >= 104.0.5084.0).
 
-#### Edge (Mac) Canary with HW HEVC support
-[Click to Download](https://www.microsoftedgeinsider.com/download/canary)(version >= 104.0.1293.0).
+### Canary Version
+
+#### Edge (Mac) Canary
+[Click to Download](https://www.microsoftedgeinsider.com/download/canary) (version >= 104.0.1293.0).
+
+### Software Decoding Compatible version
+
+#### Chromium
+[Click to Download](https://github.com/StaZhu/enable-chromium-hevc-hardware-decoding/releases) (Support HW + SW decoding, no platform requirement).
 
 ## Usage
 
-#### Chromium
-Open directly.
+### Release Version
 
-#### Chrome Canary (Windows)
+#### Chrome (Windows)
 Append switch `--enable-features=PlatformHEVCDecoderSupport` to desktop shortcut and open directly.
 
-<img src="./resources/chrome_canary_switch_en.jpg" style="width: 450px;" />
+<img src="./resources/chrome_switch_en.jpg" style="width: 450px;" />
 
-#### Chrome Canary (Mac)
-Unzip the file [Google Chrome Canary with HEVC.app.zip](./resources/Google%20Chrome%20Canary%20with%20HEVC.app.zip), then drag `Google Chrome Canary with HEVC.app` to `Applications` directory and open directly.
+#### Chrome (Mac)
+Unzip the file [Google Chrome with HEVC.app.zip](./resources/Google%20Chrome%20with%20HEVC.app.zip), then drag `Google Chrome with HEVC.app` to `Applications` directory and open directly.
 
-### Edge Canary (Mac)
+### Canary Version
+
+#### Edge Canary (Mac)
 Unzip the file [Microsoft Edge Canary with HEVC.app.zip](./resources/Microsoft%20Edge%20Canary%20with%20HEVC.app.zip), then drag `Microsoft Edge Canary with HEVC.app` to `Applications` directory and open directly.
+
+### Software Decoding Compatible version
+
+#### Chromium
+Open directly.
 
 ## What's the hardware supported HEVC profile?
 
@@ -163,11 +175,13 @@ Chrome 104 and above version will integrate HEVC hw support for ChromeOS, Mac, W
 
 ## How to integrate this into Chromium based project like Electron?
 
-If Electron >= v20.0.0-beta.9 (Chromium >= v104.0.5084.0), the HEVC hw decoding feature for Mac and Windows should have already been integrated, and you can use `app.commandLine.appendSwitch('enable-features', 'PlatformHEVCDecoderSupport')` to enable HEVC hw decoding. To add HEVC ffmpeg sw decoding, the method should be the same with Chromium guide above.
+If Electron >= v20.0.0 (Chromium >= v104.0.5084.0), the HEVC hw decoding feature for Mac and Windows should have already been integrated, and you can use `app.commandLine.appendSwitch('enable-features', 'PlatformHEVCDecoderSupport')` to enable HEVC hw decoding. To add HEVC ffmpeg sw decoding, the method should be the same with Chromium guide above.
 
-If Electron < v20.0.0-beta.9, please follow the CL in `Trace Crbug` to manually integrate HEVC features. Pull request of Patches for different version of Electron are welcome.
+If Electron < v20.0.0, please follow the CL in `Trace Crbug` to manually integrate HEVC features. Pull request of Patches for different version of Electron are welcome.
 
 ## Change Log
+
+`2022-08-02` Update usage to Chrome 104 release version
 
 `2022-08-01` Add Chrome / Edge Usage
 

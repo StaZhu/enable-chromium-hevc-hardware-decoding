@@ -7,30 +7,42 @@
 
 ## 下载地址
 
-#### 支持 HEVC 硬 + 软解的 Chromium
-[点击下载](https://github.com/StaZhu/enable-chromium-hevc-hardware-decoding/releases)。
+### 正式版
 
-#### 支持 HEVC 硬解的 Chrome Canery
-[点击下载](https://www.google.com/chrome/canary/) (版本号 >= 104.0.5084.0)。
+#### Chrome
+[点击下载](https://www.google.com/chrome/) (版本号 >= 104.0.5084.0)。
 
-#### 支持 HEVC 硬解的 Edge Canery (Mac版本)
+### 每日更新版
+
+#### Edge Canery (Mac版本)
 [点击下载](https://www.microsoftedgeinsider.com/download/canary/) (版本号 >= 104.0.1293.0)。
+
+### 软解兼容版
+
+#### Chromium
+[点击下载](https://github.com/StaZhu/enable-chromium-hevc-hardware-decoding/releases) (支持硬解+软解，无平台要求)。
 
 ## 启动方式
 
-### Chromium
-直接双击打开。
+### 正式版
 
-### Chrome Canary (Windows)
+#### Chrome (Windows)
 在桌面快捷方式添加启动参数 `--enable-features=PlatformHEVCDecoderSupport` 如下图，并双击打开。
 
-<img src="./resources/chrome_canary_switch_zh.jpg" style="width: 450px;" />
+<img src="./resources/chrome_switch_zh.jpg" style="width: 450px;" />
 
-### Chrome Canary (Mac)
-解压缩引导文件 [Google Chrome Canary with HEVC.app.zip](./resources/Google%20Chrome%20Canary%20with%20HEVC.app.zip)，并拖拽 `Google Chrome Canary with HEVC.app` 到 `应用程序` 目录后，双击打开。
+#### Chrome (Mac)
+解压缩引导文件 [Google Chrome with HEVC.app.zip](./resources/Google%20Chrome%20with%20HEVC.app.zip)，并拖拽 `Google Chrome with HEVC.app` 到 `应用程序` 目录后，双击打开。
 
-### Edge Canary (Mac)
+### 每日更新版
+
+#### Edge Canary (Mac)
 解压缩引导文件 [Microsoft Edge Canary with HEVC.app.zip](./resources/Microsoft%20Edge%20Canary%20with%20HEVC.app.zip)，并拖拽 `Microsoft Edge Canary with HEVC.app` 到 `应用程序` 目录后，双击打开。
+
+### 软解兼容版
+
+#### Chromium
+直接双击打开。
 
 ## 支持硬解哪些Profile？
 
@@ -163,11 +175,13 @@ Chrome 104 及以上版本 将集成 ChromeOS, Mac, Windows, Android 的 HEVC �
 
 ## 如何集成到 Electron 等基于 Chromium 的项目？
 
-Electron >= v20.0.0-beta.9 (Chromium >= v104.0.5084.0) 已集成好 Mac, Windows 平台的 HEVC 硬解功能，在启动时执行 `app.commandLine.appendSwitch('enable-features', 'PlatformHEVCDecoderSupport')` 即可启用硬解。若要集成软解，方法同上述 Chromium 教程相同。
+Electron >= v20.0.0 (Chromium >= v104.0.5084.0) 已集成好 Mac, Windows 平台的 HEVC 硬解功能，在启动时执行 `app.commandLine.appendSwitch('enable-features', 'PlatformHEVCDecoderSupport')` 即可启用硬解。若要集成软解，方法同上述 Chromium 教程相同。
 
-Electron < v20.0.0-beta.9 版本，请点开 `追踪进度` 内的提交记录，自己手动 CV 大法集成，欢迎提交不同版本的 Patch PR到本项目。
+Electron < v20.0.0 版本，请点开 `追踪进度` 内的提交记录，自己手动 CV 大法集成，欢迎提交不同版本的 Patch PR到本项目。
 
 ## 更新历史
+
+`2022-08-02` 更新使用说明为 Chrome 104 正式版
 
 `2022-08-01` 添加 Chrome / Edge 使用说明
 
