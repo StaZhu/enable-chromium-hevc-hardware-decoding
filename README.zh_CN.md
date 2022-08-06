@@ -12,10 +12,8 @@
 #### Chrome
 [点击下载](https://www.google.com/chrome/) (版本号 >= 104.0.5084.0)。
 
-### 每日更新版
-
-#### Edge Canery (Mac版本)
-[点击下载](https://www.microsoftedgeinsider.com/download/canary/) (版本号 >= 104.0.1293.0)。
+#### Edge (Mac)
+[点击下载](https://www.microsoft.com/edge) (版本号 >= 104.0.1293.0)。
 
 ### 软解兼容版
 
@@ -34,10 +32,8 @@
 #### Chrome (Mac)
 解压缩引导文件 [Google Chrome with HEVC.app.zip](./resources/Google%20Chrome%20with%20HEVC.app.zip)，并拖拽 `Google Chrome with HEVC.app` 到 `应用程序` 目录后，双击打开。
 
-### 每日更新版
-
-#### Edge Canary (Mac)
-解压缩引导文件 [Microsoft Edge Canary with HEVC.app.zip](./resources/Microsoft%20Edge%20Canary%20with%20HEVC.app.zip)，并拖拽 `Microsoft Edge Canary with HEVC.app` 到 `应用程序` 目录后，双击打开。
+#### Edge (Mac)
+解压缩引导文件 [Microsoft Edge with HEVC.app.zip](./resources/Microsoft%20Edge%20with%20HEVC.app.zip)，并拖拽 `Microsoft Edge with HEVC.app` 到 `应用程序` 目录后，双击打开。
 
 ### 软解兼容版
 
@@ -180,6 +176,8 @@ Electron >= v20.0.0 (Chromium >= v104.0.5084.0) 已集成好 Mac, Windows 平台
 Electron < v20.0.0 版本，请点开 `追踪进度` 内的提交记录，自己手动 CV 大法集成，欢迎提交不同版本的 Patch PR到本项目。
 
 ## 更新历史
+
+`2022-08-06` 更新使用说明为 Edge (Mac) 104 正式版
 
 `2022-08-02` 更新使用说明为 Chrome 104 正式版
 
