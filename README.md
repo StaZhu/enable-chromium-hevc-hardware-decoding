@@ -112,7 +112,7 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra and above
 |   Safari 15.3 macOS   |     ✅ (EDR)      |        ✅        |      ✅ (EDR)      |        ✅         |
 
 ## Dolby Vision Supports?
-Support HLG、PQ backward compatibility single layer dolby vision (Profile 8.1, 8.2, 8.4), not support IPTPQc2 single layer dolby vision (Profile 5), not support multi layer dolby vision, not suppory dolby atmos audio (E-AC3).
+Support HLG、PQ backward compatibility single layer dolby vision (Profile 8.1, 8.2, 8.4), not support IPTPQc2 single layer dolby vision (Profile 5), not support multi layer dolby vision, not support dolby atmos audio (E-AC3).
 
 ## What's the tech diff? (Compared with Edge / Safari)
 
