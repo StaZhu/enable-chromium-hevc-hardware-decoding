@@ -112,7 +112,7 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra 及以上
 |   Safari 15.3 macOS   |     ✅ (EDR)     |        ✅        |      ✅ (EDR)      |        ✅         |
 
 ## 杜比视界支持？
-支持兼容HLG、PQ的杜比视界（Profile 4,7,8)，不支持 IPTPQc2 的杜比视界（Profile 5）以及杜比视界全景声（E-AC3）。
+支持兼容HLG、PQ的单层杜比视界（Profile 8.1, 8.2, 8.4)，不支持 IPTPQc2 的单层杜比视界（Profile 5），不支持双层杜比视界，不支持杜比视界全景声（E-AC3）。
 
 ## 技术实现区别？(与Edge / Safari的对比)
 
