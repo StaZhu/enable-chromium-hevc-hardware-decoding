@@ -1,6 +1,6 @@
 # enable-chromium-hevc-hardware-decoding
 
-一个教你编译 Chrome / Electron 使其支持 Windows / macOS 平台 HEVC 硬 / 软解功能的教程。
+一个教你为 Chrome / Edge 启用 HEVC 硬解，或编译 Chromium / Electron 使其支持 Windows / macOS 平台 HEVC 硬 & 软解功能的教程。
 
 
 ##### 简体中文 | [English](./README.md)

@@ -1,6 +1,6 @@
 # enable-chromium-hevc-hardware-decoding
 
-A guide that teach you build a custom version of Chrome / Electron on macOS / Windows that supports hardware / software HEVC decoding.
+A guide that teach you enable hardware HEVC decoding for Chrome / Edge on macOS / Windows, or build a custom version of Chromium / Electron that supports hardware & software HEVC decoding.
 
 
 ##### English | [简体中文](./README.zh_CN.md)
