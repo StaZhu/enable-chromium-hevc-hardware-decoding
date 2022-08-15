@@ -76,7 +76,7 @@ ChromeOS (已支持，暂未测试)
 
 ## 支持哪些 API？
 
-目前支持 HTML Video Element，MSE，以及 Clearkey EME，不支持 WebRTC 和 HEVC 编码。
+目前支持 HTML Video Element，MSE，以及 Clearkey EME，暂时不支持 WebCodec，不支持 WebRTC 和 HEVC 编码。
 
 ## GPU要求？
 

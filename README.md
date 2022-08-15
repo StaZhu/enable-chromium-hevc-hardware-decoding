@@ -76,7 +76,7 @@ ChromeOS (already support, not tested)
 
 ## What's API supported?
 
-Currently supports HTML Video Element, MSE, and Clearkey EME, and not support WebRTC and video encode.
+Currently supports HTML Video Element, MSE, and Clearkey EME, not support WebCodec temperately, and not support WebRTC and video encode.
 
 ## What's the GPU requirement?
 
