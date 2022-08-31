@@ -76,7 +76,7 @@ ChromeOS (already support, not tested)
 
 ## What's API supported?
 
-Currently supports HTML Video Element, MSE, and Clearkey EME, not support WebCodec temperately, and not support WebRTC and video encode.
+Currently supports HTML Video Element, Media Source Extension, Clearkey Encrypted Media Extensions, WebCodec (8bit only, version >= 107.0.5272.0), no support for WebRTC and video encode.
 
 ## What's the GPU requirement?
 
@@ -176,6 +176,8 @@ If Electron >= v20.0.0 (Chromium >= v104.0.5084.0), the HEVC hw decoding feature
 If Electron < v20.0.0, please follow the CL in `Trace Crbug` to manually integrate HEVC features. Pull request of Patches for different version of Electron are welcome.
 
 ## Change Log
+
+`2022-08-31` Add WebCodec API (8bit only) support, and HEVC with alpha layer support (macOS only)
 
 `2022-08-06` Update usage to Edge (Mac) 104 release version
 

@@ -76,8 +76,7 @@ ChromeOS (已支持，暂未测试)
 
 ## 支持哪些 API？
 
-目前支持 HTML Video Element，MSE，以及 Clearkey EME，暂时不支持 WebCodec，不支持 WebRTC 和 HEVC 编码。
-
+目前支持 HTML Video Element, Media Source Extension, Clearkey Encrypted Media Extensions, WebCodec (8bit only, version >= 107.0.5272.0), 不支持 WebRTC 和 HEVC 编码。
 ## GPU要求？
 
 #### 独显
@@ -176,6 +175,8 @@ Electron >= v20.0.0 (Chromium >= v104.0.5084.0) 已集成好 Mac, Windows 平台
 Electron < v20.0.0 版本，请点开 `追踪进度` 内的提交记录，自己手动 CV 大法集成，欢迎提交不同版本的 Patch PR到本项目。
 
 ## 更新历史
+
+`2022-08-31` 支持 WebCodec API (仅 8bit), 支持带 Alpha 图层的 HEVC (仅 macOS)
 
 `2022-08-06` 更新使用说明为 Edge (Mac) 104 正式版
 
