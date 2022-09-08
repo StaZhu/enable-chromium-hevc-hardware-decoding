@@ -114,6 +114,76 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra and above
 ## Dolby Vision Supports?
 Support HLG、PQ backward compatibility single layer dolby vision (Profile 8.1, 8.2, 8.4), not support IPTPQc2 single layer dolby vision (Profile 5), not support multi layer dolby vision, not support dolby atmos audio (E-AC3).
 
+## How to verify certain profile or resolution is supported？
+
+#### MediaCapabilities
+
+```javascript
+const mediaConfig = {
+  /**
+   * You can use `file` or `media-source` and the result are same here,
+   * don't use `webrtc` since HEVC webrtc is not supported currently.
+   */
+  type: 'file',
+  video: {
+    /**
+     * HEVC Profile
+     * 
+     * Main: `hev1.1.6.L93.B0`
+     * Main 10: `hev1.2.4.L93.B0`
+     * Main still-picture: `hvc1.3.E.L93.B0`
+     * Main range extensions: `hvc1.4.10.L93.B0`
+     */
+    contentType : 'video/mp4;codecs="hev1.1.6.L120.90"',
+    /* Width */
+    width: 1920,
+    /* Height */
+    height: 1080,
+    /* Any number */
+    bitrate: 10000, 
+    /* Any number */
+    framerate: 30
+  }
+}
+
+navigator.mediaCapabilities.decodingInfo(mediaConfig)
+  .then(result => {
+    /**
+     * result.supported: indicate whether the profile is supported or not.
+     * result.powerEfficient: indicate whether the width and height is supported or not.
+     * 
+     * If both result are true, then the video can play well on the browser
+     */
+    if (result.supported && result.powerEfficient) {
+      console.log('Video can play!');
+    } else {
+      console.log('Video can\'t play!');
+    }
+  });
+```
+
+#### MediaSource
+
+```javascript
+if (MediaSource.isTypeSupported('video/mp4;codecs="hev1.1.6.L120.90"')) {
+  console.log('HEVC main profile is supported!');
+}
+
+if (MediaSource.isTypeSupported('video/mp4;codecs="hev1.2.4.L120.90"')) {
+  console.log('HEVC main10 profile is supported!');
+}
+
+if (MediaSource.isTypeSupported('video/mp4;codecs="hev1.3.E.L120.90"')) {
+  console.log('HEVC main still-picture profile is supported!');
+}
+
+if (MediaSource.isTypeSupported('video/mp4;codecs="hev1.4.10.L120.90"')) {
+  console.log('HEVC range extensions profile is supported!');
+}
+```
+
+Note: The above methods have already took `--disable-gpu`, `--disable-accelerated-video-decode`, gpu-workaround etc... into consideration, and if Chrome version >= 107.0.5288.0 and OS is macOS or Windows, the result are guaranteed.
+
 ## What's the tech diff? (Compared with Edge / Safari)
 
 #### Windows
@@ -176,6 +246,8 @@ If Electron >= v20.0.0 (Chromium >= v104.0.5084.0), the HEVC hw decoding feature
 If Electron < v20.0.0, please follow the CL in `Trace Crbug` to manually integrate HEVC features. Pull request of Patches for different version of Electron are welcome.
 
 ## Change Log
+
+`2022-09-08` Guarantee the detection API's result (Chrome >= `107.0.5288.0`), and update the detection methods
 
 `2022-08-31` Add WebCodec API (8bit only) support, and HEVC with alpha layer support (macOS only)
 

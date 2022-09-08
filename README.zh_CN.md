@@ -113,6 +113,76 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra 及以上
 ## 杜比视界支持？
 支持兼容HLG、PQ的单层杜比视界（Profile 8.1, 8.2, 8.4)，不支持 IPTPQc2 的单层杜比视界（Profile 5），不支持双层杜比视界，不支持杜比视界全景声（E-AC3）。
 
+## 如何验证特定 Profile, 分辨率的视频是否可以播放？
+
+#### MediaCapabilities
+
+```javascript
+const mediaConfig = {
+  /**
+   * 这里写 `file` 或 `media-source` 都可以, 结果一致,
+   * 不要写 `webrtc`, 因为目前 WebRTC 还不支持 HEVC
+   */
+  type: 'file',
+  video: {
+    /**
+     * 视频的Profile
+     * 
+     * Main: `hev1.1.6.L93.B0`
+     * Main 10: `hev1.2.4.L93.B0`
+     * Main still-picture: `hvc1.3.E.L93.B0`
+     * Main range extensions: `hvc1.4.10.L93.B0`
+     */
+    contentType : 'video/mp4;codecs="hev1.1.6.L120.90"',
+    /* 视频的宽度 */
+    width: 1920,
+    /* 视频的高度 */
+    height: 1080,
+    /* 随便写 */
+    bitrate: 10000, 
+    /* 随便写 */
+    framerate: 30
+  }
+}
+
+navigator.mediaCapabilities.decodingInfo(mediaConfig)
+  .then(result => {
+    /**
+     * result.supported: 指定的 Profile 是否支持
+     * result.powerEfficient: 指定的 宽度 与 高度 是否支持
+     * 
+     * 二者均为true, 则视频可播放
+     */
+    if (result.supported && result.powerEfficient) {
+      console.log('Video can play!');
+    } else {
+      console.log('Video can\'t play!');
+    }
+  });
+```
+
+#### MediaSource
+
+```javascript
+if (MediaSource.isTypeSupported('video/mp4;codecs="hev1.1.6.L120.90"')) {
+  console.log('HEVC main profile is supported!');
+}
+
+if (MediaSource.isTypeSupported('video/mp4;codecs="hev1.2.4.L120.90"')) {
+  console.log('HEVC main10 profile is supported!');
+}
+
+if (MediaSource.isTypeSupported('video/mp4;codecs="hev1.3.E.L120.90"')) {
+  console.log('HEVC main still-picture profile is supported!');
+}
+
+if (MediaSource.isTypeSupported('video/mp4;codecs="hev1.4.10.L120.90"')) {
+  console.log('HEVC range extensions profile is supported!');
+}
+```
+
+注：上述结果已经将 `--disable-gpu`, `--disable-accelerated-video-decode`, gpu-workaround 等影响因素考虑在内了，只要确保 Chrome 版本号 >= 107.0.5288.0，且系统是 macOS 或 Windows，则可保证结果准确性。
+
 ## 技术实现区别？(与Edge / Safari的对比)
 
 #### Windows
@@ -175,6 +245,8 @@ Electron >= v20.0.0 (Chromium >= v104.0.5084.0) 已集成好 Mac, Windows 平台
 Electron < v20.0.0 版本，请点开 `追踪进度` 内的提交记录，自己手动 CV 大法集成，欢迎提交不同版本的 Patch PR到本项目。
 
 ## 更新历史
+
+`2022-09-08` 提升了 API 的检测准确性 (Chrome >= `107.0.5288.0`), 更新了相应的检测方法
 
 `2022-08-31` 支持 WebCodec API (仅 8bit), 支持带 Alpha 图层的 HEVC (仅 macOS)
 
