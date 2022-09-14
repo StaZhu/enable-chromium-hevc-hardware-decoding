@@ -40,6 +40,11 @@
 #### Chromium
 直接双击打开。
 
+## HEVC 支持将来是否会包含在 Chrome 内并默认启用？
+
+Chrome Canary 107.0.5300.0 已默认启用 ChromeOS, Mac, Windows, Android 的 HEVC 硬解支持。
+Chrome 107 正式版将于 `2022-10-25` 起开始推送。
+
 ## 支持硬解哪些Profile？
 
 HEVC Main (最高支持 8192x8192 px)
@@ -131,7 +136,7 @@ const mediaConfig = {
      * Main: `hev1.1.6.L93.B0`
      * Main 10: `hev1.2.4.L93.B0`
      * Main still-picture: `hvc1.3.E.L93.B0`
-     * Main range extensions: `hvc1.4.10.L93.B0`
+     * Range extensions: `hvc1.4.10.L93.B0`
      */
     contentType : 'video/mp4;codecs="hev1.1.6.L120.90"',
     /* 视频的宽度 */
@@ -169,7 +174,7 @@ if (MediaSource.isTypeSupported('video/mp4;codecs="hev1.1.6.L120.90"')) {
 }
 
 if (MediaSource.isTypeSupported('video/mp4;codecs="hev1.2.4.L120.90"')) {
-  console.log('HEVC main10 profile is supported!');
+  console.log('HEVC main 10 profile is supported!');
 }
 
 if (MediaSource.isTypeSupported('video/mp4;codecs="hev1.3.E.L120.90"')) {
@@ -222,21 +227,15 @@ Safari 和 Chromium 二者均使用 `VideoToolbox` 解码器完成硬解。
 
 部分硬解有 BUG，导致被禁用 `D3D11VideoDecoder`，这种情况没什么办法解决，只能软解。[参考](https://source.chromium.org/chromium/chromium/src/+/main:gpu/config/gpu_driver_bug_list.json?q=disable_d3d11_video_decoder)
 
-## HEVC 支持将来是否会包含在 Chrome 内并默认启用？
-
-Chrome 104 及以上版本 将集成 ChromeOS, Mac, Windows, Android 的 HEVC 硬解支持，默认关闭，并允许通过 `--enable-features=PlatformHEVCDecoderSupport` 启用，待未来版本稳定后会默认启用。（Chrome 只包含操作系统提供的解码器，功能为可选支持，不支持的GPU和操作系统将无法使用）
-
 ## 如何编译？
 
 1. 请参考 [Chrome编译手册](https://www.chromium.org/developers/how-tos/get-the-code/) 配置环境并拉取 `main` 分支（硬解代码已合入）的代码。
 2. (可选) 支持 HEVC 软解：切换到 `src/third_party/ffmpeg` 目录，执行 `git am /path/to/add-hevc-ffmpeg-decoder-parser.patch` 。
 3. (可选) 支持 Main / Main10 以外的其他 HEVC Profile： 切换到 `src` 目录，执行 `git am /path/to/remove-main-main10-profile-limit.patch`。
-4. (可选) 默认启用硬解：切换到 `src` 目录，执行 `git am /path/to/enable-hevc-hardware-decoding-by-default.patch`。
-5. (可选) 集成 Widevine CDM，以支持 EME 加密视频 (例：Netflix) 播放：切换到 `src` 目录，执行 `cp -R /path/to/widevine/* third_party/widevine/cdm` (Windows 请执行: `xcopy /path/to/widevine third_party\widevine\cdm /E/H`)。
-6. 假设你想编译 `Mac` + `x64` 架构（其他可选的架构有：`x86`, `arm64`, `arm`）+ 支持 CDM 的 Chromium，请执行 `gn gen out/Release64 --args="is_component_build = false is_official_build = true is_debug = false ffmpeg_branding = \"Chrome\" target_cpu = \"x64\" proprietary_codecs = true media_use_ffmpeg = true enable_widevine = true bundle_widevine_cdm = true enable_platform_hevc = true enable_hevc_parser_and_hw_decoder = true"`，如果想编译 `Windows`，请额外添加 `enable_media_foundation_widevine_cdm = true`，如果想编译 `Windows` 且目标架构为 `arm64`，请将 `bundle_widevine_cdm` 改为 `false`。
+4. (可选) 集成 Widevine CDM，以支持 EME 加密视频 (例：Netflix) 播放：切换到 `src` 目录，执行 `cp -R /path/to/widevine/* third_party/widevine/cdm` (Windows 请执行: `xcopy /path/to/widevine third_party\widevine\cdm /E/H`)。
+5. 假设你想编译 `Mac` + `x64` 架构（其他可选的架构有：`x86`, `arm64`, `arm`）+ 支持 CDM 的 Chromium，请执行 `gn gen out/Release64 --args="is_component_build = false is_official_build = true is_debug = false ffmpeg_branding = \"Chrome\" target_cpu = \"x64\" proprietary_codecs = true media_use_ffmpeg = true enable_widevine = true bundle_widevine_cdm = true enable_platform_hevc = true enable_hevc_parser_and_hw_decoder = true"`，如果想编译 `Windows`，请额外添加 `enable_media_foundation_widevine_cdm = true`，如果想编译 `Windows` 且目标架构为 `arm64`，请将 `bundle_widevine_cdm` 改为 `false`。
 6. 执行 `autoninja -C out/Release64 chrome` 以开始编译。
-7. 如果是 Mac，执行 `./out/Release64/Chromium.app/Contents/MacOS/Chromium --args --enable-features=PlatformHEVCDecoderSupport` 打开编译好的 Chromium 并开启 HEVC 硬解。
-8. 如果是 Windows，在桌面创建一个快捷方式，并改为类似如下的路径： `C:\Users\Admin\Desktop\Chromium\chrome.exe --enable-features=PlatformHEVCDecoderSupport` 然后双击打开快捷方式，即可打开编译好的 Chromium 并开启 HEVC 硬解。
+7. 双击打开 Chromium。
 
 ## 如何集成到 Electron 等基于 Chromium 的项目？
 
@@ -245,6 +244,8 @@ Electron >= v20.0.0 (Chromium >= v104.0.5084.0) 已集成好 Mac, Windows 平台
 Electron < v20.0.0 版本，请点开 `追踪进度` 内的提交记录，自己手动 CV 大法集成，欢迎提交不同版本的 Patch PR到本项目。
 
 ## 更新历史
+
+`2022-09-14` Chrome Canary >= 107.0.5300.0 已默认启用 HEVC 硬解，正式版将于 `2022-10-25` 推送。
 
 `2022-09-08` 提升了 API 的检测准确性 (Chrome >= `107.0.5288.0`), 更新了相应的检测方法
 

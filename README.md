@@ -40,6 +40,11 @@ Unzip the file [Microsoft Edge with HEVC.app.zip](./resources/Microsoft%20Edge%2
 #### Chromium
 Open directly.
 
+## Will HEVC decoding be enabled in Chrome by default in the future?
+
+Chrome Canary 107.0.5300.0 has already enable HEVC hw support for ChromeOS, Mac, Windows and Android by default.
+Chrome 107 release version will be available after `2022-10-25`.
+
 ## What's the hardware supported HEVC profile?
 
 HEVC Main (Up to 8192x8192 pixels)
@@ -132,7 +137,7 @@ const mediaConfig = {
      * Main: `hev1.1.6.L93.B0`
      * Main 10: `hev1.2.4.L93.B0`
      * Main still-picture: `hvc1.3.E.L93.B0`
-     * Main range extensions: `hvc1.4.10.L93.B0`
+     * Range extensions: `hvc1.4.10.L93.B0`
      */
     contentType : 'video/mp4;codecs="hev1.1.6.L120.90"',
     /* Width */
@@ -170,7 +175,7 @@ if (MediaSource.isTypeSupported('video/mp4;codecs="hev1.1.6.L120.90"')) {
 }
 
 if (MediaSource.isTypeSupported('video/mp4;codecs="hev1.2.4.L120.90"')) {
-  console.log('HEVC main10 profile is supported!');
+  console.log('HEVC main 10 profile is supported!');
 }
 
 if (MediaSource.isTypeSupported('video/mp4;codecs="hev1.3.E.L120.90"')) {
@@ -223,21 +228,15 @@ Some GPU driver may has bug which will cause `D3D11VideoDecoder` forbidden to us
 
 Some GPU hardware may has bug which will cause `D3D11VideoDecoder` forbidden to use. in this case, we can't do anything else but to use the FFMPEG software decode. [See reference](https://source.chromium.org/chromium/chromium/src/+/main:gpu/config/gpu_driver_bug_list.json?q=disable_d3d11_video_decoder)
 
-## Will HEVC decoding be enabled in Chrome by default in the future?
-
-Chrome 104 and above version will integrate HEVC hw support for ChromeOS, Mac, Windows and Android, disabled by default, and you can enable it by passing `--enable-features=PlatformHEVCDecoderSupport` when opening. it should be enabled by default in the future version when stable. (only platform decoder that provided by the OS will be supported in chrome, thus this will be optional depends on the GPU and OS support)
-
 ## How to Build?
 
 1. Follow [the official build doc](https://www.chromium.org/developers/how-tos/get-the-code/) to prepare the build environment then fetch the source code from `main` branch (HEVC HW codes has been merged).
 2. (Optional) To enable HEVC software decoding: switch to `src/third_party/ffmpeg` dir, then execute `git am /path/to/add-hevc-ffmpeg-decoder-parser.patch`.
 3. (Optional) To enable other HEVC profiles (non main / main 10 profiles): switch to `src` dir, then execute `git am /path/to/remove-main-main10-profile-limit.patch`.
-4. (Optional) To default enable hardware decode: switch to `src` dir, then execute `git am /path/to/enable-hevc-hardware-decoding-by-default.patch`.
-5. (Optional) To integrate Widevine CDM to support EME API (like Netflix): switch to `src` dir, then execute `cp -R /path/to/widevine/* third_party/widevine/cdm` (Windows: `xcopy /path/to/widevine third_party\widevine\cdm /E/H`).
-6. If you are using `Mac` + want to build `x64` arch (target_cpu to `x86` , `arm64` , `arm` also available) + want to add CDM support, then run `gn gen out/Release64 --args="is_component_build = false is_official_build = true is_debug = false ffmpeg_branding = \"Chrome\" target_cpu = \"x64\" proprietary_codecs = true media_use_ffmpeg = true enable_widevine = true bundle_widevine_cdm = true enable_platform_hevc = true enable_hevc_parser_and_hw_decoder = true"`, if you are using `Windows`, you need to add `enable_media_foundation_widevine_cdm = true` as well, if you are using `Windows` and want to build `arm64` arch, then need to change `bundle_widevine_cdm` to `false`.
-7. Run `autoninja -C out/Release64 chrome` to start the build.
-8. Run `./out/Release64/Chromium.app/Contents/MacOS/Chromium --args --enable-features=PlatformHEVCDecoderSupport` to open chromium if you are using macOS.
-9. Create a desktop shortcut and passing the args like `C:\Users\Admin\Desktop\Chromium\chrome.exe --enable-features=PlatformHEVCDecoderSupport` then double click the desktop shortcut to open chromium if you are using Windows.
+4. (Optional) To integrate Widevine CDM to support EME API (like Netflix): switch to `src` dir, then execute `cp -R /path/to/widevine/* third_party/widevine/cdm` (Windows: `xcopy /path/to/widevine third_party\widevine\cdm /E/H`).
+5. If you are using `Mac` + want to build `x64` arch (target_cpu to `x86` , `arm64` , `arm` also available) + want to add CDM support, then run `gn gen out/Release64 --args="is_component_build = false is_official_build = true is_debug = false ffmpeg_branding = \"Chrome\" target_cpu = \"x64\" proprietary_codecs = true media_use_ffmpeg = true enable_widevine = true bundle_widevine_cdm = true enable_platform_hevc = true enable_hevc_parser_and_hw_decoder = true"`, if you are using `Windows`, you need to add `enable_media_foundation_widevine_cdm = true` as well, if you are using `Windows` and want to build `arm64` arch, then need to change `bundle_widevine_cdm` to `false`.
+6. Run `autoninja -C out/Release64 chrome` to start the build.
+7. Open Chromium directly.
 
 ## How to integrate this into Chromium based project like Electron?
 
@@ -246,6 +245,8 @@ If Electron >= v20.0.0 (Chromium >= v104.0.5084.0), the HEVC hw decoding feature
 If Electron < v20.0.0, please follow the CL in `Trace Crbug` to manually integrate HEVC features. Pull request of Patches for different version of Electron are welcome.
 
 ## Change Log
+
+`2022-09-14` Chrome Canary >= 107.0.5300.0 has enabled HEVC HW decoder by default, official version will be available after `2022-10-25`
 
 `2022-09-08` Guarantee the detection API's result (Chrome >= `107.0.5288.0`), and update the detection methods
 
