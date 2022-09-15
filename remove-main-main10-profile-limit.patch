@@ -1,19 +1,20 @@
-From f8a2a66134bb127bfde54db3e0575b7636e93441 Mon Sep 17 00:00:00 2001
+From 3d52ae7b36f697e2d56fe2dff316d0f9ae1e754d Mon Sep 17 00:00:00 2001
 From: Sta Zhu <zhusidayoyo@hotmail.com>
-Date: Wed, 31 Aug 2022 14:13:54 +0800
+Date: Thu, 15 Sep 2022 13:50:13 +0800
 Subject: [PATCH] Video: Remove Main/Main10 profile limit
 
 This will consider all HEVC profile as to supported, and
 help you be able to play video's like HEVC Rext, SCC etc...
+
 ---
- media/base/supported_types.cc | 20 --------------------
- 1 file changed, 20 deletions(-)
+ media/base/supported_types.cc | 23 +----------------------
+ 1 file changed, 1 insertion(+), 22 deletions(-)
 
 diff --git a/media/base/supported_types.cc b/media/base/supported_types.cc
-index 287af88e744a0..cc28d84b262fe 100644
+index c47d83f0c0641..0f7e6d7a31c2b 100644
 --- a/media/base/supported_types.cc
 +++ b/media/base/supported_types.cc
-@@ -205,27 +205,7 @@ bool IsHevcProfileSupported(const VideoType& type) {
+@@ -205,28 +205,7 @@ bool IsHevcProfileSupported(const VideoType& type) {
      return false;
  
  #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
@@ -37,10 +38,20 @@ index 287af88e744a0..cc28d84b262fe 100644
 -  return base::FeatureList::IsEnabled(kPlatformHEVCDecoderSupport);
 -#else
    return true;
--#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) ||
+-        // BUILDFLAG(IS_MAC)
  #else
    return false;
  #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+@@ -405,7 +384,7 @@ bool IsBuiltInVideoCodec(VideoCodec codec) {
+   if (codec == VideoCodec::kVP8)
+     return true;
+ #if BUILDFLAG(USE_PROPRIETARY_CODECS)
+-  if (codec == VideoCodec::kH264)
++  if (codec == VideoCodec::kH264 || codec == VideoCodec::kHEVC)
+     return true;
+ #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+ #endif  // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 -- 
-2.32.1 (Apple Git-133)
+2.37.2.windows.2
 

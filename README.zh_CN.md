@@ -42,7 +42,7 @@
 
 ## HEVC 支持将来是否会包含在 Chrome 内并默认启用？
 
-Chrome Canary 107.0.5300.0 已默认启用 ChromeOS, Mac, Windows, Android 的 HEVC 硬解支持。
+Chrome Canary >= `107.0.5300.0` 已默认启用 ChromeOS, Mac, Windows, Android 的 HEVC 硬解支持。
 Chrome 107 正式版将于 `2022-10-25` 起开始推送。
 
 ## 支持硬解哪些Profile？
@@ -112,7 +112,7 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra 及以上
 | :--------------- | :------------- | :------------- | :-------------- | :-------------- |
 |  Chromium 105 macOS  |     ✅ (EDR)     |        ✅        |      ✅ (EDR)      |        ✅         |
 | Chromium 105 Windows |        ✅        |        ✅        |        ✅         |        ✅         |
-|   Edge 102 Windows   |        ❌        |        部分支持        |        部分支持         |        ❌         |
+|   Edge 105 Windows   |        ❌        |        ✅        |        ✅         |        ✅         |
 |   Safari 15.3 macOS   |     ✅ (EDR)     |        ✅        |      ✅ (EDR)      |        ✅         |
 
 ## 杜比视界支持？
@@ -152,13 +152,8 @@ const mediaConfig = {
 
 navigator.mediaCapabilities.decodingInfo(mediaConfig)
   .then(result => {
-    /**
-     * result.supported: 指定的 Profile 是否支持
-     * result.powerEfficient: 指定的 宽度 与 高度 是否支持
-     * 
-     * 二者均为true, 则视频可播放
-     */
-    if (result.supported && result.powerEfficient) {
+    /* 指定的 Profile + 宽高的视频是否可解码 */
+    if (result.supported) {
       console.log('Video can play!');
     } else {
       console.log('Video can\'t play!');
@@ -186,7 +181,30 @@ if (MediaSource.isTypeSupported('video/mp4;codecs="hev1.4.10.L120.90"')) {
 }
 ```
 
-注：上述结果已经将 `--disable-gpu`, `--disable-accelerated-video-decode`, gpu-workaround 等影响因素考虑在内了，只要确保 Chrome 版本号 >= 107.0.5288.0，且系统是 macOS 或 Windows，则可保证结果准确性。
+#### CanPlayType
+
+```javascript
+const video = document.createElement('video');
+
+if (video.canPlayType('video/mp4;codecs="hev1.1.6.L120.90"') === 'probably') {
+  console.log('HEVC main profile is supported!');
+}
+
+if (video.canPlayType('video/mp4;codecs="hev1.2.4.L120.90"') === 'probably') {
+  console.log('HEVC main 10 profile is supported!');
+}
+
+if (video.canPlayType('video/mp4;codecs="hev1.3.E.L120.90"') === 'probably') {
+  console.log('HEVC main still-picture profile is supported!');
+}
+
+if (video.canPlayType('video/mp4;codecs="hev1.4.10.L120.90"') === 'probably') {
+  console.log('HEVC range extensions profile is supported!');
+}
+```
+
+注1：上述三种 API 均已经将 `--disable-gpu`, `--disable-accelerated-video-decode`，`gpu-workaround`，`设置-系统-使用硬件加速模式（如果可用）`，`操作系统版本号` 等影响因素考虑在内了，只要确保 Chrome 版本号 >= `107.0.5293.0`，且系统是 macOS 或 Windows，则可保证结果准确性。
+注2：相比 `MediaSource.isTypeSupported()` 或 `CanPlayType()`，更推荐使用 `MediaCapabilities`，`MediaCapabilities` 除了会将 `设置-系统-使用硬件加速模式（如果可用）` 等等上述影响因素加入考虑外，还会考虑 `视频分辨率` 是否支持，不同的 GPU 所支持的最高分辨率是不一样的，比如部分 AMD GPU 最高只支持到 4096 * 2048，一些老的 GPU 只能支持到 1080P。
 
 ## 技术实现区别？(与Edge / Safari的对比)
 
@@ -245,7 +263,9 @@ Electron < v20.0.0 版本，请点开 `追踪进度` 内的提交记录，自己
 
 ## 更新历史
 
-`2022-09-14` Chrome Canary >= 107.0.5300.0 已默认启用 HEVC 硬解，正式版将于 `2022-10-25` 推送。
+`2022-09-15` 修复了 Intel 11/12 代 iGPU 开启系统 HDR 模式下播放 HDR 视频导致崩溃的问题，提升了 MediaCapabilities API 返回值的准确性，更新 Patch 到 `107.0.5303.0`
+
+`2022-09-14` Chrome Canary >= `107.0.5300.0` 已默认启用 HEVC 硬解，正式版将于 `2022-10-25` 推送
 
 `2022-09-08` 提升了 API 的检测准确性 (Chrome >= `107.0.5288.0`), 更新了相应的检测方法
 

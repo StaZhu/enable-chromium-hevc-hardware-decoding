@@ -42,7 +42,7 @@ Open directly.
 
 ## Will HEVC decoding be enabled in Chrome by default in the future?
 
-Chrome Canary 107.0.5300.0 has already enable HEVC hw support for ChromeOS, Mac, Windows and Android by default.
+Chrome Canary >= `107.0.5300.0` has already enable HEVC HW decoding support for ChromeOS, Mac, Windows and Android by default.
 Chrome 107 release version will be available after `2022-10-25`.
 
 ## What's the hardware supported HEVC profile?
@@ -112,8 +112,8 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra and above
 |                  | PQ (SDR Screen) | PQ (HDR Screen) | HLG (SDR Screen) | HLG (HDR Screen) |
 | :-------------- | :------------- | :------------- | :-------------- | :-------------- |
 |  Chromium 105 macOS  |     ✅ (EDR)      |        ✅        |      ✅ (EDR)      |        ✅         |
-| Chromium 105 Windows |        ✅        |        ✅        |        ✅         |        ✅         |
-|   Edge 102 Windows   |        ❌        |        Partial        |        Partial         |        ❌         |
+| Chromium 105 Windows |        ✅        |        ✅        |       ✅         |        ✅         |
+|   Edge 105 Windows   |        ❌        |        ✅        |       ✅        |        ✅         |
 |   Safari 15.3 macOS   |     ✅ (EDR)      |        ✅        |      ✅ (EDR)      |        ✅         |
 
 ## Dolby Vision Supports?
@@ -153,13 +153,8 @@ const mediaConfig = {
 
 navigator.mediaCapabilities.decodingInfo(mediaConfig)
   .then(result => {
-    /**
-     * result.supported: indicate whether the profile is supported or not.
-     * result.powerEfficient: indicate whether the width and height is supported or not.
-     * 
-     * If both result are true, then the video can play well on the browser
-     */
-    if (result.supported && result.powerEfficient) {
+     /* Indicate whether or not the video with given profile, width, and height can played well on the browser */
+    if (result.supported) {
       console.log('Video can play!');
     } else {
       console.log('Video can\'t play!');
@@ -187,7 +182,30 @@ if (MediaSource.isTypeSupported('video/mp4;codecs="hev1.4.10.L120.90"')) {
 }
 ```
 
-Note: The above methods have already took `--disable-gpu`, `--disable-accelerated-video-decode`, gpu-workaround etc... into consideration, and if Chrome version >= 107.0.5288.0 and OS is macOS or Windows, the result are guaranteed.
+#### CanPlayType
+
+```javascript
+const video = document.createElement('video');
+
+if (video.canPlayType('video/mp4;codecs="hev1.1.6.L120.90"') === 'probably') {
+  console.log('HEVC main profile is supported!');
+}
+
+if (video.canPlayType('video/mp4;codecs="hev1.2.4.L120.90"') === 'probably') {
+  console.log('HEVC main 10 profile is supported!');
+}
+
+if (video.canPlayType('video/mp4;codecs="hev1.3.E.L120.90"') === 'probably') {
+  console.log('HEVC main still-picture profile is supported!');
+}
+
+if (video.canPlayType('video/mp4;codecs="hev1.4.10.L120.90"') === 'probably') {
+  console.log('HEVC range extensions profile is supported!');
+}
+```
+
+Note1: The above three API have already took `--disable-gpu`, `--disable-accelerated-video-decode`, `gpu-workaround`, `settings - system - Use hardware acceleration when available`, `OS version` etc... into consideration, and if Chrome version >= `107.0.5293.0` and OS is macOS or Windows, the result are guaranteed.
+Note2: Compared with `MediaSource.isTypeSupported()` or `CanPlayType()`, we recommand using `MediaCapabilities`, since `MediaCapabilities` not only takes `settings - system - Use hardware acceleration when available` etc... into consideration, but also check if the given `width and height` is supported or not since different GPU may have different max resolution, eg: some AMD GPU only support up to 4096 * 2048, and some old GPU only support up to 1080P.
 
 ## What's the tech diff? (Compared with Edge / Safari)
 
@@ -245,8 +263,9 @@ If Electron >= v20.0.0 (Chromium >= v104.0.5084.0), the HEVC hw decoding feature
 If Electron < v20.0.0, please follow the CL in `Trace Crbug` to manually integrate HEVC features. Pull request of Patches for different version of Electron are welcome.
 
 ## Change Log
+`2022-09-15` Fix crash for Intel 11/12 Gen iGPU when play HDR video in system HDR mode, improve the accuracy of MediaCapabilities API, Update Patch to `107.0.5303.0`
 
-`2022-09-14` Chrome Canary >= 107.0.5300.0 has enabled HEVC HW decoder by default, official version will be available after `2022-10-25`
+`2022-09-14` Chrome Canary >= `107.0.5300.0` has enabled HEVC HW decoder by default, official version will be available after `2022-10-25`
 
 `2022-09-08` Guarantee the detection API's result (Chrome >= `107.0.5288.0`), and update the detection methods
 
