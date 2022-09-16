@@ -204,8 +204,8 @@ if (video.canPlayType('video/mp4;codecs="hev1.4.10.L120.90"') === 'probably') {
 }
 ```
 
-Note1: The above three API have already took `--disable-gpu`, `--disable-accelerated-video-decode`, `gpu-workaround`, `settings - system - Use hardware acceleration when available`, `OS version` etc... into consideration, and if Chrome version >= `107.0.5293.0` and OS is macOS or Windows, the result are guaranteed.
-Note2: Compared with `MediaSource.isTypeSupported()` or `CanPlayType()`, we recommand using `MediaCapabilities`, since `MediaCapabilities` not only takes `settings - system - Use hardware acceleration when available` etc... into consideration, but also check if the given `width and height` is supported or not since different GPU may have different max resolution, eg: some AMD GPU only support up to 4096 * 2048, and some old GPU only support up to 1080P.
+#### Note 1：The above three API have already took `--disable-gpu`, `--disable-accelerated-video-decode`, `gpu-workaround`, `settings - system - Use hardware acceleration when available`, `OS version` etc... into consideration, and if Chrome version >= `107.0.5304.0` and OS is macOS or Windows, the result are guaranteed.
+#### Note 2：Compared with `MediaSource.isTypeSupported()` or `CanPlayType()`, we recommand using `MediaCapabilities`, since `MediaCapabilities` not only takes `settings - system - Use hardware acceleration when available` etc... into consideration, but also check if the given `width and height` is supported or not since different GPU may have different max resolution support, eg: some AMD GPU only support up to 4096 * 2048, and some old GPU only support up to 1080P.
 
 ## What's the tech diff? (Compared with Edge / Safari)
 
