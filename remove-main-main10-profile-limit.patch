@@ -1,23 +1,27 @@
-From 3d52ae7b36f697e2d56fe2dff316d0f9ae1e754d Mon Sep 17 00:00:00 2001
+From 5c691085eeb2feb7e61636ed27e72750e6736b73 Mon Sep 17 00:00:00 2001
 From: Sta Zhu <zhusidayoyo@hotmail.com>
-Date: Thu, 15 Sep 2022 13:50:13 +0800
+Date: Mon, 19 Sep 2022 14:30:54 +0800
 Subject: [PATCH] Video: Remove Main/Main10 profile limit
 
 This will consider all HEVC profile as to supported, and
 help you be able to play video's like HEVC Rext, SCC etc...
 
 ---
- media/base/supported_types.cc | 23 +----------------------
- 1 file changed, 1 insertion(+), 22 deletions(-)
+ media/base/supported_types.cc | 30 +-----------------------------
+ 1 file changed, 1 insertion(+), 29 deletions(-)
 
 diff --git a/media/base/supported_types.cc b/media/base/supported_types.cc
-index c47d83f0c0641..0f7e6d7a31c2b 100644
+index c47d83f0c0641..3d8fd8f583907 100644
 --- a/media/base/supported_types.cc
 +++ b/media/base/supported_types.cc
-@@ -205,28 +205,7 @@ bool IsHevcProfileSupported(const VideoType& type) {
-     return false;
+@@ -201,35 +201,7 @@ bool IsAudioCodecProprietary(AudioCodec codec) {
+ #endif  // !BUILDFLAG(USE_PROPRIETARY_CODECS)
  
- #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+ bool IsHevcProfileSupported(const VideoType& type) {
+-  if (!IsColorSpaceSupported(type.color_space))
+-    return false;
+-
+-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 -#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
 -    BUILDFLAG(IS_MAC)
 -#if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -40,10 +44,13 @@ index c47d83f0c0641..0f7e6d7a31c2b 100644
    return true;
 -#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) ||
 -        // BUILDFLAG(IS_MAC)
- #else
-   return false;
- #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
-@@ -405,7 +384,7 @@ bool IsBuiltInVideoCodec(VideoCodec codec) {
+-#else
+-  return false;
+-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+ }
+ 
+ bool IsVp9ProfileSupported(const VideoType& type) {
+@@ -405,7 +377,7 @@ bool IsBuiltInVideoCodec(VideoCodec codec) {
    if (codec == VideoCodec::kVP8)
      return true;
  #if BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -53,5 +60,5 @@ index c47d83f0c0641..0f7e6d7a31c2b 100644
  #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
  #endif  // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 -- 
-2.37.2.windows.2
+2.36.1.windows.1
 
