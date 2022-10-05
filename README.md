@@ -1,6 +1,6 @@
 # enable-chromium-hevc-hardware-decoding
 
-A guide that teach you enable hardware HEVC decoding for Chrome / Edge on macOS / Windows, or build a custom version of Chromium / Electron that supports hardware & software HEVC decoding.
+A guide that teach you enable hardware HEVC decoding for Chrome / Edge, or build a custom version of Chromium / Electron that supports hardware & software HEVC decoding.
 
 
 ##### English | [简体中文](./README.zh_CN.md)
@@ -10,10 +10,10 @@ A guide that teach you enable hardware HEVC decoding for Chrome / Edge on macOS 
 ### Release Version
 
 #### Chrome
-[Click to Download](https://www.google.com/chrome/) (version >= 104.0.5084.0).
+[Click to Download](https://www.google.com/chrome/) (Support HW decoding only, version >= 104.0.5084.0).
 
 #### Edge (Mac)
-[Click to Download](https://www.microsoft.com/edge) (version >= 104.0.1293.0).
+[Click to Download](https://www.microsoft.com/edge) (Support HW decoding only, version >= 104.0.1293.0).
 
 ### Software Decoding Compatible Version
 
@@ -75,11 +75,11 @@ macOS Big Sur (11.0) and above
 
 Windows 8 and above
 
-Android (already support, not tested)
+Android
 
-ChromeOS (already support, not tested)
+Chrome OS
 
-## What's API supported?
+## What's the API supported?
 
 Video Decode: File, Media Source Extensions, WebCodec (8bit only, require Chromium version >= `107.0.5272.0`), Clearkey Encrypted Media Extensions are supported. WebRTC is not supported.
 
@@ -113,13 +113,13 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra and above
 
 |                  | PQ (SDR Screen) | PQ (HDR Screen) | HLG (SDR Screen) | HLG (HDR Screen) |
 | :-------------- | :------------- | :------------- | :-------------- | :-------------- |
-|  Chromium 105 macOS  |     ✅ (EDR)      |        ✅        |      ✅ (EDR)      |        ✅         |
-| Chromium 105 Windows |        ✅        |        ✅        |       ✅         |        ✅         |
-|   Edge 105 Windows   |        ❌        |        ✅        |       ✅        |        ✅         |
-|   Safari 15.3 macOS   |     ✅ (EDR)      |        ✅        |      ✅ (EDR)      |        ✅         |
+|  Chromium 106 macOS  |     ✅ (EDR)      |        ✅        |      ✅ (EDR)      |        ✅         |
+| Chromium 106 Windows |        ✅        |        ✅        |       ✅         |        ✅         |
+|   Edge 106 Windows   |        ❌        |        ✅        |       ✅        |        ✅         |
+|   Safari 16.0 macOS   |     ✅ (EDR)      |        ✅        |      ✅ (EDR)      |        ✅         |
 
 ## Dolby Vision Supports?
-Support HLG、PQ backward compatibility single layer dolby vision (Profile 8.1, 8.2, 8.4), not support IPTPQc2 single layer dolby vision (Profile 5), not support multi layer dolby vision, not support dolby atmos audio (E-AC3).
+Support HLG、PQ backward compatibility single layer dolby vision (Profile 8.1, 8.2, 8.4, although when using API query `dvh1.08.07`, it still return "not supported"), not support IPTPQc2 single layer dolby vision (Profile 5), not support multi layer dolby vision, not support dolby atmos audio (E-AC3).
 
 ## How to verify certain profile or resolution is supported？
 
@@ -234,7 +234,7 @@ Safari and Chromium use the same `VideoToolbox` to finish the HEVC HW decoding.
 
 ##### Windows
 
-Please make sure you are using Windows 8 and above, this is because the `D3D11VideoDecoder` doesn't support Windows 7, and will use `VDAVideoDecoder` to hardware decoding. while `VDAVideoDecoder` based on `Media Foundation` , and `Media Foundation` start to support HEVC since Windows 10 1709 (which need you to install the `HEVC Video Extension`).
+Please make sure you are using Windows 8 and above, this is because the `D3D11VideoDecoder` doesn't support Windows 7.
 
 ##### macOS
 

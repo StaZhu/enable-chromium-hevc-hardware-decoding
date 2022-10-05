@@ -1,6 +1,6 @@
 # enable-chromium-hevc-hardware-decoding
 
-一个教你为 Chrome / Edge 启用 HEVC 硬解，或编译 Chromium / Electron 使其支持 Windows / macOS 平台 HEVC 硬 & 软解功能的教程。
+一个教你为 Chrome / Edge 启用 HEVC 硬解，或编译 Chromium / Electron 使其支持 HEVC 硬 & 软解功能的教程。
 
 
 ##### 简体中文 | [English](./README.md)
@@ -10,10 +10,10 @@
 ### 正式版
 
 #### Chrome
-[点击下载](https://www.google.com/chrome/) (版本号 >= 104.0.5084.0)。
+[点击下载](https://www.google.com/chrome/) (仅支持硬解，版本号须 >= 104.0.5084.0)。
 
 #### Edge (Mac)
-[点击下载](https://www.microsoft.com/edge) (版本号 >= 104.0.1293.0)。
+[点击下载](https://www.microsoft.com/edge) (仅支持硬解，版本号须 >= 104.0.1293.0)。
 
 ### 软解兼容版
 
@@ -75,9 +75,9 @@ macOS Big Sur (11.0) 及以上
 
 Windows 8 及以上
 
-Android (已支持，暂未测试)
+Android
 
-ChromeOS (已支持，暂未测试)
+Chrome OS
 
 ## 支持哪些 API？
 
@@ -113,13 +113,13 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra 及以上
 
 |                  | PQ (SDR Screen) | PQ (HDR Screen) | HLG (SDR Screen) | HLG (HDR Screen) |
 | :--------------- | :------------- | :------------- | :-------------- | :-------------- |
-|  Chromium 105 macOS  |     ✅ (EDR)     |        ✅        |      ✅ (EDR)      |        ✅         |
-| Chromium 105 Windows |        ✅        |        ✅        |        ✅         |        ✅         |
-|   Edge 105 Windows   |        ❌        |        ✅        |        ✅         |        ✅         |
-|   Safari 15.3 macOS   |     ✅ (EDR)     |        ✅        |      ✅ (EDR)      |        ✅         |
+|  Chromium 106 macOS  |     ✅ (EDR)     |        ✅        |      ✅ (EDR)      |        ✅         |
+| Chromium 106 Windows |        ✅        |        ✅        |        ✅         |        ✅         |
+|   Edge 106 Windows   |        ❌        |        ✅        |        ✅         |        ✅         |
+|   Safari 16.0 macOS   |     ✅ (EDR)     |        ✅        |      ✅ (EDR)      |        ✅         |
 
 ## 杜比视界支持？
-支持兼容HLG、PQ的单层杜比视界（Profile 8.1, 8.2, 8.4)，不支持 IPTPQc2 的单层杜比视界（Profile 5），不支持双层杜比视界，不支持杜比视界全景声（E-AC3）。
+支持兼容HLG、PQ的单层杜比视界（Profile 8.1, 8.2, 8.4, 尽管使用 API 查询 `dvh1.08.07` 时仍会返回"不支持")，不支持 IPTPQc2 的单层杜比视界（Profile 5），不支持双层杜比视界，不支持杜比视界全景声（E-AC3）。
 
 ## 如何验证特定 Profile, 分辨率的视频是否可以播放？
 
@@ -234,7 +234,7 @@ Safari 和 Chromium 二者均使用 `VideoToolbox` 解码器完成硬解。
 
 ##### Windows
 
-请确保操作系统版本大于等于 Windows 8，这是因为 Chromium 的 `D3D11VideoDecoder` 仅支持 Windows 8 以上系统，在 Windows 8 以下操作系统使用 `VDAVideoDecoder` 进行硬解。而 `VDAVideoDecoder` 基于 `Media Foundation` 实现，`Media Foundation ` 对于 HEVC 硬解的支持（需要安装 `HEVC视频扩展` 插件），系统版本需大于 Windows 10 1709，因此同样不可能支持。
+请确保操作系统版本大于等于 Windows 8，这是因为 Chromium 的 `D3D11VideoDecoder` 仅支持 Windows 8 以上系统。
 
 ##### macOS
 
@@ -266,7 +266,7 @@ Electron < v20.0.0 版本，请点开 `追踪进度` 内的提交记录，自己
 
 ## 更新历史
 
-`2022-09-26` 新增软解自动Patch脚本
+`2022-09-26` 新增软解自动 Patch 脚本
 
 `2022-09-15` 修复了 Intel 11/12 代 iGPU 开启系统 HDR 模式下播放 HDR 视频导致崩溃的问题，提升了 MediaCapabilities API 返回值的准确性，更新 Patch 到 `107.0.5303.0`
 
