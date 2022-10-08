@@ -81,7 +81,7 @@ Chrome OS
 
 ## What's the API supported?
 
-Video Decode: File, Media Source Extensions, WebCodec (8bit only, require Chromium version >= `107.0.5272.0`), Clearkey Encrypted Media Extensions are supported. WebRTC is not supported.
+Video Decode: File, Media Source Extensions, WebCodec (Chromium >= `107.0.5272.0`), Clearkey Encrypted Media Extensions are supported. WebRTC is not supported.
 
 Video Encode: Not supported.
 
@@ -265,6 +265,8 @@ If Electron >= v20.0.0 (Chromium >= v104.0.5084.0), the HEVC hw decoding feature
 If Electron < v20.0.0, please follow the CL in `Trace Crbug` to manually integrate HEVC features. Pull request of Patches for different version of Electron are welcome.
 
 ## Change Log
+
+`2022-10-08` Add HDR10 Metadata extract logic, support WebCodec >= 10bits
 
 `2022-09-26` Add a SW decoding auto-gen patch script
 
