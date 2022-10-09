@@ -81,7 +81,7 @@ Chrome OS
 
 ## 支持哪些 API？
 
-视频解码：支持 File, Media Source Extensions, WebCodec (Chromium >= `107.0.5272.0`), Clearkey Encrypted Media Extensions, 不支持 WebRTC。
+视频解码：支持 File, Media Source Extensions, WebCodec (8Bit >= `107.0.5272.0`, 10Bit + HEVC with Alpha >= `108.0.5343.0`), Clearkey Encrypted Media Extensions, 不支持 WebRTC。
 
 视频编码：不支持。
 
@@ -265,6 +265,8 @@ Electron >= v20.0.0 (Chromium >= v104.0.5084.0) 已集成好 Mac, Windows 平台
 Electron < v20.0.0 版本，请点开 `追踪进度` 内的提交记录，自己手动 CV 大法集成，欢迎提交不同版本的 Patch PR到本项目。
 
 ## 更新历史
+
+`2022-10-09` 带 Alpha 图层的 HEVC (仅 macOS) 支持 WebCodec 解码时保留 Alpha 图层
 
 `2022-10-08` 支持 HDR10 Metadata 提取能力，支持 WebCodec >= 10bit
 
