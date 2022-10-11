@@ -42,7 +42,7 @@
 
 ## HEVC 支持将来是否会包含在 Chrome 内并默认启用？
 
-Chrome Canary >= `107.0.5300.0` 已默认启用 ChromeOS, Mac, Windows, Android 的 HEVC 硬解支持。
+Chrome >= `107.0.5300.0` 已默认启用 ChromeOS, Mac, Windows, Android 的 HEVC 硬解支持，Chrome >= `108.0.5354.0` 已默认启用 Linux 的 HEVC 硬解支持。
 Chrome 107 正式版将于 `2022-10-25` 起开始推送。
 
 ## 支持硬解哪些Profile？
@@ -78,6 +78,8 @@ Windows 8 及以上
 Android
 
 Chrome OS
+
+Linux (version >= `108.0.5354.0`)
 
 ## 支持哪些 API？
 
@@ -265,6 +267,8 @@ Electron >= v20.0.0 (Chromium >= v104.0.5084.0) 已集成好 Mac, Windows 平台
 Electron < v20.0.0 版本，请点开 `追踪进度` 内的提交记录，自己手动 CV 大法集成，欢迎提交不同版本的 Patch PR到本项目。
 
 ## 更新历史
+
+`2022-10-11` 支持 Linux HEVC 硬解 (Chrome >= `108.0.5354.0`)
 
 `2022-10-09` 带 Alpha 图层的 HEVC (仅 macOS) 支持 WebCodec 解码时保留 Alpha 图层
 

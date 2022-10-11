@@ -42,7 +42,7 @@ Open directly.
 
 ## Will HEVC decoding be enabled in Chrome by default in the future?
 
-Chrome Canary >= `107.0.5300.0` has already enable HEVC HW decoding support for ChromeOS, Mac, Windows and Android by default.
+Chrome >= `107.0.5300.0` has already enabled HEVC HW decoding support for ChromeOS, Mac, Windows and Android by default, Chrome >= `108.0.5354.0` also enabled HEVC HW decoding support for Linux by default.
 Chrome 107 release version will be available after `2022-10-25`.
 
 ## What's the hardware supported HEVC profile?
@@ -78,6 +78,8 @@ Windows 8 and above
 Android
 
 Chrome OS
+
+Linux (version >= `108.0.5354.0`)
 
 ## What's the API supported?
 
@@ -265,6 +267,8 @@ If Electron >= v20.0.0 (Chromium >= v104.0.5084.0), the HEVC hw decoding feature
 If Electron < v20.0.0, please follow the CL in `Trace Crbug` to manually integrate HEVC features. Pull request of Patches for different version of Electron are welcome.
 
 ## Change Log
+
+`2022-10-11` Add Linux HEVC HW decoding support (Chrome >= `108.0.5354.0`)
 
 `2022-10-09` HEVC with alpha (macOS only) support decoding with WebCodec API and preserve it's alpha layer
 
