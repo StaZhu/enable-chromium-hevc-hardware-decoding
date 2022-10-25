@@ -2,48 +2,15 @@
 
 A guide that teach you enable hardware HEVC decoding for Chrome / Edge, or build a custom version of Chromium / Electron that supports hardware & software HEVC decoding.
 
-
 ##### English | [简体中文](./README.zh_CN.md)
-
-## Download Link
-
-### Release Version
-
-#### Chrome
-[Click to Download](https://www.google.com/chrome/) (Support HW decoding only, version >= 104.0.5084.0).
-
-#### Edge (Mac)
-[Click to Download](https://www.microsoft.com/edge) (Support HW decoding only, version >= 104.0.1293.0).
-
-### Software Decoding Compatible Version
-
-#### Chromium
-[Click to Download](https://github.com/StaZhu/enable-chromium-hevc-hardware-decoding/releases) (Support HW + SW decoding, no platform requirement).
 
 ## Usage
 
-### Release Version
-
-#### Chrome (Windows)
-Append switch `--enable-features=PlatformHEVCDecoderSupport` to desktop shortcut and open directly.
-
-<img src="./resources/chrome_switch_en.jpg" style="width: 450px;" />
-
-#### Chrome (Mac)
-Unzip the file [Google Chrome with HEVC.app.zip](./resources/Google%20Chrome%20with%20HEVC.app.zip), then drag `Google Chrome with HEVC.app` to `Applications` directory and open directly.
+#### Chrome & Chromium
+Make sure version >= 107 then open directly.
 
 #### Edge (Mac)
 Unzip the file [Microsoft Edge with HEVC.app.zip](./resources/Microsoft%20Edge%20with%20HEVC.app.zip), then drag `Microsoft Edge with HEVC.app` to `Applications` directory and open directly.
-
-### Software Decoding Compatible Version
-
-#### Chromium
-Open directly.
-
-## Will HEVC decoding be enabled in Chrome by default in the future?
-
-Chrome >= `107.0.5300.0` has already enabled HEVC HW decoding support for ChromeOS, Mac, Windows and Android by default, Chrome >= `108.0.5354.0` also enabled HEVC HW decoding support for Linux by default.
-Chrome 107 release version will be available after `2022-10-25`.
 
 ## What's the hardware supported HEVC profile?
 
@@ -85,7 +52,7 @@ Linux (version >= `108.0.5354.0`)
 
 Video Decode: File, Media Source Extensions, WebCodec (8Bit requires >= `107.0.5272.0`, 10Bit + HEVC with Alpha requires >= `108.0.5343.0`), Clearkey Encrypted Media Extensions are supported. WebRTC is not supported.
 
-Video Encode: Not supported.
+Video Encode: WebCodec (Windows only currently, passing `--enable-feautures=MediaFoundationHEVCEncoding` and make sure browser >= `109.0.5366.0`) is supported.
 
 ## What's the GPU requirement?
 
@@ -115,10 +82,10 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra and above
 
 |                  | PQ (SDR Screen) | PQ (HDR Screen) | HLG (SDR Screen) | HLG (HDR Screen) |
 | :-------------- | :------------- | :------------- | :-------------- | :-------------- |
-|  Chromium 106 macOS  |     ✅ (EDR)      |        ✅        |      ✅ (EDR)      |        ✅         |
-| Chromium 106 Windows |        ✅        |        ✅        |       ✅         |        ✅         |
+|  Chromium 107 macOS  |     ✅ (EDR)      |        ✅        |      ✅ (EDR)      |        ✅         |
+| Chromium 107 Windows |        ✅        |        ✅        |       ✅         |        ✅         |
 |   Edge 106 Windows   |        ❌        |        ✅        |       ✅        |        ✅         |
-|   Safari 16.0 macOS   |     ✅ (EDR)      |        ✅        |      ✅ (EDR)      |        ✅         |
+|   Safari 16.1 macOS   |     ✅ (EDR)      |        ✅        |      ✅ (EDR)      |        ✅         |
 
 ## Dolby Vision Supports?
 Support HLG、PQ backward compatibility single layer dolby vision (Profile 8.1, 8.2, 8.4, although when using API query `dvh1.08.07`, it still return "not supported"), not support IPTPQc2 single layer dolby vision (Profile 5), not support multi layer dolby vision, not support dolby atmos audio (E-AC3).
@@ -267,6 +234,8 @@ If Electron >= v20.0.0 (Chromium >= v104.0.5084.0), the HEVC hw decoding feature
 If Electron < v20.0.0, please follow the CL in `Trace Crbug` to manually integrate HEVC features. Pull request of Patches for different version of Electron are welcome.
 
 ## Change Log
+
+`2022-10-25` Chrome >= 107 enable by default + Windows WebCodec Encode support.
 
 `2022-10-11` Add Linux HEVC HW decoding support (Chrome >= `108.0.5354.0`)
 

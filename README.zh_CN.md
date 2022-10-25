@@ -2,48 +2,15 @@
 
 一个教你为 Chrome / Edge 启用 HEVC 硬解，或编译 Chromium / Electron 使其支持 HEVC 硬 & 软解功能的教程。
 
-
 ##### 简体中文 | [English](./README.md)
-
-## 下载地址
-
-### 正式版
-
-#### Chrome
-[点击下载](https://www.google.com/chrome/) (仅支持硬解，版本号须 >= 104.0.5084.0)。
-
-#### Edge (Mac)
-[点击下载](https://www.microsoft.com/edge) (仅支持硬解，版本号须 >= 104.0.1293.0)。
-
-### 软解兼容版
-
-#### Chromium
-[点击下载](https://github.com/StaZhu/enable-chromium-hevc-hardware-decoding/releases) (支持硬解+软解，无平台要求)。
 
 ## 启动方式
 
-### 正式版
-
-#### Chrome (Windows)
-在桌面快捷方式添加启动参数 `--enable-features=PlatformHEVCDecoderSupport` 如下图，并双击打开。
-
-<img src="./resources/chrome_switch_zh.jpg" style="width: 450px;" />
-
-#### Chrome (Mac)
-解压缩引导文件 [Google Chrome with HEVC.app.zip](./resources/Google%20Chrome%20with%20HEVC.app.zip)，并拖拽 `Google Chrome with HEVC.app` 到 `应用程序` 目录后，双击打开。
+#### Chrome & Chromium
+确保版本号 >= 107, 双击打开。
 
 #### Edge (Mac)
 解压缩引导文件 [Microsoft Edge with HEVC.app.zip](./resources/Microsoft%20Edge%20with%20HEVC.app.zip)，并拖拽 `Microsoft Edge with HEVC.app` 到 `应用程序` 目录后，双击打开。
-
-### 软解兼容版
-
-#### Chromium
-直接双击打开。
-
-## HEVC 支持将来是否会包含在 Chrome 内并默认启用？
-
-Chrome >= `107.0.5300.0` 已默认启用 ChromeOS, Mac, Windows, Android 的 HEVC 硬解支持，Chrome >= `108.0.5354.0` 已默认启用 Linux 的 HEVC 硬解支持。
-Chrome 107 正式版将于 `2022-10-25` 起开始推送。
 
 ## 支持硬解哪些Profile？
 
@@ -85,7 +52,7 @@ Linux (version >= `108.0.5354.0`)
 
 视频解码：支持 File, Media Source Extensions, WebCodec (8Bit >= `107.0.5272.0`, 10Bit + HEVC with Alpha >= `108.0.5343.0`), Clearkey Encrypted Media Extensions, 不支持 WebRTC。
 
-视频编码：不支持。
+视频编码：支持 WebCodec (目前仅支持 Windows，需要传启动参数：`--enable-feautures=MediaFoundationHEVCEncoding`, 并确保浏览器版本 >= `109.0.5366.0`)。
 
 ## GPU要求？
 
@@ -115,10 +82,10 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra 及以上
 
 |                  | PQ (SDR Screen) | PQ (HDR Screen) | HLG (SDR Screen) | HLG (HDR Screen) |
 | :--------------- | :------------- | :------------- | :-------------- | :-------------- |
-|  Chromium 106 macOS  |     ✅ (EDR)     |        ✅        |      ✅ (EDR)      |        ✅         |
-| Chromium 106 Windows |        ✅        |        ✅        |        ✅         |        ✅         |
+|  Chromium 107 macOS  |     ✅ (EDR)     |        ✅        |      ✅ (EDR)      |        ✅         |
+| Chromium 107 Windows |        ✅        |        ✅        |        ✅         |        ✅         |
 |   Edge 106 Windows   |        ❌        |        ✅        |        ✅         |        ✅         |
-|   Safari 16.0 macOS   |     ✅ (EDR)     |        ✅        |      ✅ (EDR)      |        ✅         |
+|   Safari 16.1 macOS   |     ✅ (EDR)     |        ✅        |      ✅ (EDR)      |        ✅         |
 
 ## 杜比视界支持？
 支持兼容HLG、PQ的单层杜比视界（Profile 8.1, 8.2, 8.4, 尽管使用 API 查询 `dvh1.08.07` 时仍会返回"不支持")，不支持 IPTPQc2 的单层杜比视界（Profile 5），不支持双层杜比视界，不支持杜比视界全景声（E-AC3）。
@@ -267,6 +234,8 @@ Electron >= v20.0.0 (Chromium >= v104.0.5084.0) 已集成好 Mac, Windows 平台
 Electron < v20.0.0 版本，请点开 `追踪进度` 内的提交记录，自己手动 CV 大法集成，欢迎提交不同版本的 Patch PR到本项目。
 
 ## 更新历史
+
+`2022-10-25` Chrome >= 107 默认支持 + Windows平台 WebCodec 支持 HEVC 编码
 
 `2022-10-11` 支持 Linux HEVC 硬解 (Chrome >= `108.0.5354.0`)
 
