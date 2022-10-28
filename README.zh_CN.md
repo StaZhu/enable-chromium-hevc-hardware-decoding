@@ -6,11 +6,8 @@
 
 ## 启动方式
 
-#### Chrome & Chromium
+#### Chrome & Edge (Mac) & Chromium
 确保版本号 >= 107, 双击打开。
-
-#### Edge (Mac)
-解压缩引导文件 [Microsoft Edge with HEVC.app.zip](./resources/Microsoft%20Edge%20with%20HEVC.app.zip)，并拖拽 `Microsoft Edge with HEVC.app` 到 `应用程序` 目录后，双击打开。
 
 ## 支持硬解哪些Profile？
 
@@ -234,6 +231,8 @@ Electron >= v20.0.0 (Chromium >= v104.0.5084.0) 已集成好 Mac, Windows 平台
 Electron < v20.0.0 版本，请点开 `追踪进度` 内的提交记录，自己手动 CV 大法集成，欢迎提交不同版本的 Patch PR到本项目。
 
 ## 更新历史
+
+`2022-10-28` Edge (Mac) >= 107 默认支持
 
 `2022-10-25` Chrome >= 107 默认支持 + Windows平台 WebCodec 支持 HEVC 编码
 

@@ -6,11 +6,8 @@ A guide that teach you enable hardware HEVC decoding for Chrome / Edge, or build
 
 ## Usage
 
-#### Chrome & Chromium
+#### Chrome & Edge (Mac) & Chromium
 Make sure version >= 107 then open directly.
-
-#### Edge (Mac)
-Unzip the file [Microsoft Edge with HEVC.app.zip](./resources/Microsoft%20Edge%20with%20HEVC.app.zip), then drag `Microsoft Edge with HEVC.app` to `Applications` directory and open directly.
 
 ## What's the hardware supported HEVC profile?
 
@@ -234,6 +231,8 @@ If Electron >= v20.0.0 (Chromium >= v104.0.5084.0), the HEVC hw decoding feature
 If Electron < v20.0.0, please follow the CL in `Trace Crbug` to manually integrate HEVC features. Pull request of Patches for different version of Electron are welcome.
 
 ## Change Log
+
+`2022-10-28` Edge (Mac) >= 107 enable by default.
 
 `2022-10-25` Chrome >= 107 enable by default + Windows WebCodec Encode support.
 
