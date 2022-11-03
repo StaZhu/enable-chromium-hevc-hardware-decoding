@@ -49,7 +49,7 @@ Linux (version >= `108.0.5354.0`)
 
 视频解码：支持 File, Media Source Extensions, WebCodec (8Bit >= `107.0.5272.0`, 10Bit + HEVC with Alpha >= `108.0.5343.0`), Clearkey Encrypted Media Extensions, 不支持 WebRTC。
 
-视频编码：支持 WebCodec (目前仅支持 Windows，需要传启动参数：`--enable-feautures=MediaFoundationHEVCEncoding`, 并确保浏览器版本 >= `109.0.5366.0`)。
+视频编码：支持 WebCodec (目前仅支持 macOS 和 Windows，需要传启动参数：`--enable-feautures=PlatformHEVCEncoderSupport`, 并确保浏览器版本 >= `109.0.5397.0`)。
 
 ## GPU要求？
 
@@ -81,7 +81,7 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra 及以上
 | :--------------- | :------------- | :------------- | :-------------- | :-------------- |
 |  Chromium 107 macOS  |     ✅ (EDR)     |        ✅        |      ✅ (EDR)      |        ✅         |
 | Chromium 107 Windows |        ✅        |        ✅        |        ✅         |        ✅         |
-|   Edge 106 Windows   |        ❌        |        ✅        |        ✅         |        ✅         |
+|   Edge 107 Windows   |        ❌        |        ✅        |        ✅         |        ✅         |
 |   Safari 16.1 macOS   |     ✅ (EDR)     |        ✅        |      ✅ (EDR)      |        ✅         |
 
 ## 杜比视界支持？
@@ -231,6 +231,8 @@ Electron >= v20.0.0 (Chromium >= v104.0.5084.0) 已集成好 Mac, Windows 平台
 Electron < v20.0.0 版本，请点开 `追踪进度` 内的提交记录，自己手动 CV 大法集成，欢迎提交不同版本的 Patch PR到本项目。
 
 ## 更新历史
+
+`2022-11-03` macOS 平台 WebCodec 新增 HEVC 编码支持
 
 `2022-10-28` Edge (Mac) >= 107 默认支持
 

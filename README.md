@@ -49,7 +49,7 @@ Linux (version >= `108.0.5354.0`)
 
 Video Decode: File, Media Source Extensions, WebCodec (8Bit requires >= `107.0.5272.0`, 10Bit + HEVC with Alpha requires >= `108.0.5343.0`), Clearkey Encrypted Media Extensions are supported. WebRTC is not supported.
 
-Video Encode: WebCodec (Windows only currently, passing `--enable-feautures=MediaFoundationHEVCEncoding` and make sure browser >= `109.0.5366.0`) is supported.
+Video Encode: WebCodec (Windows and macOS only, passing `--enable-feautures=PlatformHEVCEncoderSupport` and make sure browser >= `109.0.5397.0`) is supported.
 
 ## What's the GPU requirement?
 
@@ -81,7 +81,7 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra and above
 | :-------------- | :------------- | :------------- | :-------------- | :-------------- |
 |  Chromium 107 macOS  |     ✅ (EDR)      |        ✅        |      ✅ (EDR)      |        ✅         |
 | Chromium 107 Windows |        ✅        |        ✅        |       ✅         |        ✅         |
-|   Edge 106 Windows   |        ❌        |        ✅        |       ✅        |        ✅         |
+|   Edge 107 Windows   |        ❌        |        ✅        |       ✅        |        ✅         |
 |   Safari 16.1 macOS   |     ✅ (EDR)      |        ✅        |      ✅ (EDR)      |        ✅         |
 
 ## Dolby Vision Supports?
@@ -231,6 +231,8 @@ If Electron >= v20.0.0 (Chromium >= v104.0.5084.0), the HEVC hw decoding feature
 If Electron < v20.0.0, please follow the CL in `Trace Crbug` to manually integrate HEVC features. Pull request of Patches for different version of Electron are welcome.
 
 ## Change Log
+
+`2022-11-03` Add macOS WebCodec HEVC encode support.
 
 `2022-10-28` Edge (Mac) >= 107 enable by default.
 
