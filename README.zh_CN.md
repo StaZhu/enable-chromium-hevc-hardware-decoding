@@ -1,15 +1,16 @@
 # enable-chromium-hevc-hardware-decoding
 
-一个教你为 Chrome / Edge 启用 HEVC 硬解，或编译 Chromium / Electron 使其支持 HEVC 硬 & 软解功能的教程。
+一个教你为 Chrome / Edge 启用 HEVC 硬解码 & 硬编码，或编译 Chromium / Electron 使其支持 HEVC 硬、软解码 & 硬编码功能的教程。
 
 ##### 简体中文 | [English](./README.md)
 
 ## 启动方式
 
 #### Chrome & Edge (Mac) & Chromium
+
 确保版本号 >= 107, 双击打开。
 
-## 支持硬解哪些Profile？
+## 支持硬解码哪些Profile？
 
 HEVC Main (最高支持 8192x8192 px)
 
@@ -33,6 +34,12 @@ HEVC Rext (部分支持，细节见下表，最高支持 8192x8192 px)
 #### 注2：Intel 10代及以后的 GPU 支持硬解 HEVC Rext，如果需要使用这部分能力，须确保 Chromium 版本号 >= 106.0.5210.0。有一些Profile并不是很常见因此暂时没有支持，如果你有支持他们的需要且确保显卡支持，可以在 `crbug.com` 提交issue。
 #### 注3：尽管 NVIDIA GPU 支持 8 ~ 12b 非 422 HEVC Rext CUVIA 或 NVDEC 硬解码，但由于NVIDIA 没有给 D3D11 接口暴露这部分能力，因此 Chromium 以后也不会支持它们。
 
+## 支持硬编码哪些Profile？
+
+HEVC Main (仅 macOS & Windows, macOS 最高支持 4096x2304 px & 120 fps, Windows 最高支持 1920*1088 px & 30 fps)
+
+#### 注1：Chrome Media Team 在 2022 年还没有计划在所有平台支持 HEVC 硬编码，因此只能通过 Chrome Switch（`--enable-features=PlatformHEVCEncoderSupport`）的方式测试使用，并需要确保 Chrome 版本号 >= `109.0.5397.0`。[测试页面](https://webrtc.internaut.com/wc/wcWorker2/)。
+
 ## 操作系统要求？
 
 macOS Big Sur (11.0) 及以上
@@ -41,15 +48,15 @@ Windows 8 及以上
 
 Android
 
-Chrome OS
+Chrome OS (仅支持 VAAPI 接口支持的 GPU，比如：Intel 核显)
 
-Linux (version >= `108.0.5354.0`)
+Linux (版本号须 >= `108.0.5354.0`, 仅支持 VAAPI 接口支持的 GPU，比如：Intel 核显)
 
 ## 支持哪些 API？
 
 视频解码：支持 File, Media Source Extensions, WebCodec (8Bit >= `107.0.5272.0`, 10Bit + HEVC with Alpha >= `108.0.5343.0`), Clearkey Encrypted Media Extensions, 不支持 WebRTC。
 
-视频编码：支持 WebCodec (目前仅支持 macOS 和 Windows，需要传启动参数：`--enable-feautures=PlatformHEVCEncoderSupport`, 并确保浏览器版本 >= `109.0.5397.0`)。
+视频编码：支持 WebCodec (目前仅支持 macOS 和 Windows，需要传启动参数：`--enable-features=PlatformHEVCEncoderSupport`, 并确保浏览器版本 >= `109.0.5397.0`)。
 
 ## GPU要求？
 
@@ -232,7 +239,7 @@ Electron < v20.0.0 版本，请点开 `追踪进度` 内的提交记录，自己
 
 ## 更新历史
 
-`2022-11-03` macOS 平台 WebCodec 新增 HEVC 编码支持
+`2022-11-03` macOS 平台 WebCodec 新增 HEVC 编码支持，Windows 平台 HDR -> SDR 情况显存占用降低了 50%，Windows 平台提升了 HDR Tone Mapping 的色彩准确度
 
 `2022-10-28` Edge (Mac) >= 107 默认支持
 

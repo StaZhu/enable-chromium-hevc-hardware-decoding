@@ -1,15 +1,16 @@
 # enable-chromium-hevc-hardware-decoding
 
-A guide that teach you enable hardware HEVC decoding for Chrome / Edge, or build a custom version of Chromium / Electron that supports hardware & software HEVC decoding.
+A guide that teach you enable hardware HEVC decoding & encoding for Chrome / Edge, or build a custom version of Chromium / Electron that supports hardware & software HEVC decoding and hardware HEVC encoding.
 
 ##### English | [简体中文](./README.zh_CN.md)
 
 ## Usage
 
 #### Chrome & Edge (Mac) & Chromium
+
 Make sure version >= 107 then open directly.
 
-## What's the hardware supported HEVC profile?
+## What's the hardware decoding supported HEVC profile?
 
 HEVC Main (Up to 8192x8192 pixels)
 
@@ -33,6 +34,12 @@ HEVC Rext (Partial support, see the table below for details, up to 8192x8192 pix
 #### Note 2：Specific Intel GPU supports HEVC Rext hardware decoding on Windows, so if you want to use these profiles then Chromium version must be >= 106.0.5210.0. Some profiles are not common so we only implement part of them, if you need those unsupported profile that GPU do supports, then you can submit a issue to `crbug.com`.
 #### Note 3：Although NVIDIA GPU supports HEVC Rext hardware decoding of 8 ~ 12b non-422 contents via CUVIA or NVDEC, but because they did not provide a D3D11 interface, thus Chromium will not support it in the future.
 
+## What's the hardware encoding supported HEVC profile?
+
+HEVC Main (macOS & Windows only, macOS up to 4096x2304 px & 120 fps, Windows up to 1920*1088 px & 30 fps)
+
+#### Note 1: Chrome Media Team has no plan to support HEVC encoding in 2022, thus if you want to use this feature, the only way is passing a chrome switch to enable it（`--enable-features=PlatformHEVCEncoderSupport`）, and need to make sure Chrome version >= `109.0.5397.0`. [Test Page](https://webrtc.internaut.com/wc/wcWorker2/).
+
 ## What's the OS requirement?
 
 macOS Big Sur (11.0) and above
@@ -41,15 +48,15 @@ Windows 8 and above
 
 Android
 
-Chrome OS
+Chrome OS (Only supports GPUs that support VAAPI interface, eg: Intel GPU)
 
-Linux (version >= `108.0.5354.0`)
+Linux (Chrome version >= `108.0.5354.0`, and only supports GPUs that support VAAPI interface, eg: Intel GPU)
 
 ## What's the API supported?
 
 Video Decode: File, Media Source Extensions, WebCodec (8Bit requires >= `107.0.5272.0`, 10Bit + HEVC with Alpha requires >= `108.0.5343.0`), Clearkey Encrypted Media Extensions are supported. WebRTC is not supported.
 
-Video Encode: WebCodec (Windows and macOS only, passing `--enable-feautures=PlatformHEVCEncoderSupport` and make sure browser >= `109.0.5397.0`) is supported.
+Video Encode: WebCodec (Windows and macOS only, passing `--enable-features=PlatformHEVCEncoderSupport` and make sure browser >= `109.0.5397.0`) is supported.
 
 ## What's the GPU requirement?
 
@@ -232,11 +239,11 @@ If Electron < v20.0.0, please follow the CL in `Trace Crbug` to manually integra
 
 ## Change Log
 
-`2022-11-03` Add macOS WebCodec HEVC encode support.
+`2022-11-03` Add macOS WebCodec HEVC encode support, decrease 50% GPU memory usage when playing HDR content on SDR screen on Windows, and improved HDR tone mapping color accuracy on Windows as well
 
-`2022-10-28` Edge (Mac) >= 107 enable by default.
+`2022-10-28` Edge (Mac) >= 107 enable by default
 
-`2022-10-25` Chrome >= 107 enable by default + Windows WebCodec Encode support.
+`2022-10-25` Chrome >= 107 enable by default + Windows WebCodec Encode support
 
 `2022-10-11` Add Linux HEVC HW decoding support (Chrome >= `108.0.5354.0`)
 
