@@ -227,7 +227,7 @@ Safari 和 Chromium 二者均使用 `VideoToolbox` 解码器完成硬解。
 2. (可选) 支持 HEVC 软解：切换到 `src/third_party/ffmpeg` 目录，执行 `git am /path/to/add-hevc-ffmpeg-decoder-parser.patch` 。如果有冲突，也可尝试使用 `node /path/to/add-hevc-ffmpeg-decoder-parser.js` 直接修改代码（需要确保Node.js已安装再执行该命令）。
 3. (可选) 支持 Main / Main10 以外的其他 HEVC Profile： 切换到 `src` 目录，执行 `git am /path/to/remove-main-main10-profile-limit.patch`。
 4. (可选) 集成 Widevine CDM，以支持 EME 加密视频 (例：Netflix) 播放：切换到 `src` 目录，执行 `cp -R /path/to/widevine/* third_party/widevine/cdm` (Windows 请执行: `xcopy /path/to/widevine third_party\widevine\cdm /E/H`)。
-5. 假设你想编译 `Mac` + `x64` 架构（其他可选的架构有：`x86`, `arm64`, `arm`）+ 支持 CDM 的 Chromium，请执行 `gn gen out/Release64 --args="is_component_build = false is_official_build = true is_debug = false ffmpeg_branding = \"Chrome\" target_cpu = \"x64\" proprietary_codecs = true media_use_ffmpeg = true enable_widevine = true bundle_widevine_cdm = true enable_platform_hevc = true enable_hevc_parser_and_hw_decoder = true"`，如果想编译 `Windows`，请额外添加 `enable_media_foundation_widevine_cdm = true`，如果想编译 `Windows` 且目标架构为 `arm64`，请将 `bundle_widevine_cdm` 改为 `false`。
+5. 假设你想编译 `Mac` + `x64` 架构（其他可选的架构有：`x86`, `arm64`, `arm`）+ 支持 CDM 的 Chromium，请执行 `gn gen out/Release64 --args="is_component_build = false is_official_build = true is_debug = false ffmpeg_branding = \"Chrome\" target_cpu = \"x64\" proprietary_codecs = true media_use_ffmpeg = true enable_widevine = true bundle_widevine_cdm = true"`，如果想编译 `Windows`，请额外添加 `enable_media_foundation_widevine_cdm = true`。
 6. 执行 `autoninja -C out/Release64 chrome` 以开始编译。
 7. 双击打开 Chromium。
 
