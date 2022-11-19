@@ -239,6 +239,8 @@ If Electron < v20.0.0, please follow the CL in `Trace Crbug` to manually integra
 
 ## Change Log
 
+`2022-11-18` Fix a bug if D3D11VideoDecoder is disabled by gpu workaround, support detection API still report "supported" (M110, M109)
+
 `2022-11-03` Add macOS WebCodec HEVC encode support, decrease 50% GPU memory usage when playing HDR content on SDR screen on Windows, and improved HDR tone mapping color accuracy on Windows as well
 
 `2022-10-28` Edge (Mac) >= 107 enable by default

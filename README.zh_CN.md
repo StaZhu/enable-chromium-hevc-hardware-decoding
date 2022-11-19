@@ -239,6 +239,8 @@ Electron < v20.0.0 版本，请点开 `追踪进度` 内的提交记录，自己
 
 ## 更新历史
 
+`2022-11-18` 修复当 D3D11VideoDecoder 被 GPU Workaround 禁用时, 检测 API 仍返回 ”支持“ 的 Bug (M110, M109)
+
 `2022-11-03` macOS 平台 WebCodec 新增 HEVC 编码支持，Windows 平台 HDR -> SDR 情况显存占用降低了 50%，Windows 平台提升了 HDR Tone Mapping 的色彩准确度
 
 `2022-10-28` Edge (Mac) >= 107 默认支持
