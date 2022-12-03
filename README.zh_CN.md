@@ -86,8 +86,8 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra 及以上
 
 |                  | PQ (SDR Screen) | PQ (HDR Screen) | HLG (SDR Screen) | HLG (HDR Screen) |
 | :--------------- | :------------- | :------------- | :-------------- | :-------------- |
-|  Chromium 107 macOS  |     ✅ (EDR)     |        ✅        |      ✅ (EDR)      |        ✅         |
-| Chromium 107 Windows |        ✅        |        ✅        |        ✅         |        ✅         |
+|  Chrome 108 macOS  |     ✅ (EDR)     |        ✅        |      ✅ (EDR)      |        ✅         |
+| Chrome 108 Windows |        ✅        |        ✅        |        ✅         |        ✅         |
 |   Edge 107 Windows   |        ❌        |        ✅        |        ✅         |        ✅         |
 |   Safari 16.1 macOS   |     ✅ (EDR)     |        ✅        |      ✅ (EDR)      |        ✅         |
 
@@ -234,11 +234,11 @@ Safari 和 Chromium 二者均使用 `VideoToolbox` 解码器完成硬解。
 
 ## 如何集成到 Electron 等基于 Chromium 的项目？
 
-Electron >= v20.0.0 (Chromium >= v104.0.5084.0) 已集成好 Mac, Windows 平台的 HEVC 硬解功能，在启动时执行 `app.commandLine.appendSwitch('enable-features', 'PlatformHEVCDecoderSupport')` 即可启用硬解。若要集成软解，方法同上述 Chromium 教程相同。
-
-Electron < v20.0.0 版本，请点开 `追踪进度` 内的提交记录，自己手动 CV 大法集成，欢迎提交不同版本的 Patch PR到本项目。
+Electron >= v22.0.0 已集成好 macOS, Windows, 和 Linux (仅 VAAPI) 平台的 HEVC 硬解功能，且开箱即用。若要集成软解，方法同上述 Chromium 教程相同。
 
 ## 更新历史
+
+`2022-12-03` 修复了 SEI 可能提取不完整的问题，支持了同时从比特流和封装容器提取 HDR Metadata (静态元数据）的能力。上述两点最终可解决了部分 HDR10 视频提取不到静态元数据的问题，并确保 HDR 效果效果最佳 (Chrome >= `110.0.5456.0`)
 
 `2022-11-18` 修复当 D3D11VideoDecoder 被 GPU Workaround 禁用时, 检测 API 仍返回 ”支持“ 的 Bug (M110, M109)
 

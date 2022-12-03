@@ -86,8 +86,8 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra and above
 
 |                  | PQ (SDR Screen) | PQ (HDR Screen) | HLG (SDR Screen) | HLG (HDR Screen) |
 | :-------------- | :------------- | :------------- | :-------------- | :-------------- |
-|  Chromium 107 macOS  |     ✅ (EDR)      |        ✅        |      ✅ (EDR)      |        ✅         |
-| Chromium 107 Windows |        ✅        |        ✅        |       ✅         |        ✅         |
+|  Chrome 108 macOS  |     ✅ (EDR)      |        ✅        |      ✅ (EDR)      |        ✅         |
+| Chrome 108 Windows |        ✅        |        ✅        |       ✅         |        ✅         |
 |   Edge 107 Windows   |        ❌        |        ✅        |       ✅        |        ✅         |
 |   Safari 16.1 macOS   |     ✅ (EDR)      |        ✅        |      ✅ (EDR)      |        ✅         |
 
@@ -234,11 +234,11 @@ Some GPU hardware may has bug which will cause `D3D11VideoDecoder` forbidden to 
 
 ## How to integrate this into Chromium based project like Electron?
 
-If Electron >= v20.0.0 (Chromium >= v104.0.5084.0), the HEVC hw decoding feature for Mac and Windows should have already been integrated, and you can use `app.commandLine.appendSwitch('enable-features', 'PlatformHEVCDecoderSupport')` to enable HEVC hw decoding. To add HEVC ffmpeg sw decoding, the method should be the same with Chromium guide above.
-
-If Electron < v20.0.0, please follow the CL in `Trace Crbug` to manually integrate HEVC features. Pull request of Patches for different version of Electron are welcome.
+If Electron >= v22.0.0, the HEVC HW decoding feature for macOS, Windows, and Linux (VAAPI only) should have already been integrated. To add HEVC SW decoding, the method should be the same with Chromium guide above.
 
 ## Change Log
+
+`2022-12-03` Fixed the incomplete SEI parsing logic, and supported the extraction of HDR Metadata both from the bitstream and container. This will solved the problem that some HDR10 videos could not extract static hdr metadata and guarantee the best HDR performance (Chrome >= `110.0.5456.0`)
 
 `2022-11-18` Fix a bug if D3D11VideoDecoder is disabled by gpu workaround, support detection API still report "supported" (M110, M109)
 
