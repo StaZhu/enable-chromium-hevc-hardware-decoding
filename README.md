@@ -88,8 +88,11 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra and above
 | :-------------- | :------------- | :------------- | :-------------- | :-------------- |
 |  Chrome 108 macOS  |     ✅ (EDR)      |        ✅        |      ✅ (EDR)      |        ✅         |
 | Chrome 108 Windows |        ✅        |        ✅        |       ✅         |        ✅         |
-|   Edge 107 Windows   |        ❌        |        ✅        |       ✅        |        ✅         |
-|   Safari 16.1 macOS   |     ✅ (EDR)      |        ✅        |      ✅ (EDR)      |        ✅         |
+|   Edge 108 Windows   |        ❌        |        ✅        |       ✅        |        ✅         |
+|   Safari 16.2 macOS   |     ✅ (EDR)      |        ✅        |      ✅ (EDR)      |        ✅         |
+
+#### Note 1: Due to the limitation of GPU driver capability, Chrome's PQ support is limited to static metadata only, the dynamic metadata of HDR10+ is currently ignored.
+#### Note 2: The feature of extracting static metadata and submitting to the GPU driver is initially supported in Chrome 108 and fully supported in Chrome 110.
 
 ## Dolby Vision Supports?
 Support HLG、PQ backward compatibility single layer dolby vision (Profile 8.1, 8.2, 8.4, although when using API query `dvh1.08.07`, it still return "not supported"), not support IPTPQc2 single layer dolby vision (Profile 5), not support multi layer dolby vision, not support dolby atmos audio (E-AC3).
@@ -179,7 +182,7 @@ if (video.canPlayType('video/mp4;codecs="hev1.4.10.L120.90"') === 'probably') {
 }
 ```
 
-#### Note 1：The above three API have already took `--disable-gpu`, `--disable-accelerated-video-decode`, `gpu-workaround`, `settings - system - Use hardware acceleration when available`, `OS version` etc... into consideration, and if Chrome version >= `107.0.5304.0` and OS is macOS or Windows, the result are guaranteed.
+#### Note 1：The above three API have already took `--disable-gpu`, `--disable-accelerated-video-decode`, `gpu-workaround`, `settings - system - Use hardware acceleration when available`, `OS version` etc... into consideration, and if Chrome version >= `107.0.5304.0` (There is a bug in Chrome 108 and previous versions on Windows platform. If a specific GPU driver version causes D3D11VideoDecoder to be disabled for some reason, although the hardware decoding is no longer available, APIs such as isTypeSupported may still return "support", the bug has been fixed in the upcoming Chrome 109) and OS is macOS or Windows, the result are guaranteed.
 #### Note 2：Compared with `MediaSource.isTypeSupported()` or `CanPlayType()`, we recommand using `MediaCapabilities`, since `MediaCapabilities` not only takes `settings - system - Use hardware acceleration when available` etc... into consideration, but also check if the given `width and height` is supported or not since different GPU may have different max resolution support, eg: some AMD GPU only support up to 4096 * 2048, and some old GPU only support up to 1080P.
 
 ## What's the tech diff? (Compared with Edge / Safari)

@@ -88,8 +88,11 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra 及以上
 | :--------------- | :------------- | :------------- | :-------------- | :-------------- |
 |  Chrome 108 macOS  |     ✅ (EDR)     |        ✅        |      ✅ (EDR)      |        ✅         |
 | Chrome 108 Windows |        ✅        |        ✅        |        ✅         |        ✅         |
-|   Edge 107 Windows   |        ❌        |        ✅        |        ✅         |        ✅         |
-|   Safari 16.1 macOS   |     ✅ (EDR)     |        ✅        |      ✅ (EDR)      |        ✅         |
+|   Edge 108 Windows   |        ❌        |        ✅        |        ✅         |        ✅         |
+|   Safari 16.2 macOS   |     ✅ (EDR)     |        ✅        |      ✅ (EDR)      |        ✅         |
+
+#### 注1：由于 GPU 驱动能力限制，Chrome 的 PQ 支持，仅限于静态元数据, HDR10+ 的动态元数据目前会被忽略。
+#### 注2：静态元数据提取与提交显卡驱动的功能，在 Chrome 108 首次支持，在 Chrome 110 完整支持。
 
 ## 杜比视界支持？
 支持兼容HLG、PQ的单层杜比视界（Profile 8.1, 8.2, 8.4, 尽管使用 API 查询 `dvh1.08.07` 时仍会返回"不支持")，不支持 IPTPQc2 的单层杜比视界（Profile 5），不支持双层杜比视界，不支持杜比视界全景声（E-AC3）。
@@ -179,7 +182,7 @@ if (video.canPlayType('video/mp4;codecs="hev1.4.10.L120.90"') === 'probably') {
 }
 ```
 
-#### 注1：上述三种 API 均已经将 `--disable-gpu`, `--disable-accelerated-video-decode`，`gpu-workaround`，`设置-系统-使用硬件加速模式（如果可用）`，`操作系统版本号` 等影响因素考虑在内了，只要确保 Chrome 版本号 >= `107.0.5304.0`，且系统是 macOS 或 Windows，则可保证结果准确性。
+#### 注1：上述三种 API 均已经将 `--disable-gpu`, `--disable-accelerated-video-decode`，`gpu-workaround`，`设置-系统-使用硬件加速模式（如果可用）`，`操作系统版本号` 等影响因素考虑在内了，只要确保 Chrome 版本号 >= `107.0.5304.0` (Windows 平台 Chrome 108 及之前版本存在一个 Bug，如果设备特定的GPU驱动程序版本因为一些原因导致 D3D11VideoDecoder 被禁用，尽管硬解已不可用，但此时 isTypeSupported 等 API 仍然会返回 “支持”，该问题已在即将到来的 Chrome 109 修复), 且系统是 macOS 或 Windows，则可保证结果准确性。
 #### 注2：相比 `MediaSource.isTypeSupported()` 或 `CanPlayType()`，更推荐使用 `MediaCapabilities`，`MediaCapabilities` 除了会将 `设置-系统-使用硬件加速模式（如果可用）` 等等上述影响因素加入考虑外，还会考虑 `视频分辨率` 是否支持，不同的 GPU 所支持的最高分辨率是不一样的，比如部分 AMD GPU 最高只支持到 4096 * 2048，一些老的 GPU 只能支持到 1080P。
 
 ## 技术实现区别？(与Edge / Safari的对比)
