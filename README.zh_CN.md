@@ -22,9 +22,9 @@ HEVC Rext (部分支持，细节见下表，最高支持 8192x8192 px)
 
 |        GPU             | 8b 420 | 8b 422 | 8b 444 | 10b 420 | 10b 422 | 10b 444 | 12b 420 | 12b 422 | 12b 444 |
 | :--------------------- | :----- | :----- | :----- | :------ | :------ | :------ | :------ | :------ | :------ |
-|  Apple Silicon (macOS) |   ✅  |   ✅   |   ✅  |    ✅   |   ✅   |   ✅    |   ❌   |   ❌    |   ❌   |
-| Intel ICL ~ TGLx (Win) |   ✅  |   ⭕   |   ⭕  |    ✅   |   ✅   |   ✅    |   ❌   |   ❌    |   ❌   |
-|    Intel TGLx+ (Win)   |   ✅  |   ⭕   |   ⭕  |    ✅   |   ✅   |   ✅    |   ✅   |   ⭕    |   ⭕   |
+|  Apple Silicon (macOS) |   ✅    |   ✅   |   ✅   |    ✅   |    ✅    |    ✅   |    ❌   |    ❌    |    ❌   |
+| Intel ICL ~ TGLx (Win) |   ✅    |   ⭕   |   ⭕   |    ✅   |    ✅    |    ✅   |    ❌   |    ❌    |    ❌   |
+|    Intel TGLx+ (Win)   |   ✅    |   ⭕   |   ⭕   |    ✅   |    ✅    |    ✅   |    ✅   |    ⭕    |    ⭕   |
 
 ✅：显卡+软件都支持
 ⭕：显卡支持，软件未实现
@@ -85,11 +85,12 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra 及以上
 ## HDR 支持？(与Edge / Safari的对比)
 
 |                  | PQ (SDR Screen) | PQ (HDR Screen) | HLG (SDR Screen) | HLG (HDR Screen) |
-| :--------------- | :------------- | :------------- | :-------------- | :-------------- |
-|  Chrome 108 macOS  |     ✅ (EDR)     |        ✅        |      ✅ (EDR)      |        ✅         |
-| Chrome 108 Windows |        ✅        |        ✅        |        ✅         |        ✅         |
-|   Edge 108 Windows   |        ❌        |        ✅        |        ✅         |        ✅         |
-|   Safari 16.2 macOS   |     ✅ (EDR)     |        ✅        |      ✅ (EDR)      |        ✅         |
+| :----------------- | :--------------  | :------------- | :-------------- | :-------------- |
+|  Chrome 109 macOS  |     ✅ (EDR)     |       ✅       |      ✅ (EDR)    |        ✅       |
+| Chrome 109 Windows |        ✅        |       ✅       |        ✅        |        ✅       |
+|   Edge 109 macOS   |     ✅ (EDR)     |       ✅       |        ✅        |        ✅       |
+|  Edge 109 Windows  |        ❌        |       ✅       |        ✅        |        ✅       |
+| Safari 16.2 macOS  |     ✅ (EDR)     |       ✅       |      ✅ (EDR)    |        ✅       |
 
 #### 注1：由于 GPU 驱动能力限制，Chrome 的 PQ 支持，仅限于静态元数据, HDR10+ 的动态元数据目前会被忽略。
 #### 注2：静态元数据提取与提交显卡驱动的功能，在 Chrome 108 首次支持，在 Chrome 110 完整支持。

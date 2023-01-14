@@ -22,9 +22,9 @@ HEVC Rext (Partial support, see the table below for details, up to 8192x8192 pix
 
 |        GPU             | 8b 420 | 8b 422 | 8b 444 | 10b 420 | 10b 422 | 10b 444 | 12b 420 | 12b 422 | 12b 444 |
 | :--------------------- | :----- | :----- | :----- | :------ | :------ | :------ | :------ | :------ | :------ |
-|  Apple Silicon (macOS) |   ✅  |   ✅   |   ✅  |    ✅   |   ✅   |   ✅    |   ❌   |   ❌    |   ❌   |
-| Intel ICL ~ TGLx (Win) |   ✅  |   ⭕   |   ⭕  |    ✅   |   ✅   |   ✅    |   ❌   |   ❌    |   ❌   |
-|    Intel TGLx+ (Win)   |   ✅  |   ⭕   |   ⭕  |    ✅   |   ✅   |   ✅    |   ✅   |   ⭕    |   ⭕   |
+|  Apple Silicon (macOS) |   ✅    |   ✅   |   ✅   |    ✅   |    ✅    |    ✅   |    ❌   |    ❌    |    ❌   |
+| Intel ICL ~ TGLx (Win) |   ✅    |   ⭕   |   ⭕   |    ✅   |    ✅    |    ✅   |    ❌   |    ❌    |    ❌   |
+|    Intel TGLx+ (Win)   |   ✅    |   ⭕   |   ⭕   |    ✅   |    ✅    |    ✅   |    ✅   |    ⭕    |    ⭕   |
 
 ✅：GPU + software support
 ⭕：GPU support, software not support
@@ -85,11 +85,12 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra and above
 ## HDR Supports? (Compared with Edge / Safari)
 
 |                  | PQ (SDR Screen) | PQ (HDR Screen) | HLG (SDR Screen) | HLG (HDR Screen) |
-| :-------------- | :------------- | :------------- | :-------------- | :-------------- |
-|  Chrome 108 macOS  |     ✅ (EDR)      |        ✅        |      ✅ (EDR)      |        ✅         |
-| Chrome 108 Windows |        ✅        |        ✅        |       ✅         |        ✅         |
-|   Edge 108 Windows   |        ❌        |        ✅        |       ✅        |        ✅         |
-|   Safari 16.2 macOS   |     ✅ (EDR)      |        ✅        |      ✅ (EDR)      |        ✅         |
+| :----------------- | :--------------  | :------------- | :-------------- | :-------------- |
+|  Chrome 109 macOS  |     ✅ (EDR)     |       ✅       |      ✅ (EDR)    |        ✅       |
+| Chrome 109 Windows |        ✅        |       ✅       |        ✅        |        ✅       |
+|   Edge 109 macOS   |     ✅ (EDR)     |       ✅       |      ✅ (EDR)    |        ✅       |
+|  Edge 109 Windows  |        ❌        |       ✅       |        ✅        |        ✅       |
+| Safari 16.2 macOS  |     ✅ (EDR)     |       ✅       |      ✅ (EDR)    |        ✅       |
 
 #### Note 1: Due to the limitation of GPU driver capability, Chrome's PQ support is limited to static metadata only, the dynamic metadata of HDR10+ is currently ignored.
 #### Note 2: The feature of extracting static metadata and submitting to the GPU driver is initially supported in Chrome 108 and fully supported in Chrome 110.
