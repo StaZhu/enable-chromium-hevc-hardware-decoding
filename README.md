@@ -30,15 +30,17 @@ HEVC Rext (Partial support, see the table below for details, up to 8192x8192 pix
 ⭕：GPU support, software not support
 ❌：GPU not support
 
-#### Note 1：Intel CPU Mac supports HEVC Rext software decoding of 8 ~ 12b 400, 420, 422, 444 contents via VideoToolbox.
-#### Note 2：Specific Intel GPU supports HEVC Rext hardware decoding on Windows, so if you want to use these profiles then Chromium version must be >= 106.0.5210.0. Some profiles are not common so we only implement part of them, if you need those unsupported profile that GPU do supports, then you can submit a issue to `crbug.com`.
-#### Note 3：Although NVIDIA GPU supports HEVC Rext hardware decoding of 8 ~ 12b non-422 contents via CUVIA or NVDEC, but because they did not provide a D3D11 interface, thus Chromium will not support it in the future.
+*Note 1：Intel CPU Mac supports HEVC Rext software decoding of 8 ~ 12b 400, 420, 422, 444 contents via VideoToolbox.*
+
+*Note 2：Specific Intel GPU supports HEVC Rext hardware decoding on Windows, so if you want to use these profiles then Chromium version must be >= 106.0.5210.0. Some profiles are not common so we only implement part of them, if you need those unsupported profile that GPU do supports, then you can submit a issue to `crbug.com`.*
+
+*Note 3：Although NVIDIA GPU supports HEVC Rext hardware decoding of 8 ~ 12b non-422 contents via CUVIA or NVDEC, but because they did not provide a D3D11 interface, thus Chromium will not support it in the future.*
 
 ## What's the hardware encoding supported HEVC profile?
 
 HEVC Main (macOS & Windows only, macOS up to 4096x2304 px & 120 fps, Windows up to 1920*1088 px & 30 fps)
 
-#### Note 1: Chrome Media Team has no plan to support HEVC encoding in 2022, thus if you want to use this feature, the only way is passing a chrome switch to enable it（`--enable-features=PlatformHEVCEncoderSupport`）, and need to make sure Chrome version >= `109.0.5397.0`. [Test Page](https://webrtc.internaut.com/wc/wcWorker2/).
+*Note 1: Chrome Media Team has no plan to support HEVC encoding in 2022, thus if you want to use this feature, the only way is passing a chrome switch to enable it（`--enable-features=PlatformHEVCEncoderSupport`）, and need to make sure Chrome version >= `109.0.5397.0`. [Test Page](https://webrtc.internaut.com/wc/wcWorker2/).*
 
 ## What's the OS requirement?
 
@@ -84,19 +86,35 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra and above
 
 ## HDR Supports? (Compared with Edge / Safari)
 
-|                  | PQ (SDR Screen) | PQ (HDR Screen) | HLG (SDR Screen) | HLG (HDR Screen) |
-| :----------------- | :--------------  | :------------- | :-------------- | :-------------- |
-|  Chrome 109 macOS  |     ✅ (EDR)     |       ✅       |      ✅ (EDR)    |        ✅       |
-| Chrome 109 Windows |        ✅        |       ✅       |        ✅        |        ✅       |
-|   Edge 109 macOS   |     ✅ (EDR)     |       ✅       |      ✅ (EDR)    |        ✅       |
-|  Edge 109 Windows  |        ❌        |       ✅       |        ✅        |        ✅       |
-| Safari 16.2 macOS  |     ✅ (EDR)     |       ✅       |      ✅ (EDR)    |        ✅       |
+|                 |   PQ     |   HDR10  |  HDR10+  |   HLG    |  DV P5   |  DV P8.1  |  DV P8.4    |
+| :-------------- | :------- | :------- | :------- | :------- |:-------- |:--------- |:----------- |
+| Chrome 109 Mac  |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
+| Chrome 109 Win  |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
+|  Edge 109 Mac   |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
+|  Edge 109 Win   |    ❌    |     ❌    |    ❌    |    ✅    |    ❌     |     ❌     |     ✅     |
+| Safari 16.2 Mac |    ✅    |     ✅    |    ✅    |    ✅    |    ✅     |     ✅     |     ✅     |
 
-#### Note 1: Due to the limitation of GPU driver capability, Chrome's PQ support is limited to static metadata only, the dynamic metadata of HDR10+ is currently ignored.
-#### Note 2: The feature of extracting static metadata and submitting to the GPU driver is initially supported in Chrome 108 and fully supported in Chrome 110.
+On Windows platform, Chrome supports PQ, HDR10 (PQ with static metadata), and HLG. Automatic Tone-mapping will be enabled based on static metadata (if present) when playing in SDR mode, and HDR static metadata will be submitted to the GPU in HDR mode. HDR10+ SEI dynamic metadata wil be ignored while decoding and playback will downgrad to HDR10. The decoding implementation of Edge is different from that of Chrome / Chromium, there is a problem of abnormal PQ HDR Tone-mapping when playing in SDR mode.
 
-## Dolby Vision Supports?
-Support HLG、PQ backward compatibility single layer dolby vision (Profile 8.1, 8.2, 8.4, although when using API query `dvh1.08.07`, it still return "not supported"), not support IPTPQc2 single layer dolby vision (Profile 5), not support multi layer dolby vision, not support dolby atmos audio (E-AC3).
+On macOS platform, Chrome supports PQ, HDR10 (PQ with static metadata), HLG. In SDR / HDR / Hybrid mode, the macOS system will automatically perform EDR to ensure that HDR is displayed correctly. Chrome / Edge shared the same code thus has the same decoding ability, Safari also supports the above all HDR formats.
+
+#### Dolby Vision Supports Status
+
+On Windows platoform, for encrypted Dolby Vision content, when Chrome >= 110, Profile 4/5/8 are supported, when passing the `--enable-features=PlatformEncryptedDolbyVision` switch to launch Chrome, and when the system has installed the Dolby Vision Extension + HEVC Video Extension, "Supported" will be returned when querying the API. For non-encrypted Dolby Vision content, the RPU dynamic metadata of Dolby Vision Profile 8.1/8.4 will be ignored when decoding, and played with HDR10 / HLG downgrade instead, and will return "not supported" when using API query (for example: `MediaSource. isTypeSupported('video/mp4;codecs="dvh1.08.07"')`), Profile 5 (IPTPQc2) is not supported, and the color will be abnormal during playback.
+
+On macOS platform, the non-encrypted Dolby Vision Profile 8.1/8.4 are supported, but "not supported" will still be returned when using the API query (for example: `MediaSource.isTypeSupported('video/mp4;codecs="dvh1.08.07"')`). Safari is the only browser that supports Profile 5. Chrome / Edge uses VideoToolbox to decode, and the test results show that directly using VideoToolbox can not decode Dolby Vision Profile 5 correctly, so Chrome / Edge doesn't support Dolby Vision Profile 5 for now.
+
+Neither of the platforms supports dual-layer Dolby Vision.
+
+#### HDR support by version of Chrome
+
+Chrome 107 does not support the ability to extract HEVC static metadata, and all HDR10 video playback are downgraded to PQ only mode. HLG videos uses the video processor API provided by the GPU vendor for processing tone-mapping has a poor performance on some laptops, and playing 4K video may cause frame droping.
+
+Chrome 108 supports the ability to extract HEVC static metadata. For videos with static metadata written in the container, the playback is okey on 108, but some videos are not written static metadata to their containers, thus Chrome 108 can not extract the static metadata from these videos which causing the playback to be downgraded to PQ only mode, and the max content light level maybe cutted to a low value for these videos. In addition, the HLG Tone-mapping algorithm on Windows platform has been switched to Chrome's own algorithm, which solves the problem of bad performance on the laptop when using video processor for HLG Tone-mapping. However, Chrome has been using 8 bit for Tone-mapping, which resulting an insufficient contrast ratio of the Tone-mapping result.
+
+Chrome 109 makes the HDR -> SDR process to a 16 bit + zero copy process, which improves the accuracy of PQ Tone-mapping on Windows platform, thus the problem of the insufficient contrast ratio for HLG has been also solved, and the video memory usage has been reduced by about 50%.
+
+Chrome 110 solves the problem of incomplete static metadata extraction. It supports the extraction of static metadata from both the bitstream and the container, thus the max content light level issue has been solved, and at this point all HDR issues have been resolved.
 
 ## How to verify certain profile or resolution is supported？
 
@@ -183,8 +201,9 @@ if (video.canPlayType('video/mp4;codecs="hev1.4.10.L120.90"') === 'probably') {
 }
 ```
 
-#### Note 1：The above three API have already took `--disable-gpu`, `--disable-accelerated-video-decode`, `gpu-workaround`, `settings - system - Use hardware acceleration when available`, `OS version` etc... into consideration, and if Chrome version >= `107.0.5304.0` (There is a bug in Chrome 108 and previous versions on Windows platform. If a specific GPU driver version causes D3D11VideoDecoder to be disabled for some reason, although the hardware decoding is no longer available, APIs such as isTypeSupported may still return "support", the bug has been fixed in the upcoming Chrome 109) and OS is macOS or Windows, the result are guaranteed.
-#### Note 2：Compared with `MediaSource.isTypeSupported()` or `CanPlayType()`, we recommand using `MediaCapabilities`, since `MediaCapabilities` not only takes `settings - system - Use hardware acceleration when available` etc... into consideration, but also check if the given `width and height` is supported or not since different GPU may have different max resolution support, eg: some AMD GPU only support up to 4096 * 2048, and some old GPU only support up to 1080P.
+*Note 1：The above three API have already took `--disable-gpu`, `--disable-accelerated-video-decode`, `gpu-workaround`, `settings - system - Use hardware acceleration when available`, `OS version` etc... into consideration, and if Chrome version >= `107.0.5304.0` (There is a bug in Chrome 108 and previous versions on Windows platform. If a specific GPU driver version causes D3D11VideoDecoder to be disabled for some reason, although the hardware decoding is no longer available, APIs such as isTypeSupported may still return "support", the bug has been fixed in Chrome 109) and OS is macOS or Windows, the result are guaranteed.*
+
+*Note 2：Compared with `MediaSource.isTypeSupported()` or `CanPlayType()`, we recommand using `MediaCapabilities`, since `MediaCapabilities` not only takes `settings - system - Use hardware acceleration when available` etc... into consideration, but also check if the given `width and height` is supported or not since different GPU may have different max resolution support, eg: some AMD GPU only support up to 4096 * 2048, and some old GPU only support up to 1080P.*
 
 ## What's the tech diff? (Compared with Edge / Safari)
 

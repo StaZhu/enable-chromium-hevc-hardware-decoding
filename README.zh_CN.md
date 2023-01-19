@@ -30,15 +30,17 @@ HEVC Rext (部分支持，细节见下表，最高支持 8192x8192 px)
 ⭕：显卡支持，软件未实现
 ❌：显卡不支持
 
-#### 注1：Intel CPU 的 Mac 支持 VideoToolbox 软解 HEVC Rext，8 ~ 12b 400, 420, 422, 444 的内容均可正常解码。
-#### 注2：Intel 10代及以后的 GPU 支持硬解 HEVC Rext，如果需要使用这部分能力，须确保 Chromium 版本号 >= 106.0.5210.0。有一些Profile并不是很常见因此暂时没有支持，如果你有支持他们的需要且确保显卡支持，可以在 `crbug.com` 提交issue。
-#### 注3：尽管 NVIDIA GPU 支持 8 ~ 12b 非 422 HEVC Rext CUVIA 或 NVDEC 硬解码，但由于NVIDIA 没有给 D3D11 接口暴露这部分能力，因此 Chromium 以后也不会支持它们。
+*注1：Intel CPU 的 Mac 支持 VideoToolbox 软解 HEVC Rext，8 ~ 12b 400, 420, 422, 444 的内容均可正常解码。*
+
+*注2：Intel 10代及以后的 GPU 支持硬解 HEVC Rext，如果需要使用这部分能力，须确保 Chromium 版本号 >= 106.0.5210.0。有一些Profile并不是很常见因此暂时没有支持，如果你有支持他们的需要且确保显卡支持，可以在 `crbug.com` 提交issue。*
+
+*注3：尽管 NVIDIA GPU 支持 8 ~ 12b 非 422 HEVC Rext CUVIA 或 NVDEC 硬解码，但由于NVIDIA 没有给 D3D11 接口暴露这部分能力，因此 Chromium 以后也不会支持它们。*
 
 ## 支持硬编码哪些Profile？
 
 HEVC Main (仅 macOS & Windows, macOS 最高支持 4096x2304 px & 120 fps, Windows 最高支持 1920*1088 px & 30 fps)
 
-#### 注1：Chrome Media Team 在 2022 年还没有计划在所有平台支持 HEVC 硬编码，因此只能通过 Chrome Switch（`--enable-features=PlatformHEVCEncoderSupport`）的方式测试使用，并需要确保 Chrome 版本号 >= `109.0.5397.0`。[测试页面](https://webrtc.internaut.com/wc/wcWorker2/)。
+*注1：Chrome Media Team 在 2022 年还没有计划在所有平台支持 HEVC 硬编码，因此只能通过 Chrome Switch（`--enable-features=PlatformHEVCEncoderSupport`）的方式测试使用，并需要确保 Chrome 版本号 >= `109.0.5397.0`。[测试页面](https://webrtc.internaut.com/wc/wcWorker2/)。*
 
 ## 操作系统要求？
 
@@ -84,19 +86,35 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra 及以上
 
 ## HDR 支持？(与Edge / Safari的对比)
 
-|                  | PQ (SDR Screen) | PQ (HDR Screen) | HLG (SDR Screen) | HLG (HDR Screen) |
-| :----------------- | :--------------  | :------------- | :-------------- | :-------------- |
-|  Chrome 109 macOS  |     ✅ (EDR)     |       ✅       |      ✅ (EDR)    |        ✅       |
-| Chrome 109 Windows |        ✅        |       ✅       |        ✅        |        ✅       |
-|   Edge 109 macOS   |     ✅ (EDR)     |       ✅       |        ✅        |        ✅       |
-|  Edge 109 Windows  |        ❌        |       ✅       |        ✅        |        ✅       |
-| Safari 16.2 macOS  |     ✅ (EDR)     |       ✅       |      ✅ (EDR)    |        ✅       |
+|                 |   PQ     |   HDR10  |  HDR10+  |   HLG    |  DV P5   |  DV P8.1  |  DV P8.4    |
+| :-------------- | :------- | :------- | :------- | :------- |:-------- |:--------- |:----------- |
+| Chrome 109 Mac  |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
+| Chrome 109 Win  |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
+|  Edge 109 Mac   |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
+|  Edge 109 Win   |    ❌    |     ❌    |    ❌    |    ✅    |    ❌     |     ❌     |     ✅     |
+| Safari 16.2 Mac |    ✅    |     ✅    |    ✅    |    ✅    |    ✅     |     ✅     |     ✅     |
 
-#### 注1：由于 GPU 驱动能力限制，Chrome 的 PQ 支持，仅限于静态元数据, HDR10+ 的动态元数据目前会被忽略。
-#### 注2：静态元数据提取与提交显卡驱动的功能，在 Chrome 108 首次支持，在 Chrome 110 完整支持。
+在 Windows 平台，Chrome 支持 PQ、HDR10 (含静态元数据的 PQ)、HLG，在 SDR 模式播放时会基于静态元数据（如果存在）自动进行 Tone-mapping，在 HDR 模式播放时会提交静态元数据到 GPU。HDR10+ 的 SEI 动态元数据在解码时会被忽略，并以 HDR10 降级播放。由于 Edge 的解码实现和 Chrome / Chromium 不同，在 SDR 模式播放时，存在 PQ HDR Tone-mapping 异常的问题。
 
-## 杜比视界支持？
-支持兼容HLG、PQ的单层杜比视界（Profile 8.1, 8.2, 8.4, 尽管使用 API 查询 `dvh1.08.07` 时仍会返回"不支持")，不支持 IPTPQc2 的单层杜比视界（Profile 5），不支持双层杜比视界，不支持杜比视界全景声（E-AC3）。
+在 macOS 平台，Chrome 支持 PQ、HDR10 (含静态元数据的 PQ)、HLG。在 SDR / HDR / 自动模式下，macOS 系统会自动进行 EDR 以确保 HDR 显示正确，Chrome / Edge 实现相同，支持情况一致，Safari 同样支持上述所有 HDR 格式。
+
+#### Dolby Vision 支持情况说明
+
+在 Windows 平台，对于加密杜比视界内容，Chrome >= 110时，支持 Profile 4/5/8，在传入 `--enable-features=PlatformEncryptedDolbyVision` 启动参数开启后，且系统已安装杜比视界插件 + HEVC视频扩展插件的情况下，使用 API 查询时会返回“支持”。对于非加密杜比视界内容，Dolby Vision Profile 8.1/8.4 的 RPU 动态元数据在解码时会被忽略，并以 HDR10 / HLG 降级播放, 使用 API 查询时会返回"不支持"（例如：`MediaSource.isTypeSupported('video/mp4;codecs="dvh1.08.07"')`），不支持 Profile 5（IPTPQc2），播放时会出现颜色异常。
+
+在 macOS 平台，支持非加密的杜比视界 Profile 8.1/8.4，但使用 API 查询时仍会返回"不支持"（例如：`MediaSource.isTypeSupported('video/mp4;codecs="dvh1.08.07"')`）。Safari 是唯一支持 Profile 5 的浏览器，Chrome / Edge 使用 VideoToolbox 解码，测试结果显示直接使用 VideoToolBox 解码并不能支持杜比视界 Profile 5，因此 Chrome / Edge 目前均不支持杜比视界 Profile 5。
+
+上述两个平台均不支持双层杜比视界。
+
+#### 不同版本 Chrome 的 HDR 支持情况
+
+Chrome 107 不支持提取 HEVC 静态元数据的能力，所有 HDR10 视频均以降级为 PQ 的方式播放。HLG 视频使用显卡厂商自带的 Video Processor API 进行 Tone-mapping，在部分笔记本上性能较差，播放 4K 视频可能会导致卡顿。
+
+Chrome 108 支持了提取 HEVC 静态元数据的能力，对于容器内写入元数据的视频，播放效果很好，但有部分视频由于静态元数据没有写入容器，由于提取不到静态元数据，导致这部分 HDR10 视频被降级为 PQ 视频播放，高光细节可能会缺失。此外 Windows 平台的 HLG Tone-mapping 算法切换为了 Chrome 自己的算法，解决了卡顿的问题，但 Chrome 一直使用 8bit 做 Tone-maping，这又导致 HLG Tone-mapping 结果存在对比度不足的问题。
+
+Chrome 109 开始，HDR -> SDR 流程切换为 16 bit + 零拷贝，提升了 Windows 下的 PQ Tone-mapping 的精准度，HLG 对比度不足问题也得以解决，还降低了大概 50% 的显存占用。
+
+Chrome 110 主要解决静态元数据提取不完整的问题，支持从比特流和容器同时提取静态元数据，部分 HDR10 视频在 macOS 和 Windows 下高光部分不够亮的问题得以解决，至此所有 HDR 问题均已解决。
 
 ## 如何验证特定 Profile, 分辨率的视频是否可以播放？
 
@@ -183,8 +201,9 @@ if (video.canPlayType('video/mp4;codecs="hev1.4.10.L120.90"') === 'probably') {
 }
 ```
 
-#### 注1：上述三种 API 均已经将 `--disable-gpu`, `--disable-accelerated-video-decode`，`gpu-workaround`，`设置-系统-使用硬件加速模式（如果可用）`，`操作系统版本号` 等影响因素考虑在内了，只要确保 Chrome 版本号 >= `107.0.5304.0` (Windows 平台 Chrome 108 及之前版本存在一个 Bug，如果设备特定的GPU驱动程序版本因为一些原因导致 D3D11VideoDecoder 被禁用，尽管硬解已不可用，但此时 isTypeSupported 等 API 仍然会返回 “支持”，该问题已在即将到来的 Chrome 109 修复), 且系统是 macOS 或 Windows，则可保证结果准确性。
-#### 注2：相比 `MediaSource.isTypeSupported()` 或 `CanPlayType()`，更推荐使用 `MediaCapabilities`，`MediaCapabilities` 除了会将 `设置-系统-使用硬件加速模式（如果可用）` 等等上述影响因素加入考虑外，还会考虑 `视频分辨率` 是否支持，不同的 GPU 所支持的最高分辨率是不一样的，比如部分 AMD GPU 最高只支持到 4096 * 2048，一些老的 GPU 只能支持到 1080P。
+*注1：上述三种 API 均已经将 `--disable-gpu`, `--disable-accelerated-video-decode`，`gpu-workaround`，`设置-系统-使用硬件加速模式（如果可用）`，`操作系统版本号` 等影响因素考虑在内了，只要确保 Chrome 版本号 >= `107.0.5304.0` (Windows 平台 Chrome 108 及之前版本存在一个 Bug，如果设备特定的GPU驱动程序版本因为一些原因导致 D3D11VideoDecoder 被禁用，尽管硬解已不可用，但此时 isTypeSupported 等 API 仍然会返回 “支持”，该问题已在 Chrome 109 修复), 且系统是 macOS 或 Windows，则可保证结果准确性。*
+
+*注2：相比 `MediaSource.isTypeSupported()` 或 `CanPlayType()`，更推荐使用 `MediaCapabilities`，`MediaCapabilities` 除了会将 `设置-系统-使用硬件加速模式（如果可用）` 等等上述影响因素加入考虑外，还会考虑 `视频分辨率` 是否支持，不同的 GPU 所支持的最高分辨率是不一样的，比如部分 AMD GPU 最高只支持到 4096 * 2048，一些老的 GPU 只能支持到 1080P。*
 
 ## 技术实现区别？(与Edge / Safari的对比)
 
@@ -242,7 +261,7 @@ Electron >= v22.0.0 已集成好 macOS, Windows, 和 Linux (仅 VAAPI) 平台的
 
 ## 更新历史
 
-`2022-12-03` 修复了 SEI 可能提取不完整的问题，支持了同时从比特流和封装容器提取 HDR Metadata (静态元数据）的能力。上述两点最终可解决了部分 HDR10 视频提取不到静态元数据的问题，并确保 HDR 效果效果最佳 (Chrome >= `110.0.5456.0`)
+`2022-12-03` 修复了 SEI 可能提取不完整的问题，支持了同时从比特流和封装容器提取 HDR Metadata (静态元数据）的能力。上述两点最终可解决了部分 HDR10 视频提取不到静态元数据的问题，并确保 HDR 效果最佳 (Chrome >= `110.0.5456.0`)
 
 `2022-11-18` 修复当 D3D11VideoDecoder 被 GPU Workaround 禁用时, 检测 API 仍返回 ”支持“ 的 Bug (M110, M109)
 
