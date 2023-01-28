@@ -125,6 +125,7 @@ function enableHevcConfig(filename) {
     .replace('define CONFIG_HEVC_DECODER 0', 'define CONFIG_HEVC_DECODER 1')
     .replace('define CONFIG_HEVC_PARSER 0', 'define CONFIG_HEVC_PARSER 1')
     .replace('define CONFIG_HEVCPARSE 0', 'define CONFIG_HEVCPARSE 1')
+    .replace('define CONFIG_HEVC_SEI 0', 'define CONFIG_HEVC_SEI 1')
     .replace('define CONFIG_BSWAPDSP 0', 'define CONFIG_BSWAPDSP 1')
     .replace('define CONFIG_DOVI_RPU 0', 'define CONFIG_DOVI_RPU 1')
     .replace("--enable-decoder='aac,h264'", "--enable-decoder='aac,h264,hevc'")
