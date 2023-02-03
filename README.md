@@ -23,8 +23,8 @@ HEVC Rext (Partial support, see the table below for details, up to 8192x8192 pix
 |        GPU             | 8b 420 | 8b 422 | 8b 444 | 10b 420 | 10b 422 | 10b 444 | 12b 420 | 12b 422 | 12b 444 |
 | :--------------------- | :----- | :----- | :----- | :------ | :------ | :------ | :------ | :------ | :------ |
 |  Apple Silicon (macOS) |   ✅    |   ✅   |   ✅   |    ✅   |    ✅    |    ✅   |    ❌   |    ❌    |    ❌   |
-| Intel ICL ~ TGLx (Win) |   ✅    |   ⭕   |   ⭕   |    ✅   |    ✅    |    ✅   |    ❌   |    ❌    |    ❌   |
-|    Intel TGLx+ (Win)   |   ✅    |   ⭕   |   ⭕   |    ✅   |    ✅    |    ✅   |    ✅   |    ⭕    |    ⭕   |
+| Intel ICL ~ TGLx (Win) |   ✅    |   ❌   |   ⭕   |    ✅   |    ✅    |    ✅   |    ❌   |    ❌    |    ❌   |
+|    Intel TGLx+ (Win)   |   ✅    |   ❌   |   ⭕   |    ✅   |    ✅    |    ✅   |    ✅   |    ⭕    |    ⭕   |
 
 ✅：GPU + software support
 ⭕：GPU support, software not support
