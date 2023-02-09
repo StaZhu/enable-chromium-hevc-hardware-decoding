@@ -36,7 +36,7 @@ for (const [idx, argv] of process.argv.entries()) {
 const encodingConfig = { encoding: 'utf8' };
 const patches = [
   {
-    condition: 'if ((is_mac && ffmpeg_branding == "Chrome") || (is_win && ffmpeg_branding == "Chrome") || (use_linux_config && ffmpeg_branding == "Chrome") || (use_linux_config && ffmpeg_branding == "ChromeOS")) {',
+    condition: 'if ((is_apple && ffmpeg_branding == "Chrome") || (is_win && ffmpeg_branding == "Chrome") || (use_linux_config && ffmpeg_branding == "Chrome") || (use_linux_config && ffmpeg_branding == "ChromeOS")) {',
     ffmpeg_c_sources : [
       'libavcodec/autorename_libavcodec_bswapdsp.c',
       'libavcodec/dovi_rpu.c',
@@ -57,7 +57,7 @@ const patches = [
     ]
   },
   {
-    condition: 'if ((is_mac && current_cpu == "x64" && ffmpeg_branding == "Chrome") || (is_win && current_cpu == "x64" && ffmpeg_branding == "Chrome") || (is_win && current_cpu == "x86" && ffmpeg_branding == "Chrome") || (use_linux_config && current_cpu == "x64" && ffmpeg_branding == "Chrome") || (use_linux_config && current_cpu == "x64" && ffmpeg_branding == "ChromeOS") || (use_linux_config && current_cpu == "x86" && ffmpeg_branding == "Chrome") || (use_linux_config && current_cpu == "x86" && ffmpeg_branding == "ChromeOS")) {',
+    condition: 'if ((is_apple && current_cpu == "x64" && ffmpeg_branding == "Chrome") || (is_win && current_cpu == "x64" && ffmpeg_branding == "Chrome") || (is_win && current_cpu == "x86" && ffmpeg_branding == "Chrome") || (use_linux_config && current_cpu == "x64" && ffmpeg_branding == "Chrome") || (use_linux_config && current_cpu == "x64" && ffmpeg_branding == "ChromeOS") || (use_linux_config && current_cpu == "x86" && ffmpeg_branding == "Chrome") || (use_linux_config && current_cpu == "x86" && ffmpeg_branding == "ChromeOS")) {',
     ffmpeg_c_sources: [
       'libavcodec/x86/bswapdsp_init.c',
       'libavcodec/x86/hevcdsp_init.c',
@@ -73,7 +73,7 @@ const patches = [
     ]
   },
   {
-    condition: 'if ((is_mac && current_cpu == "arm64" && ffmpeg_branding == "Chrome") || (is_win && current_cpu == "arm64" && ffmpeg_branding == "Chrome") || (use_linux_config && current_cpu == "arm64" && ffmpeg_branding == "Chrome") || (use_linux_config && current_cpu == "arm64" && ffmpeg_branding == "ChromeOS")) {',
+    condition: 'if ((is_apple && current_cpu == "arm64" && ffmpeg_branding == "Chrome") || (is_win && current_cpu == "arm64" && ffmpeg_branding == "Chrome") || (use_linux_config && current_cpu == "arm64" && ffmpeg_branding == "Chrome") || (use_linux_config && current_cpu == "arm64" && ffmpeg_branding == "ChromeOS")) {',
     ffmpeg_c_sources: [
       'libavcodec/aarch64/hevcdsp_init_aarch64.c',
     ],
@@ -189,6 +189,7 @@ function enableSoftwreDecodeHEVC() {
   enableFFMPEGHevc('Chrome', 'win-msvc', 'x64');
   enableFFMPEGHevc('Chrome', 'mac', 'x64');
   enableFFMPEGHevc('Chrome', 'mac', 'arm64');
+  enableFFMPEGHevc('Chrome', 'ios', 'arm64');
   enableFFMPEGHevc('Chrome', 'linux', 'x64');
   enableFFMPEGHevc('Chrome', 'linux', 'ia32');
   enableFFMPEGHevc('Chrome', 'linux', 'arm64');
@@ -202,6 +203,7 @@ function enableSoftwreDecodeHEVC() {
   enableFFMPEGHevc('Chromium', 'win-msvc', 'x64');
   enableFFMPEGHevc('Chromium', 'mac', 'x64');
   enableFFMPEGHevc('Chromium', 'mac', 'arm64');
+  enableFFMPEGHevc('Chromium', 'ios', 'arm64');
   enableFFMPEGHevc('Chromium', 'linux', 'x64');
   enableFFMPEGHevc('Chromium', 'linux', 'ia32');
   enableFFMPEGHevc('Chromium', 'linux', 'arm64');
