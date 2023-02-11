@@ -56,7 +56,7 @@ Linux (Chrome version >= `108.0.5354.0`, and only supports GPUs that support VAA
 
 ## What's the API supported?
 
-Video Decode: File, Media Source Extensions, WebCodec (8Bit requires >= `107.0.5272.0`, 10Bit + HEVC with Alpha requires >= `108.0.5343.0`), Clearkey Encrypted Media Extensions are supported. WebRTC is not supported.
+Video Decode: File, Media Source Extensions, WebCodec (8Bit requires >= `107.0.5272.0`, 10Bit + HEVC with Alpha requires >= `108.0.5343.0`), Clearkey and Widevine L1 (HW only) Encrypted Media Extensions are supported. WebRTC is not supported.
 
 Video Encode: WebCodec (Windows and macOS only, passing `--enable-features=PlatformHEVCEncoderSupport` and make sure browser >= `109.0.5397.0`) is supported.
 
@@ -88,10 +88,10 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra and above
 
 |                 |   PQ     |   HDR10  |  HDR10+  |   HLG    |  DV P5   |  DV P8.1  |  DV P8.4    |
 | :-------------- | :------- | :------- | :------- | :------- |:-------- |:--------- |:----------- |
-| Chrome 109 Mac  |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
-| Chrome 109 Win  |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
-|  Edge 109 Mac   |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
-|  Edge 109 Win   |    ❌    |     ❌    |    ❌    |    ✅    |    ❌     |     ❌     |     ✅     |
+| Chrome 110 Mac  |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
+| Chrome 110 Win  |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
+|  Edge 110 Mac   |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
+|  Edge 110 Win   |    ❌    |     ❌    |    ❌    |    ✅    |    ❌     |     ❌     |     ✅     |
 | Safari 16.2 Mac |    ✅    |     ✅    |    ✅    |    ✅    |    ✅     |     ✅     |     ✅     |
 
 On Windows platform, Chrome supports PQ, HDR10 (PQ with static metadata), and HLG. Automatic Tone-mapping will be enabled based on static metadata (if present) when playing in SDR mode, and HDR static metadata will be submitted to the GPU in HDR mode. HDR10+ SEI dynamic metadata wil be ignored while decoding and playback will downgrad to HDR10. The decoding implementation of Edge is different from that of Chrome / Chromium, there is a problem of abnormal PQ HDR Tone-mapping when playing in SDR mode.
@@ -114,7 +114,7 @@ Chrome 108 supports the ability to extract HEVC static metadata. For videos with
 
 Chrome 109 makes the HDR -> SDR process to a 16 bit + zero copy process, which improves the accuracy of PQ Tone-mapping on Windows platform, thus the problem of the insufficient contrast ratio for HLG has been also solved, and the video memory usage has been reduced by about 50%.
 
-Chrome 110 solves the problem of incomplete static metadata extraction. It supports the extraction of static metadata from both the bitstream and the container, thus the max content light level issue has been solved, and at this point all HDR issues have been resolved.
+Chrome 110 solves the problem of incomplete static metadata extraction. It supports the extraction of static metadata from both the bitstream and the container, thus the max content light level issue has been solved, and at this point all HDR issues should have been resolved.
 
 ## How to verify certain profile or resolution is supported？
 
@@ -260,6 +260,8 @@ Some GPU hardware may has bug which will cause `D3D11VideoDecoder` forbidden to 
 If Electron >= v22.0.0, the HEVC HW decoding feature for macOS, Windows, and Linux (VAAPI only) should have already been integrated. To add HEVC SW decoding, the method should be the same with Chromium guide above.
 
 ## Change Log
+
+`2023-02-11` Allow invalid colorspace (primary, matrix, transfer) video to play instead of block the whole playback
 
 `2022-12-03` Fixed the incomplete SEI parsing logic, and supported the extraction of HDR Metadata both from the bitstream and container. This will solved the problem that some HDR10 videos could not extract static hdr metadata and guarantee the best HDR performance (Chrome >= `110.0.5456.0`)
 

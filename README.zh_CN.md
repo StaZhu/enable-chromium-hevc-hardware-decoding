@@ -56,7 +56,7 @@ Linux (版本号须 >= `108.0.5354.0`, 仅支持 VAAPI 接口支持的 GPU，比
 
 ## 支持哪些 API？
 
-视频解码：支持 File, Media Source Extensions, WebCodec (8Bit >= `107.0.5272.0`, 10Bit + HEVC with Alpha >= `108.0.5343.0`), Clearkey Encrypted Media Extensions, 不支持 WebRTC。
+视频解码：支持 File, Media Source Extensions, WebCodec (8Bit >= `107.0.5272.0`, 10Bit + HEVC with Alpha >= `108.0.5343.0`), Clearkey 以及 Widevine L1 (不支持L3) Encrypted Media Extensions, 不支持 WebRTC。
 
 视频编码：支持 WebCodec (目前仅支持 macOS 和 Windows，需要传启动参数：`--enable-features=PlatformHEVCEncoderSupport`, 并确保浏览器版本 >= `109.0.5397.0`)。
 
@@ -88,10 +88,10 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra 及以上
 
 |                 |   PQ     |   HDR10  |  HDR10+  |   HLG    |  DV P5   |  DV P8.1  |  DV P8.4    |
 | :-------------- | :------- | :------- | :------- | :------- |:-------- |:--------- |:----------- |
-| Chrome 109 Mac  |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
-| Chrome 109 Win  |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
-|  Edge 109 Mac   |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
-|  Edge 109 Win   |    ❌    |     ❌    |    ❌    |    ✅    |    ❌     |     ❌     |     ✅     |
+| Chrome 110 Mac  |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
+| Chrome 110 Win  |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
+|  Edge 110 Mac   |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
+|  Edge 110 Win   |    ❌    |     ❌    |    ❌    |    ✅    |    ❌     |     ❌     |     ✅     |
 | Safari 16.2 Mac |    ✅    |     ✅    |    ✅    |    ✅    |    ✅     |     ✅     |     ✅     |
 
 在 Windows 平台，Chrome 支持 PQ、HDR10 (含静态元数据的 PQ)、HLG，在 SDR 模式播放时会基于静态元数据（如果存在）自动进行 Tone-mapping，在 HDR 模式播放时会提交静态元数据到 GPU。HDR10+ 的 SEI 动态元数据在解码时会被忽略，并以 HDR10 降级播放。由于 Edge 的解码实现和 Chrome / Chromium 不同，在 SDR 模式播放时，存在 PQ HDR Tone-mapping 异常的问题。
@@ -260,6 +260,8 @@ Safari 和 Chromium 二者均使用 `VideoToolbox` 解码器完成硬解。
 Electron >= v22.0.0 已集成好 macOS, Windows, 和 Linux (仅 VAAPI) 平台的 HEVC 硬解功能，且开箱即用。若要集成软解，方法同上述 Chromium 教程相同。
 
 ## 更新历史
+
+`2023-02-11` 视频色彩空间 (Primary, Matrix, Transfer) 非法时, 仍允许视频文件正常播放
 
 `2022-12-03` 修复了 SEI 可能提取不完整的问题，支持了同时从比特流和封装容器提取 HDR Metadata (静态元数据）的能力。上述两点最终可解决了部分 HDR10 视频提取不到静态元数据的问题，并确保 HDR 效果最佳 (Chrome >= `110.0.5456.0`)
 
