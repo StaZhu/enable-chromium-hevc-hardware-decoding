@@ -261,7 +261,9 @@ If Electron >= v22.0.0, the HEVC HW decoding feature for macOS, Windows, and Lin
 
 ## Change Log
 
-`2023-02-11` Allow invalid colorspace (primary, matrix, transfer) video to play instead of block the whole playback
+`2023-02-14` Android platform now allows H264 / HEVC / VP9 / AV1 to be played at the maximum resolution supported by the device. Previously all Codecs only supported the hard-coded 4K. Now as long as the device supports it, it can support 8K or even higher resolutions (Chrome > = `112.0.5594.0`)
+
+`2023-02-11` Allow invalid colorspace (primary, matrix, transfer) video to play instead of block the whole playback (Chrome >= `112.0.5589.0`)
 
 `2022-12-03` Fixed the incomplete SEI parsing logic, and supported the extraction of HDR Metadata both from the bitstream and container. This will solved the problem that some HDR10 videos could not extract static hdr metadata and guarantee the best HDR performance (Chrome >= `110.0.5456.0`)
 
