@@ -16,9 +16,9 @@ HEVC Main (Up to 8192x8192 pixels)
 
 HEVC Main 10 (Up to 8192x8192 pixels)
 
-HEVC Main Still Picture (macOS only, up to 8192x8192 pixels)
+HEVC Main Still Picture (only Windows is not supported, up to 8192x8192 pixels)
 
-HEVC Rext (Partial support, see the table below for details, up to 8192x8192 pixels)
+HEVC Rext (partially supported, see the table below for details, up to 8192x8192 pixels)
 
 |        GPU             | 8b 420 | 8b 422 | 8b 444 | 10b 420 | 10b 422 | 10b 444 | 12b 420 | 12b 422 | 12b 444 |
 | :--------------------- | :----- | :----- | :----- | :------ | :------ | :------ | :------ | :------ | :------ |
@@ -48,7 +48,7 @@ macOS Big Sur (11.0) and above
 
 Windows 8 and above
 
-Android
+Android 5.0 and above
 
 Chrome OS (Only supports GPUs that support VAAPI interface, eg: Intel GPU)
 
@@ -117,6 +117,8 @@ Chrome 109 makes the HDR -> SDR process to a 16 bit + zero copy process, which i
 Chrome 110 solves the problem of incomplete static metadata extraction. It supports the extraction of static metadata from both the bitstream and the container, thus the max content light level issue has been solved, and at this point all HDR issues should have been resolved.
 
 ## How to verify certain profile or resolution is supported？
+
+### Clear Content
 
 #### MediaCapabilities
 
@@ -205,6 +207,58 @@ if (video.canPlayType('video/mp4;codecs="hev1.4.10.L120.90"') === 'probably') {
 
 *Note 2：Compared with `MediaSource.isTypeSupported()` or `CanPlayType()`, we recommand using `MediaCapabilities`, since `MediaCapabilities` not only takes `settings - system - Use hardware acceleration when available` etc... into consideration, but also check if the given `width and height` is supported or not since different GPU may have different max resolution support, eg: some AMD GPU only support up to 4096 * 2048, and some old GPU only support up to 1080P.*
 
+### Encrypted Content
+
+#### requestMediaKeySystemAccess
+
+```javascript
+/** Detect HEVC Widevine L1 support (only Windows is supported). */
+try {
+  await navigator.requestMediaKeySystemAccess('com.widevine.alpha.experiment', [
+    {
+      initDataTypes: ['cenc'],
+      distinctiveIdentifier: 'required',
+      persistentState: 'required',
+      sessionTypes: ['temporary'],
+      videoCapabilities: [
+        {
+          robustness: 'HW_SECURE_ALL',
+          contentType: 'video/mp4; codecs="hev1.1.6.L120.90"',
+        },
+      ],
+    },
+  ]);
+  console.log('Widevine L1 HEVC main profile is supported!');
+} catch (e) {
+  console.log('Widevine L1 HEVC main profile is not supported!');
+}
+
+
+/**
+ * Detect Dolby Vision Widevine L1 support (only Windows is supported, and only if
+ * `--enable-features=PlatformEncryptedDolbyVision` switch has been passed).
+ */
+try {
+  await navigator.requestMediaKeySystemAccess('com.widevine.alpha.experiment', [
+    {
+      initDataTypes: ['cenc'],
+      distinctiveIdentifier: 'required',
+      persistentState: 'required',
+      sessionTypes: ['temporary'],
+      videoCapabilities: [
+        {
+          robustness: 'HW_SECURE_ALL',
+          contentType: 'video/mp4; codecs="dvhe.05.07"',
+        },
+      ],
+    },
+  ]);
+  console.log('Widevine L1 DV profile 5 is supported!');
+} catch (e) {
+  console.log('Widevine L1 DV profile 5 is not supported!');
+}
+```
+
 ## What's the tech diff? (Compared with Edge / Safari)
 
 #### Windows
@@ -260,6 +314,7 @@ Some GPU hardware may has bug which will cause `D3D11VideoDecoder` forbidden to 
 If Electron >= v22.0.0, the HEVC HW decoding feature for macOS, Windows, and Linux (VAAPI only) should have already been integrated. To add HEVC SW decoding, the method should be the same with Chromium guide above.
 
 ## Change Log
+`2023-02-17` Update Widevine L1 HEVC / Dolby Vision support detect method
 
 `2023-02-14` Android platform now allows H264 / HEVC / VP9 / AV1 to be played at the maximum resolution supported by the device. Previously all Codecs only supported the hard-coded 4K. Now as long as the device supports it, it can support 8K or even higher resolutions (Chrome > = `112.0.5594.0`)
 

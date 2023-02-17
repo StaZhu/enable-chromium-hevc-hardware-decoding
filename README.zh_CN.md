@@ -16,7 +16,7 @@ HEVC Main (最高支持 8192x8192 px)
 
 HEVC Main 10 (最高支持 8192x8192 px)
 
-HEVC Main Still Picture (仅 macOS，最高支持 8192x8192 px)
+HEVC Main Still Picture (Windows 不支持，最高支持 8192x8192 px)
 
 HEVC Rext (部分支持，细节见下表，最高支持 8192x8192 px)
 
@@ -48,7 +48,7 @@ macOS Big Sur (11.0) 及以上
 
 Windows 8 及以上
 
-Android
+Android 5.0 及以上
 
 Chrome OS (仅支持 VAAPI 接口支持的 GPU，比如：Intel 核显)
 
@@ -117,6 +117,8 @@ Chrome 109 开始，HDR -> SDR 流程切换为 16 bit + 零拷贝，提升了 Wi
 Chrome 110 主要解决静态元数据提取不完整的问题，支持从比特流和容器同时提取静态元数据，部分 HDR10 视频在 macOS 和 Windows 下高光部分不够亮的问题得以解决，至此所有 HDR 问题均已解决。
 
 ## 如何验证特定 Profile, 分辨率的视频是否可以播放？
+
+### 非加密内容
 
 #### MediaCapabilities
 
@@ -205,6 +207,57 @@ if (video.canPlayType('video/mp4;codecs="hev1.4.10.L120.90"') === 'probably') {
 
 *注2：相比 `MediaSource.isTypeSupported()` 或 `CanPlayType()`，更推荐使用 `MediaCapabilities`，`MediaCapabilities` 除了会将 `设置-系统-使用硬件加速模式（如果可用）` 等等上述影响因素加入考虑外，还会考虑 `视频分辨率` 是否支持，不同的 GPU 所支持的最高分辨率是不一样的，比如部分 AMD GPU 最高只支持到 4096 * 2048，一些老的 GPU 只能支持到 1080P。*
 
+### 加密内容
+
+#### requestMediaKeySystemAccess
+
+```javascript
+/** Detect HEVC Widevine L1 support (only Windows is supported). */
+try {
+  await navigator.requestMediaKeySystemAccess('com.widevine.alpha.experiment', [
+    {
+      initDataTypes: ['cenc'],
+      distinctiveIdentifier: 'required',
+      persistentState: 'required',
+      sessionTypes: ['temporary'],
+      videoCapabilities: [
+        {
+          robustness: 'HW_SECURE_ALL',
+          contentType: 'video/mp4; codecs="hev1.1.6.L120.90"',
+        },
+      ],
+    },
+  ]);
+  console.log('Widevine L1 HEVC main profile is supported!');
+} catch (e) {
+  console.log('Widevine L1 HEVC main profile is not supported!');
+}
+
+/**
+ * Detect Dolby Vision Widevine L1 support (only Windows is supported, and only if
+ * `--enable-features=PlatformEncryptedDolbyVision` switch has been passed).
+ */
+try {
+  await navigator.requestMediaKeySystemAccess('com.widevine.alpha.experiment', [
+    {
+      initDataTypes: ['cenc'],
+      distinctiveIdentifier: 'required',
+      persistentState: 'required',
+      sessionTypes: ['temporary'],
+      videoCapabilities: [
+        {
+          robustness: 'HW_SECURE_ALL',
+          contentType: 'video/mp4; codecs="dvhe.05.07"',
+        },
+      ],
+    },
+  ]);
+  console.log('Widevine L1 DV profile 5 is supported!');
+} catch (e) {
+  console.log('Widevine L1 DV profile 5 is not supported!');
+}
+```
+
 ## 技术实现区别？(与Edge / Safari的对比)
 
 #### Windows
@@ -260,6 +313,8 @@ Safari 和 Chromium 二者均使用 `VideoToolbox` 解码器完成硬解。
 Electron >= v22.0.0 已集成好 macOS, Windows, 和 Linux (仅 VAAPI) 平台的 HEVC 硬解功能，且开箱即用。若要集成软解，方法同上述 Chromium 教程相同。
 
 ## 更新历史
+
+`2023-02-17` 更新 Widevine L1 HEVC / Dolby Vision 支持的检测方法
 
 `2023-02-14` 安卓平台现已允许使用设备支持的最大分辨率播放 H264 / HEVC / VP9 / AV1，原先所有 Codec 最大仅支持写死的 4K，现在只要设备支持，即可支持 8K 甚至更高的分辨率 (Chrome >= `112.0.5594.0`)
 
