@@ -94,7 +94,7 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra 及以上
 |  Edge 110 Win   |    ❌    |     ❌    |    ❌    |    ✅    |    ❌     |     ❌     |     ✅     |
 | Safari 16.2 Mac |    ✅    |     ✅    |    ✅    |    ✅    |    ✅     |     ✅     |     ✅     |
 
-在 Windows 平台，Chrome 支持 PQ、HDR10 (含静态元数据的 PQ)、HLG，在 SDR 模式播放时会基于静态元数据（如果存在）自动进行 Tone-mapping，在 HDR 模式播放时会提交静态元数据到 GPU。HDR10+ 的 SEI 动态元数据在解码时会被忽略，并以 HDR10 降级播放。由于 Edge 的解码实现和 Chrome / Chromium 不同，在 SDR 模式播放时，存在 PQ HDR Tone-mapping 异常的问题。
+在 Windows 平台，Chrome 支持 PQ、HDR10 (含静态元数据的 PQ)、HLG，会基于静态元数据（如果存在）自动进行 Tone-mapping。HDR10+ 的 SEI 动态元数据在解码时会被忽略，并以 HDR10 降级播放。由于 Edge 的解码实现和 Chrome / Chromium 不同，在 SDR 模式播放时，存在 PQ HDR Tone-mapping 异常的问题。
 
 在 macOS 平台，Chrome 支持 PQ、HDR10 (含静态元数据的 PQ)、HLG。在 SDR / HDR / 自动模式下，macOS 系统会自动进行 EDR 以确保 HDR 显示正确，Chrome / Edge 实现相同，支持情况一致，Safari 同样支持上述所有 HDR 格式。
 

@@ -94,7 +94,7 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra and above
 |  Edge 110 Win   |    ❌    |     ❌    |    ❌    |    ✅    |    ❌     |     ❌     |     ✅     |
 | Safari 16.2 Mac |    ✅    |     ✅    |    ✅    |    ✅    |    ✅     |     ✅     |     ✅     |
 
-On Windows platform, Chrome supports PQ, HDR10 (PQ with static metadata), and HLG. Automatic Tone-mapping will be enabled based on static metadata (if present) when playing in SDR mode, and HDR static metadata will be submitted to the GPU in HDR mode. HDR10+ SEI dynamic metadata wil be ignored while decoding and playback will downgrad to HDR10. The decoding implementation of Edge is different from that of Chrome / Chromium, there is a problem of abnormal PQ HDR Tone-mapping when playing in SDR mode.
+On Windows platform, Chrome supports PQ, HDR10 (PQ with static metadata), and HLG. Automatic Tone-mapping will be enabled based on static metadata (if present). HDR10+ SEI dynamic metadata wil be ignored while decoding and playback will downgrade to HDR10. The decoding implementation of Edge is different from that of Chrome / Chromium, there is a problem of abnormal PQ HDR Tone-mapping when playing in SDR mode.
 
 On macOS platform, Chrome supports PQ, HDR10 (PQ with static metadata), HLG. In SDR / HDR / Hybrid mode, the macOS system will automatically perform EDR to ensure that HDR is displayed correctly. Chrome / Edge shared the same code thus has the same decoding ability, Safari also supports the above all HDR formats.
 
