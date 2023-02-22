@@ -205,7 +205,9 @@ if (video.canPlayType('video/mp4;codecs="hev1.4.10.L120.90"') === 'probably') {
 
 *注1：上述三种 API 均已经将 `--disable-gpu`, `--disable-accelerated-video-decode`，`gpu-workaround`，`设置-系统-使用硬件加速模式（如果可用）`，`操作系统版本号` 等影响因素考虑在内了，只要确保 Chrome 版本号 >= `107.0.5304.0` (Windows 平台 Chrome 108 及之前版本存在一个 Bug，如果设备特定的GPU驱动程序版本因为一些原因导致 D3D11VideoDecoder 被禁用，尽管硬解已不可用，但此时 isTypeSupported 等 API 仍然会返回 “支持”，该问题已在 Chrome 109 修复), 且系统是 macOS 或 Windows，则可保证结果准确性。*
 
-*注2：相比 `MediaSource.isTypeSupported()` 或 `CanPlayType()`，更推荐使用 `MediaCapabilities`，`MediaCapabilities` 除了会将 `设置-系统-使用硬件加速模式（如果可用）` 等等上述影响因素加入考虑外，还会考虑 `视频分辨率` 是否支持，不同的 GPU 所支持的最高分辨率是不一样的，比如部分 AMD GPU 最高只支持到 4096 * 2048，一些老的 GPU 只能支持到 1080P。*
+*注2：安卓平台存在一个 Bug，Chrome < `112.0.5612.0` 的版本没有返回实际硬件支持情况（安卓 5.0 之后的版本尽管默认支持 HEVC main profile 软解，但 main10 profile 是否支持由则由具体硬件来决定），永远认为支持所有 Profile 和分辨率的 HEVC 视频。Chrome >= `112.0.5612.0` 版本解决了这个问题，并会根据设备实际支持的情况返回正确的结果，和 macoS, Windows 一样支持上述三种 API，且各种影响因素均会被考虑在内。*
+
+*注3：相比 `MediaSource.isTypeSupported()` 或 `CanPlayType()`，更推荐使用 `MediaCapabilities`，`MediaCapabilities` 除了会将 `设置-系统-使用硬件加速模式（如果可用）` 等等上述影响因素加入考虑外，还会考虑 `视频分辨率` 是否支持，不同的 GPU 所支持的最高分辨率是不一样的，比如部分 AMD GPU 最高只支持到 4096 * 2048，一些老的 GPU 只能支持到 1080P。*
 
 ### 加密内容
 
@@ -313,6 +315,8 @@ Safari 和 Chromium 二者均使用 `VideoToolbox` 解码器完成硬解。
 Electron >= v22.0.0 已集成好 macOS, Windows, 和 Linux (仅 VAAPI) 平台的 HEVC 硬解功能，且开箱即用。若要集成软解，方法同上述 Chromium 教程相同。
 
 ## 更新历史
+
+`2023-02-22` 安卓平台的检测 API 已支持根据设备实际支持情况返回正确的结果 (Chrome >= `112.0.5612.0`)
 
 `2023-02-17` 更新 Widevine L1 HEVC / Dolby Vision 支持的检测方法
 

@@ -205,7 +205,9 @@ if (video.canPlayType('video/mp4;codecs="hev1.4.10.L120.90"') === 'probably') {
 
 *Note 1：The above three API have already took `--disable-gpu`, `--disable-accelerated-video-decode`, `gpu-workaround`, `settings - system - Use hardware acceleration when available`, `OS version` etc... into consideration, and if Chrome version >= `107.0.5304.0` (There is a bug in Chrome 108 and previous versions on Windows platform. If a specific GPU driver version causes D3D11VideoDecoder to be disabled for some reason, although the hardware decoding is no longer available, APIs such as isTypeSupported may still return "support", the bug has been fixed in Chrome 109) and OS is macOS or Windows, the result are guaranteed.*
 
-*Note 2：Compared with `MediaSource.isTypeSupported()` or `CanPlayType()`, we recommand using `MediaCapabilities`, since `MediaCapabilities` not only takes `settings - system - Use hardware acceleration when available` etc... into consideration, but also check if the given `width and height` is supported or not since different GPU may have different max resolution support, eg: some AMD GPU only support up to 4096 * 2048, and some old GPU only support up to 1080P.*
+*Note 2: There is a bug for the Android platform, Chrome < `112.0.5612.0` does not return the actual support status of different devices (although Android >= 5.0 supports HEVC main profile SW decoding by default, however whether main10 profile is supported or not completely depends on hardware), and always assume that all HEVC profiles and resolution are supported. Chrome >= `112.0.5612.0` now solves this bug, and will return the correct result depends on hardware and the given video's resolution. Just like Windows and macOS, the above three APIs are supported as well, and every influencing factors should have been taken into account.*
+
+*Note 3：Compared with `MediaSource.isTypeSupported()` or `CanPlayType()`, we recommand using `MediaCapabilities`, since `MediaCapabilities` not only takes `settings - system - Use hardware acceleration when available` etc... into consideration, but also check if the given `width and height` is supported or not since different GPU may have different max resolution support, eg: some AMD GPU only support up to 4096 * 2048, and some old GPU only support up to 1080P.*
 
 ### Encrypted Content
 
@@ -314,6 +316,9 @@ Some GPU hardware may has bug which will cause `D3D11VideoDecoder` forbidden to 
 If Electron >= v22.0.0, the HEVC HW decoding feature for macOS, Windows, and Linux (VAAPI only) should have already been integrated. To add HEVC SW decoding, the method should be the same with Chromium guide above.
 
 ## Change Log
+
+`2023-02-22` Android platform now able to use the support detection API to detect the correct support status of different devices (Chrome >= `112.0.5612.0`)
+
 `2023-02-17` Update Widevine L1 HEVC / Dolby Vision support detect method
 
 `2023-02-14` Android platform now allows H264 / HEVC / VP9 / AV1 to be played at the maximum resolution supported by the device. Previously all Codecs only supported the hard-coded 4K. Now as long as the device supports it, it can support 8K or even higher resolutions (Chrome > = `112.0.5594.0`)

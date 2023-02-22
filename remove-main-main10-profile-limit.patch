@@ -1,20 +1,19 @@
-From 5c691085eeb2feb7e61636ed27e72750e6736b73 Mon Sep 17 00:00:00 2001
+From aa0517276864b5c493140f239516ecf2e1c15b68 Mon Sep 17 00:00:00 2001
 From: Sta Zhu <zhusidayoyo@hotmail.com>
-Date: Mon, 19 Sep 2022 14:30:54 +0800
+Date: Wed, 22 Feb 2023 13:45:38 +0800
 Subject: [PATCH] Video: Remove Main/Main10 profile limit
 
 This will consider all HEVC profile as to supported, and
 help you be able to play video's like HEVC Rext, SCC etc...
-
 ---
- media/base/supported_types.cc | 30 +-----------------------------
- 1 file changed, 1 insertion(+), 29 deletions(-)
+ media/base/supported_types.cc | 23 +----------------------
+ 1 file changed, 1 insertion(+), 22 deletions(-)
 
 diff --git a/media/base/supported_types.cc b/media/base/supported_types.cc
-index c47d83f0c0641..3d8fd8f583907 100644
+index 2ebbdf92cda05..24f074f9d5057 100644
 --- a/media/base/supported_types.cc
 +++ b/media/base/supported_types.cc
-@@ -201,35 +201,7 @@ bool IsAudioCodecProprietary(AudioCodec codec) {
+@@ -205,28 +205,7 @@ bool IsAudioCodecProprietary(AudioCodec codec) {
  #endif  // !BUILDFLAG(USE_PROPRIETARY_CODECS)
  
  bool IsHevcProfileSupported(const VideoType& type) {
@@ -22,8 +21,7 @@ index c47d83f0c0641..3d8fd8f583907 100644
 -    return false;
 -
 -#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
--#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
--    BUILDFLAG(IS_MAC)
+-#if BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
 -#if BUILDFLAG(IS_CHROMEOS_LACROS)
 -  // TODO(b/171813538): For Lacros, the supplemental profile cache will be
 -  // asking lacros-gpu, but we will be doing decoding in ash-gpu. Until the
@@ -35,22 +33,16 @@ index c47d83f0c0641..3d8fd8f583907 100644
 -  }
 -#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 -  return GetSupplementalProfileCache()->IsProfileSupported(type.profile);
--#elif BUILDFLAG(IS_ANDROID)
--  // Technically android 5.0 mandates support for only HEVC main profile,
--  // however some platforms (like chromecast) have had more profiles supported
--  // so we'll see what happens if we just enable them all.
--  return base::FeatureList::IsEnabled(kPlatformHEVCDecoderSupport);
 -#else
    return true;
--#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) ||
--        // BUILDFLAG(IS_MAC)
+-#endif  // BUIDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
 -#else
 -  return false;
 -#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
  }
  
  bool IsVp9ProfileSupported(const VideoType& type) {
-@@ -405,7 +377,7 @@ bool IsBuiltInVideoCodec(VideoCodec codec) {
+@@ -394,7 +373,7 @@ bool IsBuiltInVideoCodec(VideoCodec codec) {
    if (codec == VideoCodec::kVP8)
      return true;
  #if BUILDFLAG(USE_PROPRIETARY_CODECS)
