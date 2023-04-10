@@ -40,7 +40,6 @@ const patches = [
     ffmpeg_c_sources : [
       'libavcodec/autorename_libavcodec_bswapdsp.c',
       'libavcodec/dovi_rpu.c',
-      'libavcodec/dynamic_hdr10_plus.c',
       'libavcodec/dynamic_hdr_vivid.c',
       'libavcodec/hevc_cabac.c',
       'libavcodec/hevc_data.c',
