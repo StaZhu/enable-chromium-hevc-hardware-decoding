@@ -1,19 +1,19 @@
-From aa0517276864b5c493140f239516ecf2e1c15b68 Mon Sep 17 00:00:00 2001
+From 89e80d73c454577709519dd0a0b1f2b8cdd78e99 Mon Sep 17 00:00:00 2001
 From: Sta Zhu <zhusidayoyo@hotmail.com>
-Date: Wed, 22 Feb 2023 13:45:38 +0800
+Date: Tue, 2 May 2023 22:38:51 +0800
 Subject: [PATCH] Video: Remove Main/Main10 profile limit
 
 This will consider all HEVC profile as to supported, and
 help you be able to play video's like HEVC Rext, SCC etc...
 ---
- media/base/supported_types.cc | 23 +----------------------
- 1 file changed, 1 insertion(+), 22 deletions(-)
+ media/base/supported_types.cc | 28 +---------------------------
+ 1 file changed, 1 insertion(+), 27 deletions(-)
 
 diff --git a/media/base/supported_types.cc b/media/base/supported_types.cc
-index 2ebbdf92cda05..24f074f9d5057 100644
+index 07b991932aad5..657f21a934359 100644
 --- a/media/base/supported_types.cc
 +++ b/media/base/supported_types.cc
-@@ -205,28 +205,7 @@ bool IsAudioCodecProprietary(AudioCodec codec) {
+@@ -209,33 +209,7 @@ bool IsAudioCodecProprietary(AudioCodec codec) {
  #endif  // !BUILDFLAG(USE_PROPRIETARY_CODECS)
  
  bool IsHevcProfileSupported(const VideoType& type) {
@@ -32,6 +32,11 @@ index 2ebbdf92cda05..24f074f9d5057 100644
 -    return true;
 -  }
 -#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+-#if BUILDFLAG(IS_CHROMEOS_ASH)
+-  if (!base::FeatureList::IsEnabled(kPlatformHEVCDecoderSupport)) {
+-    return false;
+-  }
+-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 -  return GetSupplementalProfileCache()->IsProfileSupported(type.profile);
 -#else
    return true;
@@ -42,7 +47,7 @@ index 2ebbdf92cda05..24f074f9d5057 100644
  }
  
  bool IsVp9ProfileSupported(const VideoType& type) {
-@@ -394,7 +373,7 @@ bool IsBuiltInVideoCodec(VideoCodec codec) {
+@@ -410,7 +384,7 @@ bool IsBuiltInVideoCodec(VideoCodec codec) {
    if (codec == VideoCodec::kVP8)
      return true;
  #if BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -52,5 +57,5 @@ index 2ebbdf92cda05..24f074f9d5057 100644
  #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
  #endif  // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 -- 
-2.36.1.windows.1
+2.39.2 (Apple Git-143)
 
