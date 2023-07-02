@@ -20,21 +20,22 @@ HEVC Main Still Picture (only Windows is not supported, up to 8192x8192 pixels)
 
 HEVC Rext (partially supported, see the table below for details, up to 8192x8192 pixels)
 
-|        GPU             | 8b 420 | 8b 422 | 8b 444 | 10b 420 | 10b 422 | 10b 444 | 12b 420 | 12b 422 | 12b 444 |
-| :--------------------- | :----- | :----- | :----- | :------ | :------ | :------ | :------ | :------ | :------ |
-|  Apple Silicon (macOS) |   ✅    |   ✅   |   ✅   |    ✅   |    ✅    |    ✅   |    ❌   |    ❌    |    ❌   |
-| Intel ICL ~ TGLx (Win) |   ✅    |   ❌   |   ⭕   |    ✅   |    ✅    |    ✅   |    ❌   |    ❌    |    ❌   |
-|    Intel TGLx+ (Win)   |   ✅    |   ❌   |   ⭕   |    ✅   |    ✅    |    ✅   |    ✅   |    ⭕    |    ⭕   |
+|        GPU             | 8b 420 | 8b 422 |      8b 444    | 10b 420  | 10b 422 | 10b 444 | 12b 420 |    12b 422    |    12b 444     |
+| :--------------------- | :----- | :----- | :------------- | :------- | :------ | :------ | :------ | :------------ | :------------- |
+|  Apple Silicon (macOS) |   ✅    |   ✅   |       ✅       |    ✅    |    ✅    |    ✅   |    ❌   |       ❌       |       ❌       |
+| Intel ICL ~ TGLx (Win) |   ✅    |   ❌   |✅<sup>[4]</sup>|    ✅    |    ✅    |    ✅   |    ❌   |       ❌       |       ❌       |
+|    Intel TGLx+ (Win)   |   ✅    |   ❌   |✅<sup>[4]</sup>|    ✅    |    ✅    |    ✅   |    ✅   |✅<sup>[4]</sup>|✅<sup>[4]</sup>|
 
 ✅：GPU + software support
-⭕：GPU support, software not support
 ❌：GPU not support
 
-*Note 1：Intel CPU Mac supports HEVC Rext software decoding of 8 ~ 12b 400, 420, 422, 444 contents via VideoToolbox.*
+*Note 1: Intel Macs support HEVC Rext software decoding of 8 ~ 12b 400, 420, 422, 444 contents. Apple Silicon Mac supports HEVC Rext hardware decoding of 8 ~ 10b 400, 420, 422, 444 contents, and software decoding of 12b 400, 420, 422, 444 contents on macOS 13+.*
 
-*Note 2：Specific Intel GPU supports HEVC Rext hardware decoding on Windows, so if you want to use these profiles then Chromium version must be >= 106.0.5210.0. Some profiles are not common so we only implement part of them, if you need those unsupported profile that GPU do supports, then you can submit a issue to `crbug.com`.*
+*Note 2: Intel Gen10 GPUs support HEVC Rext hardware decoding of 8b 420, 8b 444, 10b 420, 10b 422, 10b 444 contents on Windows. Gen11+ GPUs additionally support HEVC Rext hardware decoding of 12b 420, 12b 422, 12b 444 contents.*
 
-*Note 3：Although NVIDIA GPU supports HEVC Rext hardware decoding of 8 ~ 12b non-422 contents via CUVIA or NVDEC, but because they did not provide a D3D11 interface, thus Chromium will not support it in the future.*
+*Note 3: Although NVIDIA GPUs support HEVC Rext hardware decoding of 8 ~ 12b non-422 contents via CUVIA or NVDEC, but because they did not provide a D3D11 interface, thus Chromium will not support it in the future.*
+
+*Note 4: HEVC 8b 444, 12b 422, 12b 444 support requires Chrome >= `117.0.5866.0`.*
 
 ## What's the hardware encoding supported HEVC profile?
 
@@ -88,11 +89,11 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra and above
 
 |                 |   PQ     |   HDR10  |  HDR10+  |   HLG    |  DV P5   |  DV P8.1  |  DV P8.4    |
 | :-------------- | :------- | :------- | :------- | :------- |:-------- |:--------- |:----------- |
-| Chrome 110 Mac  |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
-| Chrome 110 Win  |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
-|  Edge 110 Mac   |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
-|  Edge 110 Win   |    ❌    |     ❌    |    ❌    |    ✅    |    ❌     |     ❌     |     ✅     |
-| Safari 16.2 Mac |    ✅    |     ✅    |    ✅    |    ✅    |    ✅     |     ✅     |     ✅     |
+| Chrome 114 Mac  |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
+| Chrome 114 Win  |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
+|  Edge 114 Mac   |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
+|  Edge 114 Win   |    ❌    |     ❌    |    ❌    |    ✅    |    ❌     |     ❌     |     ✅     |
+| Safari 16.5 Mac |    ✅    |     ✅    |    ✅    |    ✅    |    ✅     |     ✅     |     ✅     |
 
 On Windows platform, Chrome supports PQ, HDR10 (PQ with static metadata), and HLG. Automatic Tone-mapping will be enabled based on static metadata (if present). HDR10+ SEI dynamic metadata wil be ignored while decoding and playback will downgrade to HDR10. The decoding implementation of Edge is different from that of Chrome / Chromium, there is a problem of abnormal PQ HDR Tone-mapping when playing in SDR mode.
 
@@ -316,6 +317,8 @@ Some GPU hardware may has bug which will cause `D3D11VideoDecoder` forbidden to 
 If Electron >= v22.0.0, the HEVC HW decoding feature for macOS, Windows, and Linux (VAAPI only) should have already been integrated. To add HEVC SW decoding, the method should be the same with Chromium guide above.
 
 ## Change Log
+
+`2023-07-02` Add HEVC Rext 8bit 444, 12bit 422, 12bit 444 support on Windows (Chrome >= `117.0.5866.0`)
 
 `2023-02-22` Android platform now able to use the support detection API to detect the correct support status of different devices (Chrome >= `112.0.5612.0`)
 

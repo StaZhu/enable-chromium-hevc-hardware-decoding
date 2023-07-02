@@ -20,21 +20,22 @@ HEVC Main Still Picture (Windows 不支持，最高支持 8192x8192 px)
 
 HEVC Rext (部分支持，细节见下表，最高支持 8192x8192 px)
 
-|        GPU             | 8b 420 | 8b 422 | 8b 444 | 10b 420 | 10b 422 | 10b 444 | 12b 420 | 12b 422 | 12b 444 |
-| :--------------------- | :----- | :----- | :----- | :------ | :------ | :------ | :------ | :------ | :------ |
-|  Apple Silicon (macOS) |   ✅    |   ✅   |   ✅   |    ✅   |    ✅    |    ✅   |    ❌   |    ❌    |    ❌   |
-| Intel ICL ~ TGLx (Win) |   ✅    |   ❌   |   ⭕   |    ✅   |    ✅    |    ✅   |    ❌   |    ❌    |    ❌   |
-|    Intel TGLx+ (Win)   |   ✅    |   ❌   |   ⭕   |    ✅   |    ✅    |    ✅   |    ✅   |    ⭕    |    ⭕   |
+|        GPU             | 8b 420 | 8b 422 |      8b 444    | 10b 420  | 10b 422 | 10b 444 | 12b 420 |    12b 422    |    12b 444     |
+| :--------------------- | :----- | :----- | :------------- | :------- | :------ | :------ | :------ | :------------ | :------------- |
+|  Apple Silicon (macOS) |   ✅    |   ✅   |       ✅       |    ✅    |    ✅    |    ✅   |    ❌   |       ❌       |       ❌       |
+| Intel ICL ~ TGLx (Win) |   ✅    |   ❌   |✅<sup>[4]</sup>|    ✅    |    ✅    |    ✅   |    ❌   |       ❌       |       ❌       |
+|    Intel TGLx+ (Win)   |   ✅    |   ❌   |✅<sup>[4]</sup>|    ✅    |    ✅    |    ✅   |    ✅   |✅<sup>[4]</sup>|✅<sup>[4]</sup>|
 
 ✅：显卡+软件都支持
-⭕：显卡支持，软件未实现
 ❌：显卡不支持
 
-*注1：Intel CPU 的 Mac 支持 VideoToolbox 软解 HEVC Rext，8 ~ 12b 400, 420, 422, 444 的内容均可正常解码。*
+*注1：Intel Mac 支持软解 HEVC Rext 8 ~ 12b 400, 420, 422, 444 的内容。Apple Silicon Mac 支持硬解 HEVC Rext 8 ～ 10b 400, 420, 422, 444 的内容，在 macOS 13+ 支持软解 HEVC Rext 12b 400, 420, 422, 444 的内容。*
 
-*注2：Intel 10代及以后的 GPU 支持硬解 HEVC Rext，如果需要使用这部分能力，须确保 Chromium 版本号 >= 106.0.5210.0。有一些Profile并不是很常见因此暂时没有支持，如果你有支持他们的需要且确保显卡支持，可以在 `crbug.com` 提交issue。*
+*注2：Intel 10 代 GPU 支持硬解 HEVC Rext 8b 420, 8b 444, 10b 420, 10b 422, 10b 444 的内容。11 代及以后的 GPU 还支持硬解 HEVC Rext 12b 420, 12b 422, 12b 444 的内容。*
 
-*注3：尽管 NVIDIA GPU 支持 8 ~ 12b 非 422 HEVC Rext CUVIA 或 NVDEC 硬解码，但由于NVIDIA 没有给 D3D11 接口暴露这部分能力，因此 Chromium 以后也不会支持它们。*
+*注3：尽管 NVIDIA GPU 支持 8 ~ 12b 非 422 HEVC Rext CUVIA 或 NVDEC 硬解码，但由于 NVIDIA 没有给 D3D11 接口暴露这部分能力，因此 Chromium 以后也不会支持它们。*
+
+*注4：Windows HEVC 8b 444, 12b 422, 12b 444 支持需要 Chrome >= `117.0.5866.0`。*
 
 ## 支持硬编码哪些Profile？
 
@@ -88,11 +89,11 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra 及以上
 
 |                 |   PQ     |   HDR10  |  HDR10+  |   HLG    |  DV P5   |  DV P8.1  |  DV P8.4    |
 | :-------------- | :------- | :------- | :------- | :------- |:-------- |:--------- |:----------- |
-| Chrome 110 Mac  |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
-| Chrome 110 Win  |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
-|  Edge 110 Mac   |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
-|  Edge 110 Win   |    ❌    |     ❌    |    ❌    |    ✅    |    ❌     |     ❌     |     ✅     |
-| Safari 16.2 Mac |    ✅    |     ✅    |    ✅    |    ✅    |    ✅     |     ✅     |     ✅     |
+| Chrome 114 Mac  |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
+| Chrome 114 Win  |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
+|  Edge 114 Mac   |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
+|  Edge 114 Win   |    ❌    |     ❌    |    ❌    |    ✅    |    ❌     |     ❌     |     ✅     |
+| Safari 16.5 Mac |    ✅    |     ✅    |    ✅    |    ✅    |    ✅     |     ✅     |     ✅     |
 
 在 Windows 平台，Chrome 支持 PQ、HDR10 (含静态元数据的 PQ)、HLG，会基于静态元数据（如果存在）自动进行 Tone-mapping。HDR10+ 的 SEI 动态元数据在解码时会被忽略，并以 HDR10 降级播放。由于 Edge 的解码实现和 Chrome / Chromium 不同，在 SDR 模式播放时，存在 PQ HDR Tone-mapping 异常的问题。
 
@@ -315,6 +316,8 @@ Safari 和 Chromium 二者均使用 `VideoToolbox` 解码器完成硬解。
 Electron >= v22.0.0 已集成好 macOS, Windows, 和 Linux (仅 VAAPI) 平台的 HEVC 硬解功能，且开箱即用。若要集成软解，方法同上述 Chromium 教程相同。
 
 ## 更新历史
+
+`2023-07-02` Windows 平台添加 HEVC Rext 8bit 444, 12bit 422, 12bit 444 支持 (Chrome >= `117.0.5866.0`)
 
 `2023-02-22` 安卓平台的检测 API 已支持根据设备实际支持情况返回正确的结果 (Chrome >= `112.0.5612.0`)
 
