@@ -318,6 +318,10 @@ If Electron >= v22.0.0, the HEVC HW decoding feature for macOS, Windows, and Lin
 
 ## Change Log
 
+`2023-07-16` Apple Silicon + macOS 14 = adds HEVC SVC (L1T2) WebCodec encoding support (Chrome >= `117.0.5891.0`)
+
+`2023-07-07` Fixed 8bit HDR HEVC playback failure issue under Windows (Chrome >= `117.0.5877.0`)
+
 `2023-07-02` Add HEVC Rext 8bit 444, 12bit 422, 12bit 444 support on Windows (Chrome >= `117.0.5866.0`)
 
 `2023-02-22` Android platform now able to use the support detection API to detect the correct support status of different devices (Chrome >= `112.0.5612.0`)

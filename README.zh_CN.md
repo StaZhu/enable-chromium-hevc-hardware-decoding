@@ -317,6 +317,10 @@ Electron >= v22.0.0 已集成好 macOS, Windows, 和 Linux (仅 VAAPI) 平台的
 
 ## 更新历史
 
+`2023-07-16` Apple Silicon + macOS 14 以上系统添加 HEVC SVC (L1T2) WebCodec 编码支持 (Chrome >= `117.0.5891.0`)
+
+`2023-07-07` 修复 Windows 下 8bit HDR HEVC 播放失败问题 (Chrome >= `117.0.5877.0`)
+
 `2023-07-02` Windows 平台添加 HEVC Rext 8bit 444, 12bit 422, 12bit 444 支持 (Chrome >= `117.0.5866.0`)
 
 `2023-02-22` 安卓平台的检测 API 已支持根据设备实际支持情况返回正确的结果 (Chrome >= `112.0.5612.0`)
