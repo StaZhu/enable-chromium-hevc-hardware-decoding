@@ -39,9 +39,11 @@ HEVC Rext (partially supported, see the table below for details, up to 8192x8192
 
 ## What's the hardware encoding supported HEVC profile?
 
-HEVC Main (macOS & Windows only, macOS up to 4096x2304 px & 120 fps, Windows up to 1920*1088 px & 30 fps)
+HEVC Main (macOS & Windows & Android, macOS up to 4096x2304 px & 120 fps, Windows up to 1920*1088 px & 30 fps, Android up to the hardware)
 
-*Note 1: Chrome Media Team has no plan to support HEVC encoding in 2022, thus if you want to use this feature, the only way is passing a chrome switch to enable it（`--enable-features=PlatformHEVCEncoderSupport`）, and need to make sure Chrome version >= `109.0.5397.0`. [Test Page](https://webrtc.internaut.com/wc/wcWorker2/).*
+*Note 1: You need to pass a chrome switch to enable it（`--enable-features=PlatformHEVCEncoderSupport`）[Test Page](https://w3c.github.io/webcodecs/samples/encode-decode-worker/index.html).*
+
+*Note 2: Windows / Mac need to make sure Chrome version >= `109.0.5397.0`，Android need to make sure Chrome version >= `117.0.5899.0`。*
 
 ## What's the OS requirement?
 
@@ -59,7 +61,7 @@ Linux (Chrome version >= `108.0.5354.0`, and only supports GPUs that support VAA
 
 Video Decode: File, Media Source Extensions, WebCodec (8Bit requires >= `107.0.5272.0`, 10Bit + HEVC with Alpha requires >= `108.0.5343.0`), Clearkey and Widevine L1 (HW only) Encrypted Media Extensions are supported. WebRTC is not supported.
 
-Video Encode: WebCodec (Windows and macOS only, passing `--enable-features=PlatformHEVCEncoderSupport` and make sure browser >= `109.0.5397.0`) is supported.
+Video Encode: WebCodec (Windows, macOS, and Android, when passing `--enable-features=PlatformHEVCEncoderSupport`) is supported.
 
 ## What's the GPU requirement?
 
@@ -317,8 +319,9 @@ Some GPU hardware may has bug which will cause `D3D11VideoDecoder` forbidden to 
 If Electron >= v22.0.0, the HEVC HW decoding feature for macOS, Windows, and Linux (VAAPI only) should have already been integrated. To add HEVC SW decoding, the method should be the same with Chromium guide above.
 
 ## Change Log
+`2023-07-20` Add HEVC HW WebCodecs encoding support for Android 10+ (Chrome >= `117.0.5899.0`)
 
-`2023-07-16` Apple Silicon + macOS 14 = adds HEVC SVC (L1T2) WebCodec encoding support (Chrome >= `117.0.5891.0`)
+`2023-07-16` Apple Silicon + macOS 14 = adds HEVC SVC (L1T2) WebCodecs encoding support (Chrome >= `117.0.5891.0`)
 
 `2023-07-07` Fixed 8bit HDR HEVC playback failure issue under Windows (Chrome >= `117.0.5877.0`)
 

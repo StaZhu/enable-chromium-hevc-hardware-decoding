@@ -39,9 +39,11 @@ HEVC Rext (部分支持，细节见下表，最高支持 8192x8192 px)
 
 ## 支持硬编码哪些Profile？
 
-HEVC Main (仅 macOS & Windows, macOS 最高支持 4096x2304 px & 120 fps, Windows 最高支持 1920*1088 px & 30 fps)
+HEVC Main (macOS & Windows & Android, macOS 最高支持 4096x2304 px & 120 fps, Windows 最高支持 1920*1088 px & 30 fps, 安卓取决于硬件最高支持)
 
-*注1：Chrome Media Team 在 2022 年还没有计划在所有平台支持 HEVC 硬编码，因此只能通过 Chrome Switch（`--enable-features=PlatformHEVCEncoderSupport`）的方式测试使用，并需要确保 Chrome 版本号 >= `109.0.5397.0`。[测试页面](https://webrtc.internaut.com/wc/wcWorker2/)。*
+*注1：需要通过 Chrome Switch（`--enable-features=PlatformHEVCEncoderSupport`）的方式测试使用，[测试页面](https://w3c.github.io/webcodecs/samples/encode-decode-worker/index.html)。*
+
+*注2: Windows / Mac 须确保 Chrome 版本号 >= `109.0.5397.0`，Android 须确保 Chrome 版本号 >= `117.0.5899.0`。*
 
 ## 操作系统要求？
 
@@ -59,7 +61,7 @@ Linux (版本号须 >= `108.0.5354.0`, 仅支持 VAAPI 接口支持的 GPU，比
 
 视频解码：支持 File, Media Source Extensions, WebCodec (8Bit >= `107.0.5272.0`, 10Bit + HEVC with Alpha >= `108.0.5343.0`), Clearkey 以及 Widevine L1 (不支持L3) Encrypted Media Extensions, 不支持 WebRTC。
 
-视频编码：支持 WebCodec (目前仅支持 macOS 和 Windows，需要传启动参数：`--enable-features=PlatformHEVCEncoderSupport`, 并确保浏览器版本 >= `109.0.5397.0`)。
+视频编码：支持 WebCodec (支持 macOS, Windows, Androird，需要传启动参数：`--enable-features=PlatformHEVCEncoderSupport` 手动开启)。
 
 ## GPU要求？
 
@@ -317,7 +319,9 @@ Electron >= v22.0.0 已集成好 macOS, Windows, 和 Linux (仅 VAAPI) 平台的
 
 ## 更新历史
 
-`2023-07-16` Apple Silicon + macOS 14 以上系统添加 HEVC SVC (L1T2) WebCodec 编码支持 (Chrome >= `117.0.5891.0`)
+`2023-07-20` Android 10+ 新增 HEVC HW WebCodecs 编码支持 (Chrome >= `117.0.5899.0`)
+
+`2023-07-16` Apple Silicon + macOS 14 以上系统添加 HEVC SVC (L1T2) WebCodecs 编码支持 (Chrome >= `117.0.5891.0`)
 
 `2023-07-07` 修复 Windows 下 8bit HDR HEVC 播放失败问题 (Chrome >= `117.0.5877.0`)
 
