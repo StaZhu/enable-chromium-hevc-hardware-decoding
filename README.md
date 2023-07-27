@@ -319,6 +319,9 @@ Some GPU hardware may has bug which will cause `D3D11VideoDecoder` forbidden to 
 If Electron >= v22.0.0, the HEVC HW decoding feature for macOS, Windows, and Linux (VAAPI only) should have already been integrated. To add HEVC SW decoding, the method should be the same with Chromium guide above.
 
 ## Change Log
+
+`2023-07-28` Fixed latency issue with WebCodecs VideoDecoder implementation for H265 on Windows (detail: https://github.com/w3c/webcodecs/issues/698, Chrome >= `117.0.5913.0`)
+
 `2023-07-20` Add HEVC HW WebCodecs encoding support for Android 10+ (Chrome >= `117.0.5899.0`)
 
 `2023-07-16` Apple Silicon + macOS 14 = adds HEVC SVC (L1T2) WebCodecs encoding support (Chrome >= `117.0.5891.0`)

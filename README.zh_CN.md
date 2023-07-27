@@ -319,6 +319,8 @@ Electron >= v22.0.0 已集成好 macOS, Windows, 和 Linux (仅 VAAPI) 平台的
 
 ## 更新历史
 
+`2023-07-28` 修复 Windows HEVC WebCodecs VideoDecoder 特定视频帧输出延时问题 (见: https://github.com/w3c/webcodecs/issues/698, Chrome >= `117.0.5913.0`)
+
 `2023-07-20` Android 10+ 新增 HEVC HW WebCodecs 编码支持 (Chrome >= `117.0.5899.0`)
 
 `2023-07-16` Apple Silicon + macOS 14 以上系统添加 HEVC SVC (L1T2) WebCodecs 编码支持 (Chrome >= `117.0.5891.0`)
