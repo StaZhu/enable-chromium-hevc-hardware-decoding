@@ -80,6 +80,7 @@ const patches = [
       'libavcodec/aarch64/autorename_libavcodec_aarch64_hevcdsp_idct_neon.S',
       'libavcodec/aarch64/autorename_libavcodec_aarch64_hevcdsp_sao_neon.S',
       'libavcodec/aarch64/hevcdsp_deblock_neon.S',
+      'libavcodec/aarch64/hevcdsp_epel_neon.S',
       'libavcodec/aarch64/hevcdsp_qpel_neon.S',
     ]
   },

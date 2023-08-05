@@ -1,6 +1,6 @@
-From c09bfd5bdb624932890375980dc523a3a98e3f14 Mon Sep 17 00:00:00 2001
+From 72ac0cb271cac0ff593bf68eba10ee27fa27e424 Mon Sep 17 00:00:00 2001
 From: Sta Zhu <zhusidayoyo@hotmail.com>
-Date: Fri, 28 Jul 2023 01:17:39 +0800
+Date: Sat, 5 Aug 2023 12:26:12 +0800
 Subject: [PATCH] Video: Add HEVC ffmpeg decoder & parser
 
 Add ffmpeg software decoder and parser for HEVC, this will make
@@ -147,11 +147,11 @@ profiles to have software HEVC decoding ability.
  .../Chromium/win/x64/libavcodec/codec_list.c  |  1 +
  .../Chromium/win/x64/libavcodec/parser_list.c |  1 +
  chromium/scripts/build_ffmpeg.py              |  4 +-
- ffmpeg_generated.gni                          | 64 +++++++++++++++++++
+ ffmpeg_generated.gni                          | 65 +++++++++++++++++++
  ...ame_libavcodec_aarch64_hevcdsp_idct_neon.S |  2 +
  ...name_libavcodec_aarch64_hevcdsp_sao_neon.S |  2 +
  libavcodec/autorename_libavcodec_bswapdsp.c   |  2 +
- 143 files changed, 387 insertions(+), 251 deletions(-)
+ 143 files changed, 388 insertions(+), 251 deletions(-)
  create mode 100644 libavcodec/aarch64/autorename_libavcodec_aarch64_hevcdsp_idct_neon.S
  create mode 100644 libavcodec/aarch64/autorename_libavcodec_aarch64_hevcdsp_sao_neon.S
  create mode 100644 libavcodec/autorename_libavcodec_bswapdsp.c
@@ -3117,7 +3117,7 @@ index 44739f5d72..17ace16075 100755
  
    # Google ChromeOS specific configuration.
 diff --git a/ffmpeg_generated.gni b/ffmpeg_generated.gni
-index 375489c10e..13e31ffb2b 100644
+index 375489c10e..df7a100404 100644
 --- a/ffmpeg_generated.gni
 +++ b/ffmpeg_generated.gni
 @@ -242,6 +242,25 @@ if (use_linux_config && ffmpeg_branding == "ChromeOS") {
@@ -3169,7 +3169,7 @@ index 375489c10e..13e31ffb2b 100644
    ffmpeg_c_sources += [
      "libavcodec/x86/h264_qpel.c",
      "libavcodec/x86/h264chroma_init.c",
-@@ -504,6 +539,18 @@ if ((is_apple && current_cpu == "arm64") || (is_win && current_cpu == "arm64") |
+@@ -504,6 +539,19 @@ if ((is_apple && current_cpu == "arm64") || (is_win && current_cpu == "arm64") |
  }
  
  if ((is_apple && current_cpu == "arm64" && ffmpeg_branding == "Chrome") || (is_win && current_cpu == "arm64" && ffmpeg_branding == "Chrome") || (use_linux_config && current_cpu == "arm64" && ffmpeg_branding == "Chrome") || (use_linux_config && current_cpu == "arm64" && ffmpeg_branding == "ChromeOS")) {
@@ -3182,13 +3182,14 @@ index 375489c10e..13e31ffb2b 100644
 +    "libavcodec/aarch64/autorename_libavcodec_aarch64_hevcdsp_idct_neon.S",
 +    "libavcodec/aarch64/autorename_libavcodec_aarch64_hevcdsp_sao_neon.S",
 +    "libavcodec/aarch64/hevcdsp_deblock_neon.S",
-+    "libavcodec/aarch64/hevcdsp_qpel_neon.S"
++    "libavcodec/aarch64/hevcdsp_epel_neon.S",
++    "libavcodec/aarch64/hevcdsp_qpel_neon.S",
 +  ]
 +
    ffmpeg_c_sources += [
      "libavcodec/aarch64/h264chroma_init_aarch64.c",
      "libavcodec/aarch64/h264dsp_init_aarch64.c",
-@@ -568,6 +615,11 @@ if (use_linux_config && current_cpu == "arm64" && ffmpeg_branding == "ChromeOS")
+@@ -568,6 +616,11 @@ if (use_linux_config && current_cpu == "arm64" && ffmpeg_branding == "ChromeOS")
  }
  
  if ((use_linux_config && current_cpu == "arm" && arm_use_neon && ffmpeg_branding == "Chrome") || (use_linux_config && current_cpu == "arm" && arm_use_neon && ffmpeg_branding == "ChromeOS") || (use_linux_config && current_cpu == "arm" && ffmpeg_branding == "Chrome") || (use_linux_config && current_cpu == "arm" && ffmpeg_branding == "ChromeOS")) {
@@ -3200,7 +3201,7 @@ index 375489c10e..13e31ffb2b 100644
    ffmpeg_c_sources += [
      "libavcodec/arm/h264chroma_init_arm.c",
      "libavcodec/arm/h264dsp_init_arm.c",
-@@ -579,6 +631,18 @@ if ((use_linux_config && current_cpu == "arm" && arm_use_neon && ffmpeg_branding
+@@ -579,6 +632,18 @@ if ((use_linux_config && current_cpu == "arm" && arm_use_neon && ffmpeg_branding
  }
  
  if ((use_linux_config && current_cpu == "arm" && arm_use_neon && ffmpeg_branding == "Chrome") || (use_linux_config && current_cpu == "arm" && arm_use_neon && ffmpeg_branding == "ChromeOS")) {
@@ -3247,5 +3248,5 @@ index 0000000000..3accbac3e4
 +#include "bswapdsp.c"
 \ No newline at end of file
 -- 
-2.37.2.windows.2
+2.39.2 (Apple Git-143)
 
