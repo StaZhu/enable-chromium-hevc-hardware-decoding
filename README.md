@@ -20,22 +20,24 @@ HEVC Main Still Picture (only Windows is not supported, up to 8192x8192 pixels)
 
 HEVC Rext (partially supported, see the table below for details, up to 8192x8192 pixels)
 
-|        GPU             | 8b 420 | 8b 422 |      8b 444    | 10b 420  | 10b 422 | 10b 444 | 12b 420 |    12b 422    |    12b 444     |
-| :--------------------- | :----- | :----- | :------------- | :------- | :------ | :------ | :------ | :------------ | :------------- |
-|  Apple Silicon (macOS) |   ✅    |   ✅   |       ✅       |    ✅    |    ✅    |    ✅   |    ❌   |       ❌       |       ❌       |
-| Intel ICL ~ TGLx (Win) |   ✅    |   ❌   |✅<sup>[4]</sup>|    ✅    |    ✅    |    ✅   |    ❌   |       ❌       |       ❌       |
-|    Intel TGLx+ (Win)   |   ✅    |   ❌   |✅<sup>[4]</sup>|    ✅    |    ✅    |    ✅   |    ✅   |✅<sup>[4]</sup>|✅<sup>[4]</sup>|
+|        GPU             | 8b 420 |     8b 422     |      8b 444    | 10b 420  | 10b 422 | 10b 444 | 12b 420 |    12b 422    |    12b 444     |
+| :--------------------- | :----- | :------------- | :------------- | :------- | :------ | :------ | :------ | :------------ | :------------- |
+|  Apple Silicon (macOS) |   ✅    |       ✅       |       ✅       |    ✅    |    ✅    |    ✅   |    ❌   |       ❌       |       ❌       |
+| Intel ICL ~ TGLx (Win) |   ✅    |✅<sup>[5]</sup>|✅<sup>[4]</sup>|    ✅    |    ✅    |    ✅   |    ❌   |       ❌       |       ❌       |
+|    Intel TGLx+ (Win)   |   ✅    |✅<sup>[5]</sup>|✅<sup>[4]</sup>|    ✅    |    ✅    |    ✅   |    ✅   |✅<sup>[4]</sup>|✅<sup>[4]</sup>|
 
 ✅：GPU + software support
 ❌：GPU not support
 
 *Note 1: Intel Macs support HEVC Rext software decoding of 8 ~ 12b 400, 420, 422, 444 contents. Apple Silicon Mac supports HEVC Rext hardware decoding of 8 ~ 10b 400, 420, 422, 444 contents, and software decoding of 12b 400, 420, 422, 444 contents on macOS 13+.*
 
-*Note 2: Intel Gen10 GPUs support HEVC Rext hardware decoding of 8b 420, 8b 444, 10b 420, 10b 422, 10b 444 contents on Windows. Gen11+ GPUs additionally support HEVC Rext hardware decoding of 12b 420, 12b 422, 12b 444 contents.*
+*Note 2: Intel Gen10 GPUs support HEVC Rext hardware decoding of 8b 420, 8b 422, 8b 444, 10b 420, 10b 422, 10b 444 contents on Windows. Gen11+ GPUs additionally support HEVC Rext hardware decoding of 12b 420, 12b 422, 12b 444 contents.*
 
 *Note 3: Although NVIDIA GPUs support HEVC Rext hardware decoding of 8 ~ 12b non-422 contents via CUVIA or NVDEC, but because they did not provide a D3D11 interface, thus Chromium will not support it in the future.*
 
 *Note 4: HEVC 8b 444, 12b 422, 12b 444 support requires Chrome >= `117.0.5866.0`.*
+
+*Note 5: HEVC 8b 422 support requires Chrome >= `118.0.5956.0`.*
 
 ## What's the hardware encoding supported HEVC profile?
 
@@ -319,6 +321,8 @@ Some GPU hardware may has bug which will cause `D3D11VideoDecoder` forbidden to 
 If Electron >= v22.0.0, the HEVC HW decoding feature for macOS, Windows, and Linux (VAAPI only) should have already been integrated. To add HEVC SW decoding, the method should be the same with Chromium guide above.
 
 ## Change Log
+
+`2023-08-21` Add HEVC Rext 8bit 422 support on Windows (Chrome >= `118.0.5956.0`)
 
 `2023-07-28` Fixed latency issue with WebCodecs VideoDecoder implementation for H265 on Windows (detail: https://github.com/w3c/webcodecs/issues/698, Chrome >= `117.0.5913.0`)
 

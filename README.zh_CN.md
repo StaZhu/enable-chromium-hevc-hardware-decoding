@@ -20,22 +20,24 @@ HEVC Main Still Picture (Windows 不支持，最高支持 8192x8192 px)
 
 HEVC Rext (部分支持，细节见下表，最高支持 8192x8192 px)
 
-|        GPU             | 8b 420 | 8b 422 |      8b 444    | 10b 420  | 10b 422 | 10b 444 | 12b 420 |    12b 422    |    12b 444     |
-| :--------------------- | :----- | :----- | :------------- | :------- | :------ | :------ | :------ | :------------ | :------------- |
-|  Apple Silicon (macOS) |   ✅    |   ✅   |       ✅       |    ✅    |    ✅    |    ✅   |    ❌   |       ❌       |       ❌       |
-| Intel ICL ~ TGLx (Win) |   ✅    |   ❌   |✅<sup>[4]</sup>|    ✅    |    ✅    |    ✅   |    ❌   |       ❌       |       ❌       |
-|    Intel TGLx+ (Win)   |   ✅    |   ❌   |✅<sup>[4]</sup>|    ✅    |    ✅    |    ✅   |    ✅   |✅<sup>[4]</sup>|✅<sup>[4]</sup>|
+|        GPU             | 8b 420 |     8b 422     |      8b 444    | 10b 420  | 10b 422 | 10b 444 | 12b 420 |    12b 422    |    12b 444     |
+| :--------------------- | :----- | :------------- | :------------- | :------- | :------ | :------ | :------ | :------------ | :------------- |
+|  Apple Silicon (macOS) |   ✅    |       ✅       |       ✅       |    ✅    |    ✅    |    ✅   |    ❌   |       ❌       |       ❌       |
+| Intel ICL ~ TGLx (Win) |   ✅    |✅<sup>[5]</sup>|✅<sup>[4]</sup>|    ✅    |    ✅    |    ✅   |    ❌   |       ❌       |       ❌       |
+|    Intel TGLx+ (Win)   |   ✅    |✅<sup>[5]</sup>|✅<sup>[4]</sup>|    ✅    |    ✅    |    ✅   |    ✅   |✅<sup>[4]</sup>|✅<sup>[4]</sup>|
 
 ✅：显卡+软件都支持
 ❌：显卡不支持
 
 *注1：Intel Mac 支持软解 HEVC Rext 8 ~ 12b 400, 420, 422, 444 的内容。Apple Silicon Mac 支持硬解 HEVC Rext 8 ～ 10b 400, 420, 422, 444 的内容，在 macOS 13+ 支持软解 HEVC Rext 12b 400, 420, 422, 444 的内容。*
 
-*注2：Intel 10 代 GPU 支持硬解 HEVC Rext 8b 420, 8b 444, 10b 420, 10b 422, 10b 444 的内容。11 代及以后的 GPU 还支持硬解 HEVC Rext 12b 420, 12b 422, 12b 444 的内容。*
+*注2：Intel 10 代 GPU 支持硬解 HEVC Rext 8b 420, 8b 422, 8b 444, 10b 420, 10b 422, 10b 444 的内容。11 代及以后的 GPU 还支持硬解 HEVC Rext 12b 420, 12b 422, 12b 444 的内容。*
 
 *注3：尽管 NVIDIA GPU 支持 8 ~ 12b 非 422 HEVC Rext CUVIA 或 NVDEC 硬解码，但由于 NVIDIA 没有给 D3D11 接口暴露这部分能力，因此 Chromium 以后也不会支持它们。*
 
 *注4：Windows HEVC 8b 444, 12b 422, 12b 444 支持需要 Chrome >= `117.0.5866.0`。*
+
+*注5：Windows HEVC 8b 422 支持需要 Chrome >= `118.0.5956.0`。*
 
 ## 支持硬编码哪些Profile？
 
@@ -318,6 +320,8 @@ Safari 和 Chromium 二者均使用 `VideoToolbox` 解码器完成硬解。
 Electron >= v22.0.0 已集成好 macOS, Windows, 和 Linux (仅 VAAPI) 平台的 HEVC 硬解功能，且开箱即用。若要集成软解，方法同上述 Chromium 教程相同。
 
 ## 更新历史
+
+`2023-08-21` Windows 平台添加 HEVC Rext 8bit 422 支持 (Chrome >= `118.0.5956.0`)
 
 `2023-07-28` 修复 Windows HEVC WebCodecs VideoDecoder 特定视频帧输出延时问题 (见: https://github.com/w3c/webcodecs/issues/698, Chrome >= `117.0.5913.0`)
 
