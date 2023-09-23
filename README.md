@@ -322,6 +322,8 @@ If Electron >= v22.0.0, the HEVC HW decoding feature for macOS, Windows, and Lin
 
 ## Change Log
 
+`2023-09-23` Fix 10bit video playback issues for AMD GPU on Windows platform (black screen when playing HLG video in SDR mode, 4K freezes, high memory usage, color change when switching full-screen, crash when playing SDR video in HDR mode, Chrome >= `119.0.6022.0`)
+
 `2023-08-21` Add HEVC Rext 8bit 422 support on Windows (Chrome >= `118.0.5956.0`)
 
 `2023-07-28` Fixed latency issue with WebCodecs VideoDecoder implementation for H265 on Windows (detail: https://github.com/w3c/webcodecs/issues/698, Chrome >= `117.0.5913.0`)

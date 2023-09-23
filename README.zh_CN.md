@@ -321,6 +321,8 @@ Electron >= v22.0.0 已集成好 macOS, Windows, 和 Linux (仅 VAAPI) 平台的
 
 ## 更新历史
 
+`2023-09-23` Windows 平台 AMD 显卡 10bit 播放视频问题修复（SDR 模式下播放 HLG 视频黑屏，4K 卡顿，显存占用高，播放 PQ 视频可能导致全屏颜色变化，HDR 模式下播放 10bit SDR 视频崩溃, Chrome >= `119.0.6022.0`）
+
 `2023-08-21` Windows 平台添加 HEVC Rext 8bit 422 支持 (Chrome >= `118.0.5956.0`)
 
 `2023-07-28` 修复 Windows HEVC WebCodecs VideoDecoder 特定视频帧输出延时问题 (见: https://github.com/w3c/webcodecs/issues/698, Chrome >= `117.0.5913.0`)
