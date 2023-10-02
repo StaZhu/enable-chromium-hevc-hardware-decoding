@@ -93,13 +93,13 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra and above
 
 |                 |   PQ     |   HDR10  |  HDR10+  |   HLG    |  DV P5   |  DV P8.1  |  DV P8.4    |
 | :-------------- | :------- | :------- | :------- | :------- |:-------- |:--------- |:----------- |
-| Chrome 114 Mac  |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
-| Chrome 114 Win  |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
-|  Edge 114 Mac   |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
-|  Edge 114 Win   |    ❌    |     ❌    |    ❌    |    ✅    |    ❌     |     ❌     |     ✅     |
-| Safari 16.5 Mac |    ✅    |     ✅    |    ✅    |    ✅    |    ✅     |     ✅     |     ✅     |
+| Chrome 117 Mac  |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
+| Chrome 117 Win  |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
+|  Edge 117 Mac   |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
+|  Edge 117 Win   |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
+| Safari 17.0 Mac |    ✅    |     ✅    |    ✅    |    ✅    |    ✅     |     ✅     |     ✅     |
 
-On Windows platform, Chrome supports PQ, HDR10 (PQ with static metadata), and HLG. Automatic Tone-mapping will be enabled based on static metadata (if present). HDR10+ SEI dynamic metadata wil be ignored while decoding and playback will downgrade to HDR10. The decoding implementation of Edge is different from that of Chrome / Chromium, there is a problem of abnormal PQ HDR Tone-mapping when playing in SDR mode.
+On Windows platform, Chrome supports PQ, HDR10 (PQ with static metadata), and HLG. Automatic Tone-mapping will be enabled based on static metadata (if present). HDR10+ SEI dynamic metadata wil be ignored while decoding and playback will downgrade to HDR10.
 
 On macOS platform, Chrome supports PQ, HDR10 (PQ with static metadata), HLG. In SDR / HDR / Hybrid mode, the macOS system will automatically perform EDR to ensure that HDR is displayed correctly. Chrome / Edge shared the same code thus has the same decoding ability, Safari also supports the above all HDR formats.
 
@@ -270,7 +270,7 @@ try {
 
 #### Windows
 
-Edge uses `VDAVideoDecoder` to call `MediaFoundation` (need to install `HEVC Video Extension`) to finish the HEVC HW decoding which is the same tech behind `Movies and TV` builtin system app.
+Edge uses `MediaFoundationRender` to call `MediaFoundation` (need to install `HEVC Video Extension`) to finish the HEVC HW decoding which is the same tech behind `Movies and TV` builtin system app.
 
 Chromium uses `D3D11VideoDecoder` to call `D3D11VA` (no need to install anything) to finish the HEVC HW decoding which is the same tech behind video players like `VLC`.
 
@@ -321,6 +321,8 @@ Some GPU hardware may has bug which will cause `D3D11VideoDecoder` forbidden to 
 If Electron >= v22.0.0, the HEVC HW decoding feature for macOS, Windows, and Linux (VAAPI only) should have already been integrated. To add HEVC SW decoding, the method should be the same with Chromium guide above.
 
 ## Change Log
+
+`2023-10-02` Update HDR10/PQ support status on Edge 117
 
 `2023-09-23` Fix 10bit video playback issues for AMD GPU on Windows platform (black screen when playing HLG video in SDR mode, 4K freezes, high memory usage, color change when switching full-screen, crash when playing SDR video in HDR mode, Chrome >= `119.0.6022.0`)
 

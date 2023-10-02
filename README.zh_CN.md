@@ -93,13 +93,13 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra 及以上
 
 |                 |   PQ     |   HDR10  |  HDR10+  |   HLG    |  DV P5   |  DV P8.1  |  DV P8.4    |
 | :-------------- | :------- | :------- | :------- | :------- |:-------- |:--------- |:----------- |
-| Chrome 114 Mac  |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
-| Chrome 114 Win  |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
-|  Edge 114 Mac   |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
-|  Edge 114 Win   |    ❌    |     ❌    |    ❌    |    ✅    |    ❌     |     ❌     |     ✅     |
-| Safari 16.5 Mac |    ✅    |     ✅    |    ✅    |    ✅    |    ✅     |     ✅     |     ✅     |
+| Chrome 117 Mac  |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
+| Chrome 117 Win  |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
+|  Edge 117 Mac   |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
+|  Edge 117 Win   |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ❌     |     ✅     |
+| Safari 17.0 Mac |    ✅    |     ✅    |    ✅    |    ✅    |    ✅     |     ✅     |     ✅     |
 
-在 Windows 平台，Chrome 支持 PQ、HDR10 (含静态元数据的 PQ)、HLG，会基于静态元数据（如果存在）自动进行 Tone-mapping。HDR10+ 的 SEI 动态元数据在解码时会被忽略，并以 HDR10 降级播放。由于 Edge 的解码实现和 Chrome / Chromium 不同，在 SDR 模式播放时，存在 PQ HDR Tone-mapping 异常的问题。
+在 Windows 平台，Chrome 支持 PQ、HDR10 (含静态元数据的 PQ)、HLG，会基于静态元数据（如果存在）自动进行 Tone-mapping。HDR10+ 的 SEI 动态元数据在解码时会被忽略，并以 HDR10 降级播放。
 
 在 macOS 平台，Chrome 支持 PQ、HDR10 (含静态元数据的 PQ)、HLG。在 SDR / HDR / 自动模式下，macOS 系统会自动进行 EDR 以确保 HDR 显示正确，Chrome / Edge 实现相同，支持情况一致，Safari 同样支持上述所有 HDR 格式。
 
@@ -269,7 +269,7 @@ try {
 
 #### Windows
 
-Edge 使用 `VDAVideoDecoder` 调用 `MediaFoundation`（需要安装`HEVC视频扩展`插件）完成硬解，和系统自带的 `电影与电视` 用的解码器相同。
+Edge 使用 `MediaFoundationRender` 调用 `MediaFoundation`（需要安装`HEVC视频扩展`插件）完成硬解，和系统自带的 `电影与电视` 用的解码器相同。
 
 Chromium 使用 `D3D11VideoDecoder` 调用 `D3D11VA` （无需安装插件）完成硬解，和 `VLC` 等视频播放器用的解码器相同。
 
@@ -320,6 +320,7 @@ Safari 和 Chromium 二者均使用 `VideoToolbox` 解码器完成硬解。
 Electron >= v22.0.0 已集成好 macOS, Windows, 和 Linux (仅 VAAPI) 平台的 HEVC 硬解功能，且开箱即用。若要集成软解，方法同上述 Chromium 教程相同。
 
 ## 更新历史
+`2023-10-02` 更新 Edge 117 HEVC HDR10/PQ 支持情况
 
 `2023-09-23` Windows 平台 AMD 显卡 10bit 播放视频问题修复（SDR 模式下播放 HLG 视频黑屏，4K 卡顿，显存占用高，播放 PQ 视频可能导致全屏颜色变化，HDR 模式下播放 10bit SDR 视频崩溃, Chrome >= `119.0.6022.0`）
 
