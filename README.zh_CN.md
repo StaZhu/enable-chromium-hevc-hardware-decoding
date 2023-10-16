@@ -269,7 +269,7 @@ try {
 
 #### Windows
 
-Edge 使用 `MediaFoundationRender` 调用 `MediaFoundation`（需要安装`HEVC视频扩展`插件）完成硬解，和系统自带的 `电影与电视` 用的解码器相同。
+Edge 使用 `MediaFoundationRenderer` 调用 `MediaFoundation`（需要安装`HEVC视频扩展`插件）完成硬解，和系统自带的 `电影与电视` 用的解码器相同。
 
 Chromium 使用 `D3D11VideoDecoder` 调用 `D3D11VA` （无需安装插件）完成硬解，和 `VLC` 等视频播放器用的解码器相同。
 
@@ -320,6 +320,9 @@ Safari 和 Chromium 二者均使用 `VideoToolbox` 解码器完成硬解。
 Electron >= v22.0.0 已集成好 macOS, Windows, 和 Linux (仅 VAAPI) 平台的 HEVC 硬解功能，且开箱即用。若要集成软解，方法同上述 Chromium 教程相同。
 
 ## 更新历史
+
+`2023-10-10` 禁用 `20.19.15.4284` - `20.19.15.5172` 可能导致 HEVC 崩溃的驱动版本 (Chrome >= `120.0.6059.0`)
+
 `2023-10-02` 更新 Edge 117 HEVC HDR10/PQ 支持情况
 
 `2023-09-23` Windows 平台 AMD 显卡 10bit 播放视频问题修复（SDR 模式下播放 HLG 视频黑屏，4K 卡顿，显存占用高，播放 PQ 视频可能导致全屏颜色变化，HDR 模式下播放 10bit SDR 视频崩溃, Chrome >= `119.0.6022.0`）

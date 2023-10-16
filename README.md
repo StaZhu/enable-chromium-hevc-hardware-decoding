@@ -270,7 +270,7 @@ try {
 
 #### Windows
 
-Edge uses `MediaFoundationRender` to call `MediaFoundation` (need to install `HEVC Video Extension`) to finish the HEVC HW decoding which is the same tech behind `Movies and TV` builtin system app.
+Edge uses `MediaFoundationRenderer` to call `MediaFoundation` (need to install `HEVC Video Extension`) to finish the HEVC HW decoding which is the same tech behind `Movies and TV` builtin system app.
 
 Chromium uses `D3D11VideoDecoder` to call `D3D11VA` (no need to install anything) to finish the HEVC HW decoding which is the same tech behind video players like `VLC`.
 
@@ -322,7 +322,9 @@ If Electron >= v22.0.0, the HEVC HW decoding feature for macOS, Windows, and Lin
 
 ## Change Log
 
-`2023-10-02` Update HDR10/PQ support status on Edge 117
+`2023-10-10` Block Intel driver version between `20.19.15.4284` and `20.19.15.5172` that could cause HEVC playback crash (Chrome >= `120.0.6059.0`)
+
+`2023-10-02` Update HDR10/PQ support status for Edge 117
 
 `2023-09-23` Fix 10bit video playback issues for AMD GPU on Windows platform (black screen when playing HLG video in SDR mode, 4K freezes, high memory usage, color change when switching full-screen, crash when playing SDR video in HDR mode, Chrome >= `119.0.6022.0`)
 
