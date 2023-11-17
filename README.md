@@ -322,6 +322,8 @@ If Electron >= v22.0.0, the HEVC HW decoding feature for macOS, Windows, and Lin
 
 ## Change Log
 
+`2023-11-16` Support MV-HEVC Base Layer playback (Chrome >= `121.0.6131.0`)
+
 `2023-10-20` Fixed Winodows CRA/RASL image artifact issue when seeking (Chrome >= `120.0.6076.0`)
 
 `2023-10-10` Block Intel driver version between `20.19.15.4284` and `20.19.15.5172` that could cause HEVC playback crash (Chrome >= `120.0.6059.0`)

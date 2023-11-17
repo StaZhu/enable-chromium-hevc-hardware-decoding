@@ -321,6 +321,8 @@ Electron >= v22.0.0 已集成好 macOS, Windows, 和 Linux (仅 VAAPI) 平台的
 
 ## 更新历史
 
+`2023-11-16` 支持 MV-HEVC Base Layer 播放 (Chrome >= `121.0.6131.0`)
+
 `2023-10-20` 修复 Winodows CRA/RASL Seek 时可能导致马赛克画面的问题 (Chrome >= `120.0.6076.0`)
 
 `2023-10-10` 禁用 `20.19.15.4284` - `20.19.15.5172` 可能导致 HEVC 崩溃的驱动版本 (Chrome >= `120.0.6059.0`)
