@@ -105,11 +105,54 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra 及以上
 
 #### Dolby Vision 支持情况说明
 
-在 Windows 平台，对于加密杜比视界内容，Chrome >= 110时，支持 Profile 4/5/8，在传入 `--enable-features=PlatformEncryptedDolbyVision` 启动参数开启后，且系统已安装杜比视界插件 + HEVC视频扩展插件的情况下，使用 API 查询时会返回“支持”。对于非加密杜比视界内容，Dolby Vision Profile 8.1/8.4 的 RPU 动态元数据在解码时会被忽略，并以 HDR10 / HLG 降级播放, 使用 API 查询时会返回"不支持"（例如：`MediaSource.isTypeSupported('video/mp4;codecs="dvh1.08.07"')`），不支持 Profile 5（IPTPQc2），播放时会出现颜色异常。
+这里情况分为两种：
+1. 第一种：支持 RPU 动态元数据，支持 Profile 5（IPTPQc2）播放。
+2. 第二种：支持 Profile 8/9 等 Cross-compatible Profile，以 HDR10/HLG/SDR 渲染播放。
 
-在 macOS 平台，支持非加密的杜比视界 Profile 8.1/8.4，但使用 API 查询时仍会返回"不支持"（例如：`MediaSource.isTypeSupported('video/mp4;codecs="dvh1.08.07"')`）。Safari 是唯一支持 Profile 5 的浏览器，Chrome / Edge 使用 VideoToolbox 解码，测试结果显示直接使用 VideoToolBox 解码并不能支持杜比视界 Profile 5，因此 Chrome / Edge 目前均不支持杜比视界 Profile 5。
+对于第一种，目前仅 Chromecast 和 Windows 平台具有有限的支持，在 Windows 平台，Chrome 支持加密杜比视界内容。Chrome >= 110 的版本，手动传入 `--enable-features=PlatformEncryptedDolbyVision` 启动参数，在系统已安装杜比视界插件 + HEVC视频扩展插件的情况下，支持 Profile 4/5/8，使用 API 查询时会返回“支持”（注：对于外置 HDR 显示器，如果开启 HDR 模式，微软的 MediaFoundation 存在Bug，不会返回“支持” 结果）。
 
-上述两个平台均不支持双层杜比视界。
+对于第二种，例如具有 HLG, HDR10, SDR 兼容性的 Profile 8/9，在使用 API 以 `dvh1`, `dvhe`, `dva1`, `dvav` 查询时会返回 "不支持"（例如：`MediaSource.isTypeSupported('video/mp4;codecs="dvh1.08.07"')`），以 `hvc1`, `hev1`, `avc1`, `avc3` 查询时会返回"支持"，具体版本的 Chrome，实现细节有所不同：
+
+Chrome >= 122，正常情况，只要平台支持 HEVC，则支持，假定开发者使用的 API 是 MSE，则整体流程大致如下：
+
+```javascript
+if (isTypeSupported('video/mp4;codecs="dvh1.08.07"')) {
+  if (use_rpu) {
+    // 播放成功，Chrome 内部认为 Codec 为 杜比视界，并使用 RPU 动态元数据。
+    source.addSourceBuffer('video/mp4;codecs="dvh1.08.07"');
+    ...
+  } else if (dvcc.dv_bl_signal_compatibility_id === 1 ||
+             dvcc.dv_bl_signal_compatibility_id === 2 ||
+             dvcc.dv_bl_signal_compatibility_id === 4) {
+    // 播放成功，Chrome 内部认为 Codec 为 HEVC，忽略 RPU 动态元数据
+    // 并以 HLG/HDR10/SDR 格式解码渲染。
+    // 注意：如果是 Profile5，只能基于 `dvh1` 或 `dvhe` 创建 Source Buffer
+    source.addSourceBuffer('video/mp4;codecs="hev1.2.4.L120.90"');
+    ...
+  } else {
+    // 播放失败，不向下兼容的杜比 Profile，不可以使用 HEVC 构造
+    // Source Buffer。
+  }
+} else if (isTypeSupported('video/mp4;codecs="hev1.2.4.L120.90"')) {
+  if (dvcc.dv_bl_signal_compatibility_id === 1 ||
+      dvcc.dv_bl_signal_compatibility_id === 2 ||
+      dvcc.dv_bl_signal_compatibility_id === 4) {
+    // 播放成功，Chrome 内部认为 Codec 为 HEVC，忽略 RPU 动态元数据
+    // 并以 HLG/HDR10/SDR 渲染。
+    source.addSourceBuffer('video/mp4;codecs="hev1.2.4.L120.90"');
+    ...
+  } else {
+    // 播放失败，例如 Chrome 不支持 Profile 5 时，但你使用 HEVC 构造
+    // 了 Source Buffer。
+  }
+} else {
+  // 播放失败，HEVC 不支持。
+}
+```
+
+110 ～ 121 版本的 Windows Chrome, 开发者需要注意，不管啥情况都是播不成的，这不是你的问题，是浏览器的问题。如果是其他平台的 Chrome, 比如：macOS, Android 等，可以正常以 `hvc1`, `hev1`, `avc1`, `avc3` 构建 SourceBuffer 并播放 Profile 8 等兼容杜比视界内容，只要视频的 Sample Entry 不是 `dvh1`, `dvhe`, `dva1`, `dvav` 就可以。
+
+107 ～ 109 版本，可以正常以 `hvc1`, `hev1`, `avc1`, `avc3` 构建 SourceBuffer 并播放 Profile8 等兼容 Dolby Vision 内容，只要视频的 Sample Entry 不是 `dvh1`, `dvhe`, `dva1`, `dvav` 就可以。
 
 #### 不同版本 Chrome 的 HDR 支持情况
 
@@ -120,6 +163,10 @@ Chrome 108 支持了提取 HEVC 静态元数据的能力，对于容器内写入
 Chrome 109 开始，HDR -> SDR 流程切换为 16 bit + 零拷贝，提升了 Windows 下的 PQ Tone-mapping 的精准度，HLG 对比度不足问题也得以解决，还降低了大概 50% 的显存占用。
 
 Chrome 110 主要解决静态元数据提取不完整的问题，支持从比特流和容器同时提取静态元数据，部分 HDR10 视频在 macOS 和 Windows 下高光部分不够亮的问题得以解决，至此所有 HDR 问题均已解决。
+
+Chrome 119 解决了 Windows 平台 AMD 显卡 10bit 播放视频问题（SDR 模式下播放 HLG 视频黑屏，4K 卡顿，显存占用高，播放 PQ 视频可能导致全屏颜色变化，HDR 模式下播放 10bit SDR 视频崩溃）。
+
+Chrome 122 主要解决了杜比视界 Profile8 兼容播放等问题。
 
 ## 如何验证特定 Profile, 分辨率的视频是否可以播放？
 
@@ -319,6 +366,8 @@ Safari 和 Chromium 二者均使用 `VideoToolbox` 解码器完成硬解。
 Electron >= v22.0.0 已集成好 macOS, Windows, 和 Linux (仅 VAAPI) 平台的 HEVC 硬解功能，且开箱即用。若要集成软解，方法同上述 Chromium 教程相同。
 
 ## 更新历史
+
+`2023-12-08` 提升杜比视界播放能力 (Chrome >= `122.0.6168.0`)
 
 `2023-11-16` 支持 MV-HEVC Base Layer 播放 (Chrome >= `121.0.6131.0`)
 

@@ -105,11 +105,56 @@ On macOS platform, Chrome supports PQ, HDR10 (PQ with static metadata), HLG. In 
 
 #### Dolby Vision Supports Status
 
-On Windows platoform, for encrypted Dolby Vision content, when Chrome >= 110, Profile 4/5/8 are supported, when passing the `--enable-features=PlatformEncryptedDolbyVision` switch to launch Chrome, and when the system has installed the Dolby Vision Extension + HEVC Video Extension, "Supported" will be returned when querying the API. For non-encrypted Dolby Vision content, the RPU dynamic metadata of Dolby Vision Profile 8.1/8.4 will be ignored when decoding, and played with HDR10 / HLG downgrade instead, and will return "not supported" when using API query (for example: `MediaSource. isTypeSupported('video/mp4;codecs="dvh1.08.07"')`), Profile 5 (IPTPQc2) is not supported, and the color will be abnormal during playback.
+There are two type of support type here:
+1. Type 1: Supports RPU dynamic metadata and Profile 5 (IPTPQc2).
+2. Type 2: Supports profiles like Profile 8/9 that has cross-compatible HDR10/HLG/SDR support.
 
-On macOS platform, the non-encrypted Dolby Vision Profile 8.1/8.4 are supported, but "not supported" will still be returned when using the API query (for example: `MediaSource.isTypeSupported('video/mp4;codecs="dvh1.08.07"')`). Safari is the only browser that supports Profile 5. Chrome / Edge uses VideoToolbox to decode, and the test results show that directly using VideoToolbox can not decode Dolby Vision Profile 5 correctly, so Chrome / Edge doesn't support Dolby Vision Profile 5 for now.
+For the first type, currently only Chromecast and Windows platforms have very limited support. On Windows platform, Chrome supports encrypted Dolby Vision content, for versions of Chrome >= 110, when manually passing `--enable-features=PlatformEncryptedDolbyVision` switch and launch Chrome and when the system has installed the Dolby Vision extension and HEVC video extension, Profile 4/5/8 will be supported, "Supported" will be returned when querying the API (Note: For external HDR displays, if HDR mode is turned on, Microsoft's MediaFoundation has a bug and will not return "Supported" results).
 
-Neither of the platforms supports dual-layer Dolby Vision.
+For the second type, Profile 8/9 with cross-compatibility such as HLG, HDR10, SDR, using API to query with `dvh1`, `dvhe`, `dva1`, `dvav` will return "not supported" (for example :`MediaSource.isTypeSupported('video/mp4;codecs="dvh1.08.07"')`), while when querying with `hvc1`, `hev1`, `avc1`, `avc3`, "supported" will be returned. The specific version of Chrome has different implementation details:
+
+Chrome >= 122. as long as the platform supports HEVC, then it is supported. Assuming that the API used by developers is MSE, the logic will be something like below:
+
+```javascript
+if (isTypeSupported('video/mp4;codecs="dvh1.08.07"')) {
+   if (use_rpu) {
+     // Playback should success. Chrome internally considers the codec to be Dolby Vision 
+     // and uses RPU dynamic metadata.
+     source.addSourceBuffer('video/mp4;codecs="dvh1.08.07"');
+     ...
+   } else if (dvcc.dv_bl_signal_compatibility_id === 1 ||
+              dvcc.dv_bl_signal_compatibility_id === 2 ||
+              dvcc.dv_bl_signal_compatibility_id === 4) {
+     // Playback should success. Chrome internally considers the codec to be HEVC,
+     // ignores RPU dynamic metadata, decode and render in HLG/HDR10/SDR mode.
+     // Note: If it is profile 5, source buffer can only be created with `dvh1` or `dvhe`
+     // mimetype.
+     source.addSourceBuffer('video/mp4;codecs="hev1.2.4.L120.90"');
+     ...
+   } else {
+     // Playback should fails, for incompatible dolby profiles, if you use HEVC construct
+     // source buffer, it will always fails.
+   }
+} else if (isTypeSupported('video/mp4;codecs="hev1.2.4.L120.90"')) {
+   if (dvcc.dv_bl_signal_compatibility_id === 1 ||
+       dvcc.dv_bl_signal_compatibility_id === 2 ||
+       dvcc.dv_bl_signal_compatibility_id === 4) {
+     // Playback should success. Chrome internally considers the codec to be HEVC,
+     // ignores RPU dynamic metadata, decode and render in HLG/HDR10/SDR mode.
+     source.addSourceBuffer('video/mp4;codecs="hev1.2.4.L120.90"');
+     ...
+   } else {
+     // Playback should fails, for example when Chrome does not support profile 5 but you use 
+     // HEVC construct SourceBuffer.
+   }
+} else {
+   // Playback should fails, HEVC is not supported.
+}
+```
+
+Versions 110 ~ 121 of Chrome on Windows, Dolby Vision is not playable at all if its not encrypted, this is a bug of the browser. Chrome on other platforms, such as macOS, Android, etc, as long as constructing source buffer with `hvc1`, `hev1`, `avc1`, `avc3` and the sample entry is not `dvh1`, `dvhe`, `dva1`, `dvav`, then the playback should be success.
+
+Versions 107 ~ 109 of Chrome, if constructing source buffer with `hvc1`, `hev1`, `avc1`, `avc3` and the sample entry is not `dvh1`, `dvhe`, `dva1`, `dvav`, then the playback should be success.
 
 #### HDR support by version of Chrome
 
@@ -120,6 +165,10 @@ Chrome 108 supports the ability to extract HEVC static metadata. For videos with
 Chrome 109 makes the HDR -> SDR process to a 16 bit + zero copy process, which improves the accuracy of PQ Tone-mapping on Windows platform, thus the problem of the insufficient contrast ratio for HLG has been also solved, and the video memory usage has been reduced by about 50%.
 
 Chrome 110 solves the problem of incomplete static metadata extraction. It supports the extraction of static metadata from both the bitstream and the container, thus the max content light level issue has been solved, and at this point all HDR issues should have been resolved.
+
+Chrome 119 fixed 10bit video playback issues for AMD GPU on Windows platform (black screen when playing HLG video in SDR mode, 4K freezes, high memory usage, color change when switching full-screen, crash when playing SDR video in HDR mode).
+
+Chrome 122 improved Dolby Vision cross-compatible playback ability.
 
 ## How to verify certain profile or resolution is supported？
 
@@ -320,6 +369,8 @@ Some GPU hardware may has bug which will cause `D3D11VideoDecoder` forbidden to 
 If Electron >= v22.0.0, the HEVC HW decoding feature for macOS, Windows, and Linux (VAAPI only) should have already been integrated. To add HEVC SW decoding, the method should be the same with Chromium guide above.
 
 ## Change Log
+
+`2023-12-08` Improved Dolby Vision playback capabilities (Chrome >= `122.0.6168.0`)
 
 `2023-11-16` Support MV-HEVC Base Layer playback (Chrome >= `121.0.6131.0`)
 
