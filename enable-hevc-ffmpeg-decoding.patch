@@ -1,0 +1,97 @@
+From e91e3db45e571e7274a9237565210dede0462a1f Mon Sep 17 00:00:00 2001
+From: Sta Zhu <zhusidayoyo@hotmail.com>
+Date: Thu, 7 Dec 2023 22:00:52 +0800
+Subject: [PATCH] Video: Enable HEVC ffmpeg decoding
+
+This will consider all HEVC profile as to supported, let FFMpegVideoDecoder
+handle SW fallback and help you be able to play video's like HEVC Rext, SCC 
+etc... as long as ffmpeg support it.
+---
+ media/base/supported_types.cc         | 28 +--------------------------
+ media/filters/ffmpeg_glue.cc          |  3 +++
+ media/filters/ffmpeg_video_decoder.cc |  2 +-
+ 3 files changed, 5 insertions(+), 28 deletions(-)
+
+diff --git a/media/base/supported_types.cc b/media/base/supported_types.cc
+index 1360ee1bfb46d..c26dd9a752912 100644
+--- a/media/base/supported_types.cc
++++ b/media/base/supported_types.cc
+@@ -221,33 +221,7 @@ bool IsAudioCodecProprietary(AudioCodec codec) {
+ #endif  // !BUILDFLAG(USE_PROPRIETARY_CODECS)
+ 
+ bool IsHevcProfileSupported(const VideoType& type) {
+-  if (!IsColorSpaceSupported(type.color_space))
+-    return false;
+-
+-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+-#if BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
+-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+-  // TODO(b/171813538): For Lacros, the supplemental profile cache will be
+-  // asking lacros-gpu, but we will be doing decoding in ash-gpu. Until the
+-  // codec detection is plumbed through to ash-gpu we can do this extra check
+-  // for HEVC support.
+-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+-          switches::kLacrosEnablePlatformHevc)) {
+-    return true;
+-  }
+-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+-#if BUILDFLAG(IS_CHROMEOS_ASH)
+-  if (!base::FeatureList::IsEnabled(kPlatformHEVCDecoderSupport)) {
+-    return false;
+-  }
+-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+-  return GetSupplementalProfileCache()->IsProfileSupported(type.profile);
+-#else
+   return true;
+-#endif  // BUIDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
+-#else
+-  return false;
+-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+ }
+ 
+ bool IsVp9ProfileSupported(const VideoType& type) {
+@@ -434,7 +408,7 @@ bool IsBuiltInVideoCodec(VideoCodec codec) {
+   if (codec == VideoCodec::kVP8)
+     return true;
+ #if BUILDFLAG(USE_PROPRIETARY_CODECS)
+-  if (codec == VideoCodec::kH264)
++  if (codec == VideoCodec::kH264 || codec == VideoCodec::kHEVC)
+     return true;
+ #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+ #endif  // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+diff --git a/media/filters/ffmpeg_glue.cc b/media/filters/ffmpeg_glue.cc
+index af52aeb5173af..c1a826ece8791 100644
+--- a/media/filters/ffmpeg_glue.cc
++++ b/media/filters/ffmpeg_glue.cc
+@@ -166,6 +166,9 @@ const char* FFmpegGlue::GetAllowedVideoDecoders() {
+     }
+ #if BUILDFLAG(USE_PROPRIETARY_CODECS)
+     allowed_decoders.push_back("h264");
++#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
++    allowed_decoders.push_back("hevc");
++#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+ #if BUILDFLAG(IS_CHROMEOS)
+     if (base::FeatureList::IsEnabled(kCrOSLegacyMediaFormats)) {
+       allowed_decoders.push_back("mpeg4");
+diff --git a/media/filters/ffmpeg_video_decoder.cc b/media/filters/ffmpeg_video_decoder.cc
+index aaab17bdc3b9c..a8137c4f72270 100644
+--- a/media/filters/ffmpeg_video_decoder.cc
++++ b/media/filters/ffmpeg_video_decoder.cc
+@@ -76,7 +76,6 @@ static int GetFFmpegVideoDecoderThreadCount(const VideoDecoderConfig& config) {
+     case VideoCodec::kUnknown:
+     case VideoCodec::kVC1:
+     case VideoCodec::kMPEG2:
+-    case VideoCodec::kHEVC:
+     case VideoCodec::kVP9:
+     case VideoCodec::kAV1:
+     case VideoCodec::kDolbyVision:
+@@ -89,6 +88,7 @@ static int GetFFmpegVideoDecoderThreadCount(const VideoDecoderConfig& config) {
+       break;
+ 
+     case VideoCodec::kH264:
++    case VideoCodec::kHEVC:
+     case VideoCodec::kVP8:
+       // Normalize to three threads for 1080p content, then scale linearly
+       // with number of pixels.
+-- 
+2.37.2.windows.2
