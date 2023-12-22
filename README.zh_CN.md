@@ -89,19 +89,22 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra 及以上
 
 [NVIDIA](https://bluesky-soft.com/en/dxvac/deviceInfo/decoder/nvidia.html)
 
-## HDR 支持？(与Edge / Safari的对比)
+## HDR 支持？(与 Edge / Safari / Firefox 的对比)
 
 |                 |   PQ     |   HDR10  |  HDR10+  |   HLG    |  DV P5   |  DV P8.1  |  DV P8.4    |
 | :-------------- | :------- | :------- | :------- | :------- |:-------- |:--------- |:----------- |
-| Chrome 117 Mac  |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
-| Chrome 117 Win  |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
-|  Edge 117 Mac   |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
-|  Edge 117 Win   |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ❌     |     ✅     |
-| Safari 17.0 Mac |    ✅    |     ✅    |    ✅    |    ✅    |    ✅     |     ✅     |     ✅     |
+| Chrome Mac  |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
+| Chrome Win  |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
+|  Edge Mac   |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
+|  Edge Win   |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
+| Safari Mac  |    ✅    |     ✅    |    ✅    |    ✅    |    ✅     |     ✅     |     ✅     |
+|Firefox Win<sup>[1]</sup>|    ❌    |     ❌    |    ❌    |    ❌    |    ❌     |     ❌     |     ❌     |
 
 在 Windows 平台，Chrome 支持 PQ、HDR10 (含静态元数据的 PQ)、HLG，会基于静态元数据（如果存在）自动进行 Tone-mapping。HDR10+ 的 SEI 动态元数据在解码时会被忽略，并以 HDR10 降级播放。
 
 在 macOS 平台，Chrome 支持 PQ、HDR10 (含静态元数据的 PQ)、HLG。在 SDR / HDR / 自动模式下，macOS 系统会自动进行 EDR 以确保 HDR 显示正确，Chrome / Edge 实现相同，支持情况一致，Safari 同样支持上述所有 HDR 格式。
+
+*注1：Firefox >= 120 新增 HEVC 解码支持 (仅 Windows 平台，实验功能，需手动设置 `media.wmf.hevc.enabled=1` 开启)，经测试 Firefox 支持 HEVC Main profile，但还暂不支持 HEVC Main10 profile (通常 HDR 视频以 Main10 profile 编码)，如 Firefox 后续修复，我会重新测试并更新上表。*
 
 #### Dolby Vision 支持情况说明
 
@@ -312,17 +315,21 @@ try {
 }
 ```
 
-## 技术实现区别？(与Edge / Safari的对比)
+## 技术实现区别？(与 Edge / Safari / Firefox 的对比)
 
 #### Windows
 
 Edge 使用 `MediaFoundationRenderer` 调用 `MediaFoundation`（需要安装`HEVC视频扩展`插件）完成硬解，和系统自带的 `电影与电视` 用的解码器相同。
 
-Chromium 使用 `D3D11VideoDecoder` 调用 `D3D11VA` （无需安装插件）完成硬解，和 `VLC` 等视频播放器用的解码器相同。
+Firefox (>= 120, 实验功能, 需手动设置 `media.wmf.hevc.enabled=1` 开启) 使用 DXVA MFT（需要安装`HEVC视频扩展`插件）完成硬解，和系统自带的 `电影与电视` 用的解码器相同。
+
+Chrome 使用 `D3D11VideoDecoder` 调用 `D3D11VA` （无需安装插件）完成硬解，和 `VLC` 等视频播放器用的解码器相同。
 
 #### macOS
 
-Safari 和 Chromium 二者均使用 `VideoToolbox` 解码器完成硬解。
+Edge 和 Chrome 在 macOS 的解码实现没有任何区别。
+
+Safari 和 Chrome 二者均使用 `VideoToolbox` 解码器完成硬解。
 
 ## 如何验证视频播放是否走硬解？
 
@@ -366,6 +373,8 @@ Safari 和 Chromium 二者均使用 `VideoToolbox` 解码器完成硬解。
 Electron >= v22.0.0 已集成好 macOS, Windows, 和 Linux (仅 VAAPI) 平台的 HEVC 硬解功能，且开箱即用。若要集成软解，方法同上述 Chromium 教程相同。
 
 ## 更新历史
+
+`2023-12-22` 更新与 Firefox 技术实现细节的对比
 
 `2023-12-08` 提升杜比视界播放能力 (Chrome >= `122.0.6168.0`)
 

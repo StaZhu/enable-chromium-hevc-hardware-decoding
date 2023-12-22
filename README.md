@@ -89,19 +89,22 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra and above
 
 [NVIDIA](https://bluesky-soft.com/en/dxvac/deviceInfo/decoder/nvidia.html)
 
-## HDR Supports? (Compared with Edge / Safari)
+## HDR Supports? (Compared with Edge / Safari / Firefox)
 
 |                 |   PQ     |   HDR10  |  HDR10+  |   HLG    |  DV P5   |  DV P8.1  |  DV P8.4    |
 | :-------------- | :------- | :------- | :------- | :------- |:-------- |:--------- |:----------- |
-| Chrome 117 Mac  |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
-| Chrome 117 Win  |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
-|  Edge 117 Mac   |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
-|  Edge 117 Win   |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
-| Safari 17.0 Mac |    ✅    |     ✅    |    ✅    |    ✅    |    ✅     |     ✅     |     ✅     |
+| Chrome Mac  |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
+| Chrome Win  |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
+|  Edge Mac   |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
+|  Edge Win   |    ✅    |     ✅    |    ✅    |    ✅    |    ❌     |     ✅     |     ✅     |
+| Safari Mac  |    ✅    |     ✅    |    ✅    |    ✅    |    ✅     |     ✅     |     ✅     |
+| Firefox Win<sup>[1]</sup>|    ❌    |     ❌    |    ❌    |    ❌    |    ❌     |     ❌     |     ❌     |
 
 On Windows platform, Chrome supports PQ, HDR10 (PQ with static metadata), and HLG. Automatic Tone-mapping will be enabled based on static metadata (if present). HDR10+ SEI dynamic metadata wil be ignored while decoding and playback will downgrade to HDR10.
 
 On macOS platform, Chrome supports PQ, HDR10 (PQ with static metadata), HLG. In SDR / HDR / Hybrid mode, the macOS system will automatically perform EDR to ensure that HDR is displayed correctly. Chrome / Edge shared the same code thus has the same decoding ability, Safari also supports the above all HDR formats.
+
+*Note 1: Firefox >= 120 just added HEVC decoding support (Windows platform only, experimental, need to manually set `media.wmf.hevc.enabled=1` to enable the feature). Based on my testing, Firefox supports HEVC Main profile while doesn't support Main10 profile (HDR contents usually encoded with Main10 profile) yet, if the bug got fixed, I will re-test and update the table later.*
 
 #### Dolby Vision Supports Status
 
@@ -315,17 +318,21 @@ try {
 }
 ```
 
-## What's the tech diff? (Compared with Edge / Safari)
+## What's the tech diff? (Compared with Edge / Safari / Firefox)
 
 #### Windows
 
 Edge uses `MediaFoundationRenderer` to call `MediaFoundation` (need to install `HEVC Video Extension`) to finish the HEVC HW decoding which is the same tech behind `Movies and TV` builtin system app.
 
-Chromium uses `D3D11VideoDecoder` to call `D3D11VA` (no need to install anything) to finish the HEVC HW decoding which is the same tech behind video players like `VLC`.
+Firefox (>= 120, experimental, need to manually set `media.wmf.hevc.enabled=1` to enable the feature) uses DXVA MFT (need to install `HEVC Video Extension`) to finish the HEVC HW decoding which is the same tech behind `Movies and TV` builtin system app.
+
+Chrome uses `D3D11VideoDecoder` to call `D3D11VA` (no need to install anything) to finish the HEVC HW decoding which is the same tech behind video players like `VLC`.
 
 #### macOS
 
-Safari and Chromium use the same `VideoToolbox` to finish the HEVC HW decoding.
+Edge and Chrome use the same decoding implementations on macOS.
+
+Safari and Chrome use the same `VideoToolbox` to finish the HEVC HW decoding.
 
 ## How to verify HEVC hardware support is enabled?
 
@@ -369,6 +376,8 @@ Some GPU hardware may has bug which will cause `D3D11VideoDecoder` forbidden to 
 If Electron >= v22.0.0, the HEVC HW decoding feature for macOS, Windows, and Linux (VAAPI only) should have already been integrated. To add HEVC SW decoding, the method should be the same with Chromium guide above.
 
 ## Change Log
+
+`2023-12-22` Update implementation details and comparison with Firefox
 
 `2023-12-08` Improved Dolby Vision playback capabilities (Chrome >= `122.0.6168.0`)
 
