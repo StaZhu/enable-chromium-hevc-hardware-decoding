@@ -36,7 +36,12 @@ for (const [idx, argv] of process.argv.entries()) {
 const encodingConfig = { encoding: 'utf8' };
 const patches = [
   {
-    condition: 'if ((is_apple && ffmpeg_branding == "Chrome") || (is_win && ffmpeg_branding == "Chrome") || (use_linux_config && ffmpeg_branding == "Chrome") || (use_linux_config && ffmpeg_branding == "ChromeOS")) {',
+    condition: [
+      'if ((is_apple && ffmpeg_branding == "Chrome") ||',
+      '    (is_win && ffmpeg_branding == "Chrome") ||',
+      '    (use_linux_config && ffmpeg_branding == "Chrome") ||',
+      '    (use_linux_config && ffmpeg_branding == "ChromeOS")) {',
+    ].join('\n'),
     ffmpeg_c_sources : [
       'libavcodec/autorename_libavcodec_bswapdsp.c',
       'libavcodec/dovi_rpu.c',
@@ -53,13 +58,24 @@ const patches = [
       'libavcodec/hevcdec.c',
       'libavcodec/hevcdsp.c',
       'libavcodec/hevcpred.c',
-    ]
+    ],
   },
   {
-    condition: 'if ((is_apple && current_cpu == "x64" && ffmpeg_branding == "Chrome") || (is_win && current_cpu == "x64" && ffmpeg_branding == "Chrome") || (is_win && current_cpu == "x86" && ffmpeg_branding == "Chrome") || (use_linux_config && current_cpu == "x64" && ffmpeg_branding == "Chrome") || (use_linux_config && current_cpu == "x64" && ffmpeg_branding == "ChromeOS") || (use_linux_config && current_cpu == "x86" && ffmpeg_branding == "Chrome") || (use_linux_config && current_cpu == "x86" && ffmpeg_branding == "ChromeOS")) {',
+    condition: [
+      'if ((is_apple && current_cpu == "x64" && ffmpeg_branding == "Chrome") ||',
+      '    (is_win && current_cpu == "x64" && ffmpeg_branding == "Chrome") ||',
+      '    (is_win && current_cpu == "x86" && ffmpeg_branding == "Chrome") ||',
+      '    (use_linux_config && current_cpu == "x64" && ffmpeg_branding == "Chrome") ||',
+      '    (use_linux_config && current_cpu == "x64" &&',
+      '     ffmpeg_branding == "ChromeOS") ||',
+      '    (use_linux_config && current_cpu == "x86" && ffmpeg_branding == "Chrome") ||',
+      '    (use_linux_config && current_cpu == "x86" &&',
+      '     ffmpeg_branding == "ChromeOS")) {',
+    ].join('\n'),
     ffmpeg_c_sources: [
       'libavcodec/x86/bswapdsp_init.c',
       'libavcodec/x86/hevcdsp_init.c',
+      'libavcodec/x86/h26x/h2656dsp.c',
     ],
     ffmpeg_asm_sources: [
       'libavcodec/x86/bswapdsp.asm',
@@ -69,10 +85,18 @@ const patches = [
       'libavcodec/x86/hevc_mc.asm',
       'libavcodec/x86/hevc_sao.asm',
       'libavcodec/x86/hevc_sao_10bit.asm',
-    ]
+      'libavcodec/x86/h26x/h2656_inter.asm',
+    ],
   },
   {
-    condition: 'if ((is_apple && current_cpu == "arm64" && ffmpeg_branding == "Chrome") || (is_win && current_cpu == "arm64" && ffmpeg_branding == "Chrome") || (use_linux_config && current_cpu == "arm64" && ffmpeg_branding == "Chrome") || (use_linux_config && current_cpu == "arm64" && ffmpeg_branding == "ChromeOS")) {',
+    condition: [
+      'if ((is_apple && current_cpu == "arm64" && ffmpeg_branding == "Chrome") ||',
+      '    (is_win && current_cpu == "arm64" && ffmpeg_branding == "Chrome") ||',
+      '    (use_linux_config && current_cpu == "arm64" &&',
+      '     ffmpeg_branding == "Chrome") ||',
+      '    (use_linux_config && current_cpu == "arm64" &&',
+      '     ffmpeg_branding == "ChromeOS")) {',
+    ].join('\n'),
     ffmpeg_c_sources: [
       'libavcodec/aarch64/hevcdsp_init_aarch64.c',
     ],
@@ -82,16 +106,29 @@ const patches = [
       'libavcodec/aarch64/hevcdsp_deblock_neon.S',
       'libavcodec/aarch64/hevcdsp_epel_neon.S',
       'libavcodec/aarch64/hevcdsp_qpel_neon.S',
-    ]
+    ],
   },
   {
-    condition: 'if ((use_linux_config && current_cpu == "arm" && arm_use_neon && ffmpeg_branding == "Chrome") || (use_linux_config && current_cpu == "arm" && arm_use_neon && ffmpeg_branding == "ChromeOS") || (use_linux_config && current_cpu == "arm" && ffmpeg_branding == "Chrome") || (use_linux_config && current_cpu == "arm" && ffmpeg_branding == "ChromeOS")) {',
+    condition: [
+      'if ((use_linux_config && current_cpu == "arm" && arm_use_neon &&',
+      '     ffmpeg_branding == "Chrome") ||',
+      '    (use_linux_config && current_cpu == "arm" && arm_use_neon &&',
+      '     ffmpeg_branding == "ChromeOS") ||',
+      '    (use_linux_config && current_cpu == "arm" && ffmpeg_branding == "Chrome") ||',
+      '    (use_linux_config && current_cpu == "arm" &&',
+      '     ffmpeg_branding == "ChromeOS")) {',
+    ].join('\n'),
     ffmpeg_c_sources: [
       'libavcodec/arm/hevcdsp_init_arm.c',
-    ]
+    ],
   },
   {
-    condition: 'if ((use_linux_config && current_cpu == "arm" && arm_use_neon && ffmpeg_branding == "Chrome") || (use_linux_config && current_cpu == "arm" && arm_use_neon && ffmpeg_branding == "ChromeOS")) {',
+    condition: [
+      'if ((use_linux_config && current_cpu == "arm" && arm_use_neon &&',
+      '     ffmpeg_branding == "Chrome") ||',
+      '    (use_linux_config && current_cpu == "arm" && arm_use_neon &&',
+      '     ffmpeg_branding == "ChromeOS")) {',
+    ].join('\n'),
     ffmpeg_c_sources: [
       'libavcodec/arm/hevcdsp_init_neon.c',
     ],
@@ -100,9 +137,9 @@ const patches = [
       'libavcodec/arm/hevcdsp_idct_neon.S',
       'libavcodec/arm/hevcdsp_qpel_neon.S',
       'libavcodec/arm/hevcdsp_sao_neon.S',
-    ]
-  }
-]
+    ],
+  },
+];
 
 function genPath(subPath) {
   return path.resolve(ffmpegRoot, subPath);
