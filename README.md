@@ -173,6 +173,10 @@ Chrome 119 fixed 10bit video playback issues for AMD GPU on Windows platform (bl
 
 Chrome 122 improved Dolby Vision cross-compatible playback ability.
 
+Chrome 123 ensures that on Windows platforms, PQ/HDR10 video can be rendered at absolute brightness when system HDR mode is enabled. It also solves the problem of abnormal Tone-mapping issue when the window is dragged between SDR monitor / HDR monitor when multiple monitors are connected.
+
+Chrome 124 solves the issue that on Windows platform when the NVIDIA RTX Auto HDR feature is enabled, page scrolling will cause video brightness transition. And after solving various issues with Intel HDR10 MPO, the feature has been re-enabled.
+
 ## How to verify certain profile or resolution is supported？
 
 ### Clear Content
@@ -322,7 +326,7 @@ try {
 
 #### Windows
 
-Edge uses `MediaFoundationRenderer` to call `MediaFoundation` (need to install `HEVC Video Extension`) to finish the HEVC HW decoding which is the same tech behind `Movies and TV` builtin system app.
+Edge uses `VDAVideoDecocder` to call `MFT` (need to install `HEVC Video Extension`, Edge 117 ~ 121 uses `MediaFoundationRenderer`, and switch back to the original `VDAVideoDecocder` after version 122) to finish the HEVC HW decoding which is the same tech behind `Movies and TV` builtin system app.
 
 Firefox (>= 120, experimental, need to manually set `media.wmf.hevc.enabled=1` to enable the feature) uses DXVA MFT (need to install `HEVC Video Extension`) to finish the HEVC HW decoding which is the same tech behind `Movies and TV` builtin system app.
 
@@ -376,6 +380,8 @@ Some GPU hardware may has bug which will cause `D3D11VideoDecoder` forbidden to 
 If Electron >= v22.0.0, the HEVC HW decoding feature for macOS, Windows, and Linux (VAAPI only) should have already been integrated. To add HEVC SW decoding, the method should be the same with Chromium guide above.
 
 ## Change Log
+
+`2024-03-28` Update Chromium 123 / 124 HDR related bug fixes detail, and the tech diff with Chrome for `Edge >= 122`
 
 `2023-12-22` Update implementation details and comparison with Firefox
 

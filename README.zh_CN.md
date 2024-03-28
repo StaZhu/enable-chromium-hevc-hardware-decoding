@@ -171,6 +171,10 @@ Chrome 119 解决了 Windows 平台 AMD 显卡 10bit 播放视频问题（SDR �
 
 Chrome 122 主要解决了杜比视界 Profile8 兼容播放等问题。
 
+Chrome 123 确保了 Windos 平台，PQ/HDR10 视频在显示器 HDR 模式下可以以绝对亮度渲染。还解决了连接多显示器时，窗口在 SDR 显示器/ HDR 显示器间拖动时，Tone-mapping 颜色异常的问题。
+
+Chrome 124 解决了 Windows 平台，开启 NVIDIA RTX Auto HDR 功能后，页面滚动会导致视频亮度频繁切换的问题。并在解决了 Intel HDR10 MPO 的各种问题后，重启启用了该功能。 
+
 ## 如何验证特定 Profile, 分辨率的视频是否可以播放？
 
 ### 非加密内容
@@ -319,7 +323,7 @@ try {
 
 #### Windows
 
-Edge 使用 `MediaFoundationRenderer` 调用 `MediaFoundation`（需要安装`HEVC视频扩展`插件）完成硬解，和系统自带的 `电影与电视` 用的解码器相同。
+Edge 使用 `VDAVideoDecoder` 调用 `MFT`（需要安装`HEVC视频扩展`插件, Edge 117 ~ 121 使用 `MediaFoundationRenderer`, 在 122 及以后版本切换回了之前的 `VDAVideoDecocder`）完成硬解，和系统自带的 `电影与电视` 用的解码器相同。
 
 Firefox (>= 120, 实验功能, 需手动设置 `media.wmf.hevc.enabled=1` 开启) 使用 DXVA MFT（需要安装`HEVC视频扩展`插件）完成硬解，和系统自带的 `电影与电视` 用的解码器相同。
 
@@ -373,6 +377,8 @@ Safari 和 Chrome 二者均使用 `VideoToolbox` 解码器完成硬解。
 Electron >= v22.0.0 已集成好 macOS, Windows, 和 Linux (仅 VAAPI) 平台的 HEVC 硬解功能，且开箱即用。若要集成软解，方法同上述 Chromium 教程相同。
 
 ## 更新历史
+
+`2024-03-28` 更新 Chromium 123 / 124 HDR 问题修复细节，以及 `Edge >= 122` 后与 Chrome 的技术实现区别对比
 
 `2023-12-22` 更新与 Firefox 技术实现细节的对比
 
