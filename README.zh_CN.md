@@ -39,6 +39,8 @@ HEVC Rext (部分支持，细节见下表，最高支持 8192x8192 px)
 
 *注5：Windows HEVC 8b 422 支持需要 Chrome >= `118.0.5956.0`。*
 
+*注6：保留原始 4:2:2/4:4:4 色度抽样, 需要 Chrome >= `125.0.6408.0`。*
+
 ## 支持硬编码哪些Profile？
 
 HEVC Main (macOS & Windows & Android, macOS 最高支持 4096x2304 px & 120 fps, Windows 最高支持 1920*1088 px & 30 fps, 安卓取决于硬件最高支持)
@@ -173,7 +175,9 @@ Chrome 122 主要解决了杜比视界 Profile8 兼容播放等问题。
 
 Chrome 123 确保了 Windos 平台，PQ/HDR10 视频在显示器 HDR 模式下可以以绝对亮度渲染。还解决了连接多显示器时，窗口在 SDR 显示器/ HDR 显示器间拖动时，Tone-mapping 颜色异常的问题。
 
-Chrome 124 解决了 Windows 平台，开启 NVIDIA RTX Auto HDR 功能后，页面滚动会导致视频亮度频繁切换的问题。并在解决了 Intel HDR10 MPO 的各种问题后，重启启用了该功能。 
+Chrome 124 解决了 Windows 平台，开启 NVIDIA RTX Auto HDR 功能后，页面滚动会导致视频亮度频繁切换的问题。
+
+Chrome 125 在解决了 Intel HDR10 MPO 的各种问题后，重启启用了该功能。 
 
 ## 如何验证特定 Profile, 分辨率的视频是否可以播放？
 
@@ -377,6 +381,8 @@ Safari 和 Chrome 二者均使用 `VideoToolbox` 解码器完成硬解。
 Electron >= v22.0.0 已集成好 macOS, Windows, 和 Linux (仅 VAAPI) 平台的 HEVC 硬解功能，且开箱即用。若要集成软解，方法同上述 Chromium 教程相同。
 
 ## 更新历史
+
+`2024-04-09` 解决了 Windows/macOS 平台 HEVC Rext 4:2:2/4:4:4 视频色度抽样被降级到 4:2:0 的问题 (Chrome >= `125.0.6408.0`)
 
 `2024-03-28` 更新 Chromium 123 / 124 HDR 问题修复细节，以及 `Edge >= 122` 后与 Chrome 的技术实现区别对比
 

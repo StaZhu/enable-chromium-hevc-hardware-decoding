@@ -171,14 +171,6 @@ function enableHevcConfig(filename) {
   fs.writeFileSync(filename, content, encodingConfig);
 }
 
-function modifyHevcBuildFFmpegPy(filename) {
-  let content = fs.readFileSync(filename, encodingConfig);
-  content = content
-    .replace('--enable-decoder=aac,h264', '--enable-decoder=aac,h264,hevc')
-    .replace('--enable-parser=aac,h264', '--enable-parser=aac,h264,hevc');
-  fs.writeFileSync(filename, content, encodingConfig);
-}
-
 function enableFFMPEGHevc(brand, os, arch) {
   modifyAVCodec(genPath(`./chromium/config/${brand}/${os}/${arch}/libavcodec/codec_list.c`), '&ff_hevc_decoder');
   modifyAVCodec(genPath(`./chromium/config/${brand}/${os}/${arch}/libavcodec/parser_list.c`), '&ff_hevc_parser');
@@ -256,19 +248,16 @@ function enableSoftwreDecodeHEVC() {
   enableFFMPEGHevc('ChromeOS', 'linux', 'arm-neon');
   enableFFMPEGHevc('ChromeOS', 'linux-noasm', 'x64');
 
-  // 2. Modify build_ffmpeg.py
-  modifyHevcBuildFFmpegPy(genPath(`./chromium/scripts/build_ffmpeg.py`));
-
-  // 3. Create auto rename file
+  // 2. Create auto rename file
   const prefix = '// File automatically generated. See crbug.com/495833.';
   writeAutoRenameFile(genPath(`./libavcodec/aarch64/autorename_libavcodec_aarch64_hevcdsp_idct_neon.S`), [prefix, '#include "hevcdsp_idct_neon.S"'].join('\n'));
   writeAutoRenameFile(genPath(`./libavcodec/aarch64/autorename_libavcodec_aarch64_hevcdsp_sao_neon.S`), [prefix, '#include "hevcdsp_sao_neon.S"'].join('\n'));
   writeAutoRenameFile(genPath(`./libavcodec/autorename_libavcodec_bswapdsp.c`), [prefix, '#include "bswapdsp.c"'].join('\n'));
 
-  // 4. Modify ffmpeg_generated.gni
+  // 3. Modify ffmpeg_generated.gni
   modifyFFMPEGGenerated(genPath(`./ffmpeg_generated.gni`));
 
-  // 5. Commit the code then `git format-patch HEAD^ -o /path/to/export/patch`
+  // 4. Commit the code then `git format-patch HEAD^ -o /path/to/export/patch`
   // if you want to generate the `.patch` file.
   if (genPatch) {
     // Commit the code.
