@@ -159,13 +159,13 @@ if (isTypeSupported('video/mp4;codecs="dvh1.08.07"')) {
 
 107 ～ 109 版本，可以正常以 `hvc1`, `hev1`, `avc1`, `avc3` 构建 SourceBuffer 并播放 Profile8 等兼容 Dolby Vision 内容，只要视频的 Sample Entry 不是 `dvh1`, `dvhe`, `dva1`, `dvav` 就可以。
 
-#### 不同版本 Chrome 的 HDR 支持情况
+#### 不同版本 Chrome/Edge 的 HDR 支持情况
 
 Chrome 107 不支持提取 HEVC 静态元数据的能力，所有 HDR10 视频均以降级为 PQ 的方式播放。HLG 视频使用显卡厂商自带的 Video Processor API 进行 Tone-mapping，在部分笔记本上性能较差，播放 4K 视频可能会导致卡顿。
 
 Chrome 108 支持了提取 HEVC 静态元数据的能力，对于容器内写入元数据的视频，播放效果很好，但有部分视频由于静态元数据没有写入容器，由于提取不到静态元数据，导致这部分 HDR10 视频被降级为 PQ 视频播放，高光细节可能会缺失。此外 Windows 平台的 HLG Tone-mapping 算法切换为了 Chrome 自己的算法，解决了卡顿的问题，但 Chrome 一直使用 8bit 做 Tone-maping，这又导致 HLG Tone-mapping 结果存在对比度不足的问题。
 
-Chrome 109 开始，HDR -> SDR 流程切换为 16 bit + 零拷贝，提升了 Windows 下的 PQ Tone-mapping 的精准度，HLG 对比度不足问题也得以解决，还降低了大概 50% 的显存占用。
+Chrome 109 开始，HDR -> SDR 流程切换为 16bit + 零拷贝，提升了 Windows 下的 PQ Tone-mapping 的精准度，HLG 对比度不足问题也得以解决，还降低了大概 50% 的显存占用。
 
 Chrome 110 主要解决静态元数据提取不完整的问题，支持从比特流和容器同时提取静态元数据，部分 HDR10 视频在 macOS 和 Windows 下高光部分不够亮的问题得以解决，至此所有 HDR 问题均已解决。
 
@@ -173,11 +173,13 @@ Chrome 119 解决了 Windows 平台 AMD 显卡 10bit 播放视频问题（SDR �
 
 Chrome 122 主要解决了杜比视界 Profile8 兼容播放等问题。
 
-Chrome 123 确保了 Windos 平台，PQ/HDR10 视频在显示器 HDR 模式下可以以绝对亮度渲染。还解决了连接多显示器时，窗口在 SDR 显示器/ HDR 显示器间拖动时，Tone-mapping 颜色异常的问题。
+Chrome 123 确保了 Windows 平台，PQ/HDR10 视频在显示器 HDR 模式下可以以绝对亮度渲染。还解决了连接多显示器时，窗口在 SDR 显示器/ HDR 显示器间拖动时，Tone-mapping 颜色异常的问题。
 
 Chrome 124 解决了 Windows 平台，开启 NVIDIA RTX Auto HDR 功能后，页面滚动会导致视频亮度频繁切换的问题。
 
 Chrome 125 在解决了 Intel HDR10 MPO 的各种问题后，重启启用了该功能。 
+
+Edge 125 解决了 Windows 平台 `VDAVideoDecoder` 解码 HEVC Main10 10bit 视频后，没有零拷贝输出的问题，PQ/HDR10/HLG Tone-mapping 异常的问题方可亦得到解决。后期版本的 HDR 渲染结果预期将与 Chrome 完全一致，由于统一由 Skia 渲染，最终各显卡厂商的渲染结果在 HDR 模式开启/关闭前后，都可以保持一致（在 HDR 模式开启后，11 代以后的 Intel GPU, Intel HDR10 MPO 可能会被启用，此时与 Skia 渲染的结果有少许不一致）。
 
 ## 如何验证特定 Profile, 分辨率的视频是否可以播放？
 
@@ -194,7 +196,7 @@ const mediaConfig = {
   type: 'file',
   video: {
     /**
-     * 视频的Profile
+     * 视频的 Profile
      * 
      * Main: `hev1.1.6.L93.B0`
      * Main 10: `hev1.2.4.L93.B0`
@@ -266,7 +268,43 @@ if (video.canPlayType('video/mp4;codecs="hev1.4.10.L120.90"') === 'probably') {
 }
 ```
 
-*注1：上述三种 API 均已经将 `--disable-gpu`, `--disable-accelerated-video-decode`，`gpu-workaround`，`设置-系统-使用硬件加速模式（如果可用）`，`操作系统版本号` 等影响因素考虑在内了，只要确保 Chrome 版本号 >= `107.0.5304.0` (Windows 平台 Chrome 108 及之前版本存在一个 Bug，如果设备特定的GPU驱动程序版本因为一些原因导致 D3D11VideoDecoder 被禁用，尽管硬解已不可用，但此时 isTypeSupported 等 API 仍然会返回 “支持”，该问题已在 Chrome 109 修复), 且系统是 macOS 或 Windows，则可保证结果准确性。*
+#### VideoDecoder
+
+```javascript
+const videoConfig = {
+  /**
+   * 视频的 Profile
+   * 
+   * Main: `hev1.1.6.L93.B0`
+   * Main 10: `hev1.2.4.L93.B0`
+   * Main still-picture: `hvc1.3.E.L93.B0`
+   * Range extensions: `hvc1.4.10.L93.B0`
+   */
+  codec: 'hev1.1.6.L120.90',
+  /* HEVC 只支持硬解 */
+  hardwareAcceleration: 'prefer-hardware',
+  /* 视频的宽度 */
+  codedWidth: 1280,
+  /* 视频的高度 */
+  codedHeight: 720,
+}
+
+let supported = false;
+try {
+  const result = await VideoDecoder.isConfigSupported(videoConfig);
+  /* 指定的 Profile + 宽高的视频是否可解码 */
+  if (result.supported) {
+    console.log('Video can play!');
+  } else {
+    console.log('Video can\'t play!');
+  }
+} catch (e) {
+  /* 老版本 Chromium 可能对不支持的 Profile, throw Error */
+  console.log('Video can\'t play!');
+}
+```
+
+*注1：上述四种 API 均已经将 `--disable-gpu`, `--disable-accelerated-video-decode`，`gpu-workaround`，`设置-系统-使用硬件加速模式（如果可用）`，`操作系统版本号` 等影响因素考虑在内了，只要确保 Chrome 版本号 >= `107.0.5304.0` (Windows 平台 Chrome 108 及之前版本存在一个 Bug，如果设备特定的GPU驱动程序版本因为一些原因导致 D3D11VideoDecoder 被禁用，尽管硬解已不可用，但此时 isTypeSupported 等 API 仍然会返回 “支持”，该问题已在 Chrome 109 修复), 且系统是 macOS 或 Windows，则可保证结果准确性。*
 
 *注2：安卓平台存在一个 Bug，Chrome < `112.0.5612.0` 的版本没有返回实际硬件支持情况（安卓 5.0 之后的版本尽管默认支持 HEVC main profile 软解，但 main10 profile 是否支持由则由具体硬件来决定），永远认为支持所有 Profile 和分辨率的 HEVC 视频。Chrome >= `112.0.5612.0` 版本解决了这个问题，并会根据设备实际支持的情况返回正确的结果，和 macoS, Windows 一样支持上述三种 API，且各种影响因素均会被考虑在内。*
 
@@ -381,6 +419,8 @@ Safari 和 Chrome 二者均使用 `VideoToolbox` 解码器完成硬解。
 Electron >= v22.0.0 已集成好 macOS, Windows, 和 Linux (仅 VAAPI) 平台的 HEVC 硬解功能，且开箱即用。若要集成软解，方法同上述 Chromium 教程相同。
 
 ## 更新历史
+
+`2024-04-18` 修复了某些 AMD GPU 上的视频帧卡顿的问题 (Edge >= `124.0.2478.49`)，以及 Windows 平台上 Edge 的 HEVC Main10 HDR Tone-mapping 颜色异常，性能不佳的问题 (Edge >= `125.0.2530.0`)
 
 `2024-04-09` 解决了 Windows/macOS 平台 HEVC Rext 4:2:2/4:4:4 视频色度抽样被降级到 4:2:0 的问题 (Chrome >= `125.0.6408.0`)
 

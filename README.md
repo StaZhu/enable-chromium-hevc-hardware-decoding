@@ -161,7 +161,7 @@ Versions 110 ~ 121 of Chrome on Windows, Dolby Vision is not playable at all if 
 
 Versions 107 ~ 109 of Chrome, if constructing source buffer with `hvc1`, `hev1`, `avc1`, `avc3` and the sample entry is not `dvh1`, `dvhe`, `dva1`, `dvav`, then the playback should be success.
 
-#### HDR support by version of Chrome
+#### HDR support by version of Chrome/Edge
 
 Chrome 107 does not support the ability to extract HEVC static metadata, and all HDR10 video playback are downgraded to PQ only mode. HLG videos uses the video processor API provided by the GPU vendor for processing tone-mapping has a poor performance on some laptops, and playing 4K video may cause frame droping.
 
@@ -180,6 +180,8 @@ Chrome 123 ensures that on Windows platforms, PQ/HDR10 video can be rendered at 
 Chrome 124 solves the issue that on Windows platform when the NVIDIA RTX Auto HDR feature is enabled, page scrolling will cause video brightness transition.
 
 Chrome 125 solves all issues with Intel HDR10 MPO, the feature has been re-enabled.
+
+Edge 125 solves the issue of no zero-copy output when using `VDAVideoDecoder` decodes HEVC Main10 10bit contents on the Windows platform, and the issue of PQ/HDR10/HLG bad tone-mapping result could also be solved. The HDR rendering results of later versions of Edge are expected to be exactly the same as Chrome, performed by Skia, and the rendering results of various GPU manufacturers will remain consistent no matter system HDR mode on or off (Intel HDR10 MPO may be enabled if system HDR mode is turned on and GPU generation >= 11, which may result in slight inconsistencies with Skia rendering results).
 
 ## How to verify certain profile or resolution is supported？
 
@@ -268,11 +270,47 @@ if (video.canPlayType('video/mp4;codecs="hev1.4.10.L120.90"') === 'probably') {
 }
 ```
 
-*Note 1：The above three API have already took `--disable-gpu`, `--disable-accelerated-video-decode`, `gpu-workaround`, `settings - system - Use hardware acceleration when available`, `OS version` etc... into consideration, and if Chrome version >= `107.0.5304.0` (There is a bug in Chrome 108 and previous versions on Windows platform. If a specific GPU driver version causes D3D11VideoDecoder to be disabled for some reason, although the hardware decoding is no longer available, APIs such as isTypeSupported may still return "support", the bug has been fixed in Chrome 109) and OS is macOS or Windows, the result are guaranteed.*
+#### VideoDecoder
+
+```javascript
+const videoConfig = {
+  /**
+   * HEVC Profile
+   * 
+   * Main: `hev1.1.6.L93.B0`
+   * Main 10: `hev1.2.4.L93.B0`
+   * Main still-picture: `hvc1.3.E.L93.B0`
+   * Range extensions: `hvc1.4.10.L93.B0`
+   */
+  codec: 'hev1.1.6.L120.90',
+  /* HEVC is always hw accelerated */
+  hardwareAcceleration: 'prefer-hardware',
+  /* Width */
+  codedWidth: 1280,
+  /* Height */
+  codedHeight: 720,
+}
+
+let supported = false;
+try {
+  const result = await VideoDecoder.isConfigSupported(videoConfig);
+  /* Indicate whether or not the video with given profile, width, and height can be decoded by WebCodecs API */
+  if (result.supported) {
+    console.log('Video can play!');
+  } else {
+    console.log('Video can\'t play!');
+  }
+} catch (e) {
+  /* There is a bug that in previous version of Chromium, the api may throw Error if config is not supported */
+  console.log('Video can\'t play!');
+}
+```
+
+*Note 1：The above four API have already took `--disable-gpu`, `--disable-accelerated-video-decode`, `gpu-workaround`, `settings - system - Use hardware acceleration when available`, `OS version` etc... into consideration, and if Chrome version >= `107.0.5304.0` (There is a bug in Chrome 108 and previous versions on Windows platform. If a specific GPU driver version causes D3D11VideoDecoder to be disabled for some reason, although the hardware decoding is no longer available, APIs such as isTypeSupported may still return "support", the bug has been fixed in Chrome 109) and OS is macOS or Windows, the result are guaranteed.*
 
 *Note 2: There is a bug for the Android platform, Chrome < `112.0.5612.0` does not return the actual support status of different devices (although Android >= 5.0 supports HEVC main profile SW decoding by default, however whether main10 profile is supported or not completely depends on hardware), and always assume that all HEVC profiles and resolution are supported. Chrome >= `112.0.5612.0` now solves this bug, and will return the correct result depends on hardware and the given video's resolution. Just like Windows and macOS, the above three APIs are supported as well, and every influencing factors should have been taken into account.*
 
-*Note 3：Compared with `MediaSource.isTypeSupported()` or `CanPlayType()`, we recommand using `MediaCapabilities`, since `MediaCapabilities` not only takes `settings - system - Use hardware acceleration when available` etc... into consideration, but also check if the given `width and height` is supported or not since different GPU may have different max resolution support, eg: some AMD GPU only support up to 4096 * 2048, and some old GPU only support up to 1080P.*
+*Note 3：Compared with `MediaSource.isTypeSupported()` or `CanPlayType()`, we recommend using `MediaCapabilities`, since `MediaCapabilities` not only takes `settings - system - Use hardware acceleration when available` etc... into consideration, but also check if the given `width and height` is supported or not since different GPU may have different max resolution support, eg: some AMD GPU only support up to 4096 * 2048, and some old GPU only support up to 1080P.*
 
 ### Encrypted Content
 
@@ -384,6 +422,8 @@ Some GPU hardware may has bug which will cause `D3D11VideoDecoder` forbidden to 
 If Electron >= v22.0.0, the HEVC HW decoding feature for macOS, Windows, and Linux (VAAPI only) should have already been integrated. To add HEVC SW decoding, the method should be the same with Chromium guide above.
 
 ## Change Log
+
+`2024-04-18` Fixed issue of video frame stuttering on some AMD GPUs (Edge >= `124.0.2478.49`), and issue of bad HEVC Main10 HDR tone-mapping performance for Edge on Windows platform (Edge >= `125.0.2530.0`)
 
 `2024-04-09` Fixed issue where HEVC Rext 4:2:2/4:4:4 video chroma sampling was downgraded to 4:2:0 on Windows/macOS platforms (Chrome >= `125.0.6408.0`)
 
