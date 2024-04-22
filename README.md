@@ -383,10 +383,10 @@ Safari and Chrome use the same `VideoToolbox` to finish the HEVC decoding, if th
 
 ## How to verify HEVC hardware support is enabled?
 
-1. Open `chrome://gpu`, and search `Video Acceleration Information`, you should see **Decode hevc main** field and **Decode hevc main 10** field  (macOS will show **Decode hevc main still-picture** and **Decode hevc range extensions** as well, Windows Intel Gen10+ iGPU will show **Decode hevc range extensions** as well)  present if hardware decoding is supported (macOS is an exception here, you see this field doesn't means the decode will use hardware, it actually depends on your GPU).
-2. Open `chrome://media-internals` and play some HEVC video ([Test Page](https://lf-tk-sg.ibytedtos.com/obj/tcs-client-sg/resources/video_demo_hevc.html)) if the decoder is `VDAVideoDecoder` or `VideoToolboxVideoDecoder` or `D3D11VideoDecoder` or `VaapiVideoDecoder` that means the video is using hardware decoding (macOS is an exception here, if the OS >= Big Sur, and the GPU doesn't support HEVC, VideoToolbox will fallback to software decode which has a better performance compared with FFMPEG, the decoder is `VDAVideoDecoder` or `VideoToolboxVideoDecoder` in this case indeed), and if the decoder is `FFMpegVideoDecoder` that means  the video is using software decoding.
+1. Open `chrome://gpu`, and search `Video Acceleration Information`, you should see **Decode hevc main** field and **Decode hevc main 10** field (macOS will show **Decode hevc main still-picture** and **Decode hevc range extensions** as well, Windows Intel Gen10+ iGPU will show **Decode hevc range extensions** as well) present if hardware decoding is supported (macOS is an exception here, you see this field doesn't means the decode will use hardware, it actually depends on your GPU).
+2. Open `chrome://media-internals` and play some HEVC video ([Test Page](https://lf-tk-sg.ibytedtos.com/obj/tcs-client-sg/resources/video_demo_hevc.html)) if the decoder is `VDAVideoDecoder` or `VideoToolboxVideoDecoder` or `D3D11VideoDecoder` or `VaapiVideoDecoder` that means the video is using hardware decoding (macOS is an exception here, if the OS >= Big Sur, and the GPU doesn't support HEVC, VideoToolbox will fallback to software decode which has a better performance compared with FFMPEG, the decoder is `VDAVideoDecoder` or `VideoToolboxVideoDecoder` in this case indeed), and if the decoder is `FFMpegVideoDecoder` that means the video is using software decoding.
 3. Open `Activity Monitor` on Mac and search `VTDecoderXPCService`, if the cpu usage larger than 0 when playing video, that means hardware (or software) decoding is being used.
-4. Open `Windows Task Manager` on Windows and switch to `Performance` - `GPU`, if `Video Decode`(Intel, Nvidia) or `Video Codec`(AMD) usage larger than 0 when playing video,  that means hardware decoding is being used.
+4. Open `Windows Task Manager` on Windows and switch to `Performance` - `GPU`, if `Video Decode`(Intel, NVIDIA) or `Video Codec`(AMD) usage larger than 0 when playing video, that means hardware decoding is being used. For some first generation GPU (i.e: NVIDIA RTX 745) that support HEVC, since there is no dedicated hw decoding circuit inside the GPU, although the `D3D11` decoding API is supported, it will only occupy the general `3D` utilization when decoding.
 
 ## Why my GPU support HEVC, but still not able to hardware decode?
 
@@ -398,7 +398,7 @@ Please make sure you are using Windows 8 and above, this is because the `D3D11Vi
 
 ##### macOS
 
-Please make sure you are using macOS Big Sur and above, this is because `CMVideoFormatDescriptionCreateFromHEVCParameterSets`  API has compatibility issue on lower macOS.
+Please make sure you are using macOS Big Sur and above, this is because `CMVideoFormatDescriptionCreateFromHEVCParameterSets` API has compatibility issue on lower macOS.
 
 #### GPU driver has bug
 

@@ -380,10 +380,10 @@ Safari 和 Chrome 二者均使用 `VideoToolbox` 解码器完成解码，如果�
 
 ## 如何验证视频播放是否走硬解？
 
-1. 打开 `chrome://gpu`, 搜索 `Video Acceleration Information`, 如果能看到 **Decode hevc main**  和 **Decode hevc main 10**  (macOS 还会显示 **Decode hevc main still-picture** 和 **Decode hevc range extensions**，Windows Intel Gen10+ iGPU 会显示 **Decode hevc range extensions**) 说明支持硬解（这里 macOS 是个例外，显示仅代表支持 VideoToolbox 解码，至于是否硬解取决于 GPU 支持情况)。
+1. 打开 `chrome://gpu`, 搜索 `Video Acceleration Information`, 如果能看到 **Decode hevc main** 和 **Decode hevc main 10** (macOS 还会显示 **Decode hevc main still-picture** 和 **Decode hevc range extensions**，Windows Intel Gen10+ iGPU 会显示 **Decode hevc range extensions**) 说明支持硬解（这里 macOS 是个例外，显示仅代表支持 VideoToolbox 解码，至于是否硬解取决于 GPU 支持情况）。
 2. 打开 `chrome://media-internals` 并尝试播放一些 HEVC 视频 ([测试页面](https://lf3-cdn-tos.bytegoofy.com/obj/tcs-client/resources/video_demo_hevc.html))，如果最终使用的 Decoder 是 `VDAVideoDecoder` 或 `VideoToolboxVideoDecoder` 或 `D3D11VideoDecoder` 或 `VaapiVideoDecoder` 说明走了硬解（这里 macOS 是个例外，macOS Big Sur 以上版本，在不支持的 GPU 上，VideoToolbox 会自动 fallback 到软解，性能相比 FFMPEG 软解更好，Decoder 同样为 `VDAVideoDecoder` 或 `VideoToolboxVideoDecoder`）, 如果 Decoder 是 `FFMpegVideoDecoder` 说明走的是软解。
-3. 如果是 Mac，请打开 `活动监视器`并搜索 `VTDecoderXPCService`, 如果播放时进程的 CPU 利用率大于0说明走了硬解（或软解)。
-4. 如果是 Windows，请打开 `任务管理器` 并切换到 `性能` - `GPU` 面板，如果 `Video Decode`(Intel, Nvidia) 或 `Video Codec`(AMD) 的利用率大于0说明走了硬解。
+3. 如果是 Mac，请打开 `活动监视器`并搜索 `VTDecoderXPCService`, 如果播放时进程的 CPU 利用率大于 0 说明走了硬解（或软解）。
+4. 如果是 Windows，请打开 `任务管理器` 并切换到 `性能` - `GPU` 面板，如果 `Video Decode`(Intel, NVIDIA) 或 `Video Codec`(AMD) 的利用率大于 0 说明走了硬解，对于一些初代支持 HEVC 的显卡（例如: NVIDIA RTX 745），由于没有专用解码电路，虽然支持 `D3D11` 解码 API，但解码时仅占用通用的 `3D` 利用率。
 
 ## 为什么我的显卡支持，但仍无法使用硬解？
 
