@@ -71,7 +71,9 @@ Linux (版本号须 >= `108.0.5354.0`, 仅支持 VAAPI 接口支持的 GPU，比
 
 #### 独显
 
-NVIDIA GTX950 及以上
+Intel DG1 及以上
+
+NVIDIA GT635, GTX645 及以上
 
 AMD RX460 及以上
 

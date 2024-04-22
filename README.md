@@ -69,9 +69,11 @@ Video Encode: WebCodec (Windows, macOS, and Android, when passing `--enable-feat
 
 ## What's the GPU requirement?
 
-#### Independent GPU
+#### Discrete GPU
 
-NVIDIA GTX950 and above
+Intel DG1 and above
+
+NVIDIA GT635, GTX645 and above
 
 AMD RX460 and above
 
