@@ -291,7 +291,6 @@ const videoConfig = {
   codedHeight: 720,
 }
 
-let supported = false;
 try {
   const result = await VideoDecoder.isConfigSupported(videoConfig);
   /* Indicate whether or not the video with given profile, width, and height can be decoded by WebCodecs API */
@@ -368,9 +367,11 @@ try {
 
 #### Windows
 
-Edge uses `VDAVideoDecocder` to call `MFT` (need to install `HEVC Video Extension`, Edge 117 ~ 121 uses `MediaFoundationRenderer`, and switch back to the original `VDAVideoDecocder` after version 122) to finish the HEVC HW decoding which is the same tech behind `Movies and TV` builtin system app.
+Edge uses `VDAVideoDecocder` to call `MFT` (need to install `HEVC Video Extension`, Edge 117 ~ 121 uses `MediaFoundationRenderer`, and switch back to the original `VDAVideoDecocder` after version 122) to finish the HEVC decoding which is the same tech behind `Movies and TV` builtin system app.
 
-Firefox (>= 120, experimental, need to manually set `media.wmf.hevc.enabled=1` to enable the feature) uses DXVA MFT (need to install `HEVC Video Extension`) to finish the HEVC HW decoding which is the same tech behind `Movies and TV` builtin system app.
+Firefox (>= 120, experimental, need to manually set `media.wmf.hevc.enabled=1` to enable the feature) uses `MFT` (need to install `HEVC Video Extension`) to finish the HEVC decoding which is the same tech behind `Movies and TV` builtin system app.
+
+When using `MFT`, If the device does not have hardware decoding support of a specific profile (i.e. NVIDIA GTX 745 does not support Main10 profile) or resolution (i.e. NVIDIA GTX 960 does not support resolutions above 4K), `MFT` will automatically switch to software decoding.
 
 Chrome uses `D3D11VideoDecoder` to call `D3D11VA` (no need to install anything) to finish the HEVC HW decoding which is the same tech behind video players like `VLC`.
 
@@ -378,12 +379,12 @@ Chrome uses `D3D11VideoDecoder` to call `D3D11VA` (no need to install anything) 
 
 Edge and Chrome use the same decoding implementations on macOS.
 
-Safari and Chrome use the same `VideoToolbox` to finish the HEVC HW decoding.
+Safari and Chrome use the same `VideoToolbox` to finish the HEVC decoding, if the device does not have hardware support, it will automatically fallback to use software decoding. Compared with Safari, Chrome requires higher OS version (10.13 vs 11.0).
 
 ## How to verify HEVC hardware support is enabled?
 
 1. Open `chrome://gpu`, and search `Video Acceleration Information`, you should see **Decode hevc main** field and **Decode hevc main 10** field  (macOS will show **Decode hevc main still-picture** and **Decode hevc range extensions** as well, Windows Intel Gen10+ iGPU will show **Decode hevc range extensions** as well)  present if hardware decoding is supported (macOS is an exception here, you see this field doesn't means the decode will use hardware, it actually depends on your GPU).
-2. Open `chrome://media-internals` and play some HEVC video ([Test Page](https://lf-tk-sg.ibytedtos.com/obj/tcs-client-sg/resources/video_demo_hevc.html)) if the decoder is `VDAVideoDecoder` or `D3D11VideoDecoder` or `VaapiVideoDecoder` that means the video is using hardware decoding (macOS is an exception here, if the OS >= Big Sur, and the GPU doesn't support HEVC, VideoToolbox will fallback to software decode which has a better performance compared with FFMPEG, the decoder is `VDAVideoDecoder` in this case indeed), and if the decoder is `FFMpegVideoDecoder` that means  the video is using software decoding.
+2. Open `chrome://media-internals` and play some HEVC video ([Test Page](https://lf-tk-sg.ibytedtos.com/obj/tcs-client-sg/resources/video_demo_hevc.html)) if the decoder is `VDAVideoDecoder` or `VideoToolboxVideoDecoder` or `D3D11VideoDecoder` or `VaapiVideoDecoder` that means the video is using hardware decoding (macOS is an exception here, if the OS >= Big Sur, and the GPU doesn't support HEVC, VideoToolbox will fallback to software decode which has a better performance compared with FFMPEG, the decoder is `VDAVideoDecoder` or `VideoToolboxVideoDecoder` in this case indeed), and if the decoder is `FFMpegVideoDecoder` that means  the video is using software decoding.
 3. Open `Activity Monitor` on Mac and search `VTDecoderXPCService`, if the cpu usage larger than 0 when playing video, that means hardware (or software) decoding is being used.
 4. Open `Windows Task Manager` on Windows and switch to `Performance` - `GPU`, if `Video Decode`(Intel, Nvidia) or `Video Codec`(AMD) usage larger than 0 when playing video,  that means hardware decoding is being used.
 

@@ -289,7 +289,6 @@ const videoConfig = {
   codedHeight: 720,
 }
 
-let supported = false;
 try {
   const result = await VideoDecoder.isConfigSupported(videoConfig);
   /* 指定的 Profile + 宽高的视频是否可解码 */
@@ -365,9 +364,11 @@ try {
 
 #### Windows
 
-Edge 使用 `VDAVideoDecoder` 调用 `MFT`（需要安装`HEVC视频扩展`插件, Edge 117 ~ 121 使用 `MediaFoundationRenderer`, 在 122 及以后版本切换回了之前的 `VDAVideoDecocder`）完成硬解，和系统自带的 `电影与电视` 用的解码器相同。
+Edge 使用 `VDAVideoDecoder` 调用 `MFT`（需要安装 `HEVC视频扩展` 插件, Edge 117 ~ 121 使用 `MediaFoundationRenderer`, 在 122 及以后版本切换回了之前的 `VDAVideoDecocder`）完成解码，和系统自带的 `电影与电视` 用的解码器相同。
 
-Firefox (>= 120, 实验功能, 需手动设置 `media.wmf.hevc.enabled=1` 开启) 使用 DXVA MFT（需要安装`HEVC视频扩展`插件）完成硬解，和系统自带的 `电影与电视` 用的解码器相同。
+Firefox (>= 120, 实验功能, 需手动设置 `media.wmf.hevc.enabled=1` 开启) 调用 `MFT`（需要安装 `HEVC视频扩展` 插件）完成解码，和系统自带的 `电影与电视` 用的解码器相同。
+
+当使用 `MFT` 解码时，如果设备不支持特定的 Profile（比如：NVIDIA GTX 745 不支持 Main10 Profile）或者分辨率（比如：NVIDIA GTX 960 不支持 4K 以上分辨率）的硬解，`MFT` 会自动切换到软解。
 
 Chrome 使用 `D3D11VideoDecoder` 调用 `D3D11VA` （无需安装插件）完成硬解，和 `VLC` 等视频播放器用的解码器相同。
 
@@ -375,12 +376,12 @@ Chrome 使用 `D3D11VideoDecoder` 调用 `D3D11VA` （无需安装插件）完�
 
 Edge 和 Chrome 在 macOS 的解码实现没有任何区别。
 
-Safari 和 Chrome 二者均使用 `VideoToolbox` 解码器完成硬解。
+Safari 和 Chrome 二者均使用 `VideoToolbox` 解码器完成解码，如果设备不支持硬解，均会自动切换到软解。此外, 与 Safari 相比，Chrome 具有更高的操作系统版本要求 (10.13 vs 11.0)。
 
 ## 如何验证视频播放是否走硬解？
 
 1. 打开 `chrome://gpu`, 搜索 `Video Acceleration Information`, 如果能看到 **Decode hevc main**  和 **Decode hevc main 10**  (macOS 还会显示 **Decode hevc main still-picture** 和 **Decode hevc range extensions**，Windows Intel Gen10+ iGPU 会显示 **Decode hevc range extensions**) 说明支持硬解（这里 macOS 是个例外，显示仅代表支持 VideoToolbox 解码，至于是否硬解取决于 GPU 支持情况)。
-2. 打开 `chrome://media-internals` 并尝试播放一些 HEVC 视频 ([测试页面](https://lf3-cdn-tos.bytegoofy.com/obj/tcs-client/resources/video_demo_hevc.html))，如果最终使用的 Decoder 是 `VDAVideoDecoder` 或 `D3D11VideoDecoder` 或 `VaapiVideoDecoder` 说明走了硬解（这里 macOS 是个例外，macOS Big Sur 以上版本，在不支持的 GPU 上，VideoToolbox 会自动 fallback 到软解，性能相比 FFMPEG 软解更好，Decoder 同样为 `VDAVideoDecoder`）, 如果 Decoder 是 `FFMpegVideoDecoder` 说明走的是软解。
+2. 打开 `chrome://media-internals` 并尝试播放一些 HEVC 视频 ([测试页面](https://lf3-cdn-tos.bytegoofy.com/obj/tcs-client/resources/video_demo_hevc.html))，如果最终使用的 Decoder 是 `VDAVideoDecoder` 或 `VideoToolboxVideoDecoder` 或 `D3D11VideoDecoder` 或 `VaapiVideoDecoder` 说明走了硬解（这里 macOS 是个例外，macOS Big Sur 以上版本，在不支持的 GPU 上，VideoToolbox 会自动 fallback 到软解，性能相比 FFMPEG 软解更好，Decoder 同样为 `VDAVideoDecoder` 或 `VideoToolboxVideoDecoder`）, 如果 Decoder 是 `FFMpegVideoDecoder` 说明走的是软解。
 3. 如果是 Mac，请打开 `活动监视器`并搜索 `VTDecoderXPCService`, 如果播放时进程的 CPU 利用率大于0说明走了硬解（或软解)。
 4. 如果是 Windows，请打开 `任务管理器` 并切换到 `性能` - `GPU` 面板，如果 `Video Decode`(Intel, Nvidia) 或 `Video Codec`(AMD) 的利用率大于0说明走了硬解。
 
