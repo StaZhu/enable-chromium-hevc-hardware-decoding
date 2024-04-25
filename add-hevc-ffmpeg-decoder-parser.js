@@ -43,6 +43,7 @@ const patches = [
       '    (use_linux_config && ffmpeg_branding == "ChromeOS")) {',
     ].join('\n'),
     ffmpeg_c_sources : [
+      "libavcodec/aom_film_grain.c",
       'libavcodec/autorename_libavcodec_bswapdsp.c',
       'libavcodec/dovi_rpu.c',
       'libavcodec/dynamic_hdr_vivid.c',
