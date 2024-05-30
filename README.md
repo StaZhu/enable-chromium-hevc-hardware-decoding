@@ -426,6 +426,8 @@ If Electron >= v22.0.0, the HEVC HW decoding feature for macOS, Windows, and Lin
 
 ## Change Log
 
+`2024-05-30` Fixed issue of abnormal color when HEVC video encoded with GBR color space matrix (Chrome >= `127.0.6510.0`).
+
 `2024-04-18` Fixed issue of video frame stuttering on some AMD GPUs (Edge >= `124.0.2478.49`), and issue of bad HEVC Main10 HDR tone-mapping performance for Edge on Windows platform (Edge >= `125.0.2530.0`)
 
 `2024-04-09` Fixed issue where HEVC Rext 4:2:2/4:4:4 video chroma sampling was downgraded to 4:2:0 on Windows/macOS platforms (Chrome >= `125.0.6408.0`)
