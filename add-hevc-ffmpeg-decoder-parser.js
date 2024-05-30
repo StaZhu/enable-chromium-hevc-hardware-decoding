@@ -21,7 +21,7 @@ for (const [idx, argv] of process.argv.entries()) {
       output = process.argv[idx + 1];
       if (!fs.existsSync(output)) {
         fs.mkdirSync(output, {
-          recursive: true
+          recursive: true,
         });
       }
       break;
@@ -39,13 +39,13 @@ const patches = [
     condition: [
       'if ((is_apple && ffmpeg_branding == "Chrome") ||',
       '    (is_win && ffmpeg_branding == "Chrome") ||',
-      '    (use_linux_config && ffmpeg_branding == "Chrome") ||',
-      '    (use_linux_config && ffmpeg_branding == "ChromeOS")) {',
+      '    (use_linux_config && ffmpeg_branding == "Chrome")) {',
     ].join('\n'),
     ffmpeg_c_sources : [
-      "libavcodec/aom_film_grain.c",
+      'libavcodec/aom_film_grain.c',
       'libavcodec/autorename_libavcodec_bswapdsp.c',
       'libavcodec/dovi_rpu.c',
+      'libavcodec/dovi_rpudec.c',
       'libavcodec/dynamic_hdr_vivid.c',
       'libavcodec/hevc_cabac.c',
       'libavcodec/hevc_data.c',
@@ -67,11 +67,7 @@ const patches = [
       '    (is_win && current_cpu == "x64" && ffmpeg_branding == "Chrome") ||',
       '    (is_win && current_cpu == "x86" && ffmpeg_branding == "Chrome") ||',
       '    (use_linux_config && current_cpu == "x64" && ffmpeg_branding == "Chrome") ||',
-      '    (use_linux_config && current_cpu == "x64" &&',
-      '     ffmpeg_branding == "ChromeOS") ||',
-      '    (use_linux_config && current_cpu == "x86" && ffmpeg_branding == "Chrome") ||',
-      '    (use_linux_config && current_cpu == "x86" &&',
-      '     ffmpeg_branding == "ChromeOS")) {',
+      '    (use_linux_config && current_cpu == "x86" && ffmpeg_branding == "Chrome")) {',
     ].join('\n'),
     ffmpeg_c_sources: [
       'libavcodec/x86/bswapdsp_init.c',
@@ -94,9 +90,7 @@ const patches = [
       'if ((is_apple && current_cpu == "arm64" && ffmpeg_branding == "Chrome") ||',
       '    (is_win && current_cpu == "arm64" && ffmpeg_branding == "Chrome") ||',
       '    (use_linux_config && current_cpu == "arm64" &&',
-      '     ffmpeg_branding == "Chrome") ||',
-      '    (use_linux_config && current_cpu == "arm64" &&',
-      '     ffmpeg_branding == "ChromeOS")) {',
+      '     ffmpeg_branding == "Chrome")) {',
     ].join('\n'),
     ffmpeg_c_sources: [
       'libavcodec/aarch64/hevcdsp_init_aarch64.c',
@@ -113,11 +107,7 @@ const patches = [
     condition: [
       'if ((use_linux_config && current_cpu == "arm" && arm_use_neon &&',
       '     ffmpeg_branding == "Chrome") ||',
-      '    (use_linux_config && current_cpu == "arm" && arm_use_neon &&',
-      '     ffmpeg_branding == "ChromeOS") ||',
-      '    (use_linux_config && current_cpu == "arm" && ffmpeg_branding == "Chrome") ||',
-      '    (use_linux_config && current_cpu == "arm" &&',
-      '     ffmpeg_branding == "ChromeOS")) {',
+      '    (use_linux_config && current_cpu == "arm" && ffmpeg_branding == "Chrome")) {',
     ].join('\n'),
     ffmpeg_c_sources: [
       'libavcodec/arm/hevcdsp_init_arm.c',
@@ -125,10 +115,8 @@ const patches = [
   },
   {
     condition: [
-      'if ((use_linux_config && current_cpu == "arm" && arm_use_neon &&',
-      '     ffmpeg_branding == "Chrome") ||',
-      '    (use_linux_config && current_cpu == "arm" && arm_use_neon &&',
-      '     ffmpeg_branding == "ChromeOS")) {',
+      'if (use_linux_config && current_cpu == "arm" && arm_use_neon &&',
+      '    ffmpeg_branding == "Chrome") {',
     ].join('\n'),
     ffmpeg_c_sources: [
       'libavcodec/arm/hevcdsp_init_neon.c',
@@ -167,8 +155,8 @@ function enableHevcConfig(filename) {
     .replace('define CONFIG_HEVC_SEI 0', 'define CONFIG_HEVC_SEI 1')
     .replace('define CONFIG_BSWAPDSP 0', 'define CONFIG_BSWAPDSP 1')
     .replace('define CONFIG_DOVI_RPU 0', 'define CONFIG_DOVI_RPU 1')
-    .replace("--enable-decoder='aac,h264'", "--enable-decoder='aac,h264,hevc'")
-    .replace("--enable-parser='aac,h264'", "--enable-decoder='aac,h264,hevc'");
+    .replace('--enable-decoder=\'aac,h264\'', '--enable-decoder=\'aac,h264,hevc\'')
+    .replace('--enable-parser=\'aac,h264\'', '--enable-decoder=\'aac,h264,hevc\'');
   fs.writeFileSync(filename, content, encodingConfig);
 }
 
@@ -242,13 +230,6 @@ function enableSoftwreDecodeHEVC() {
   enableFFMPEGHevc('Chromium', 'linux', 'arm-neon');
   enableFFMPEGHevc('Chromium', 'linux-noasm', 'x64');
 
-  enableFFMPEGHevc('ChromeOS', 'linux', 'x64');
-  enableFFMPEGHevc('ChromeOS', 'linux', 'ia32');
-  enableFFMPEGHevc('ChromeOS', 'linux', 'arm64');
-  enableFFMPEGHevc('ChromeOS', 'linux', 'arm');
-  enableFFMPEGHevc('ChromeOS', 'linux', 'arm-neon');
-  enableFFMPEGHevc('ChromeOS', 'linux-noasm', 'x64');
-
   // 2. Create auto rename file
   const prefix = '// File automatically generated. See crbug.com/495833.';
   writeAutoRenameFile(genPath(`./libavcodec/aarch64/autorename_libavcodec_aarch64_hevcdsp_idct_neon.S`), [prefix, '#include "hevcdsp_idct_neon.S"'].join('\n'));
@@ -264,17 +245,17 @@ function enableSoftwreDecodeHEVC() {
     // Commit the code.
     try {
       const msg = [
-        "Video: Add HEVC ffmpeg decoder & parser",
-        "Add ffmpeg software decoder and parser for HEVC to enable SW HEVC decoding"
+        'Video: Add HEVC ffmpeg decoder & parser',
+        'Add ffmpeg software decoder and parser for HEVC to enable SW HEVC decoding',
       ].map(v => `-m "${v}" `).join('');
       childProcess.execSync(`git add -A && git commit ${msg}`, {
-        cwd: ffmpegRoot
+        cwd: ffmpegRoot,
       });
     } catch(e) {}
     // Gen patch.
     try {
       childProcess.execSync(`git format-patch HEAD"^" -o "${output}"`, {
-        cwd: ffmpegRoot
+        cwd: ffmpegRoot,
       });
       console.log('Generate patch success!');
     } catch (e) {}
