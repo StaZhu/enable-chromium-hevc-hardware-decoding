@@ -1,6 +1,6 @@
-From 8feb289170c2e140cbd6d49b358e7d449de2e51f Mon Sep 17 00:00:00 2001
+From c29ca1852fe6d975b0b772dd78e36de23641f14f Mon Sep 17 00:00:00 2001
 From: Sta Zhu <zhusidayoyo@hotmail.com>
-Date: Sat, 2 Mar 2024 16:09:58 +0800
+Date: Wed, 5 Jun 2024 22:55:04 +0800
 Subject: [PATCH] Video: Enable HEVC ffmpeg decoding
 
 This will consider all HEVC profile as to supported, let FFMpegVideoDecoder
@@ -13,7 +13,7 @@ etc... as long as ffmpeg support it.
  3 files changed, 5 insertions(+), 28 deletions(-)
 
 diff --git a/media/base/supported_types.cc b/media/base/supported_types.cc
-index 58801ea7a994e..78cdb9a13285f 100644
+index b3ca9c106e406..a6e3b0d5ea5db 100644
 --- a/media/base/supported_types.cc
 +++ b/media/base/supported_types.cc
 @@ -222,33 +222,7 @@ bool IsAudioCodecProprietary(AudioCodec codec) {
@@ -50,7 +50,7 @@ index 58801ea7a994e..78cdb9a13285f 100644
  }
  
  bool IsVp9ProfileSupported(const VideoType& type) {
-@@ -428,7 +402,7 @@ bool IsDefaultSupportedAudioType(const AudioType& type) {
+@@ -441,7 +415,7 @@ bool IsDefaultSupportedAudioType(const AudioType& type) {
  
  bool IsBuiltInVideoCodec(VideoCodec codec) {
  #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) && BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -60,21 +60,21 @@ index 58801ea7a994e..78cdb9a13285f 100644
    }
  #endif  // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) &&
 diff --git a/media/filters/ffmpeg_glue.cc b/media/filters/ffmpeg_glue.cc
-index 140d90aba760e..80c0292785ae4 100644
+index e3a8c01362707..3d30a437e010d 100644
 --- a/media/filters/ffmpeg_glue.cc
 +++ b/media/filters/ffmpeg_glue.cc
-@@ -160,6 +160,9 @@ const char* FFmpegGlue::GetAllowedVideoDecoders() {
-     std::vector<std::string> allowed_decoders;
+@@ -156,6 +156,9 @@ const char* FFmpegGlue::GetAllowedVideoDecoders() {
  #if BUILDFLAG(USE_PROPRIETARY_CODECS)
      allowed_decoders.push_back("h264");
+ #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 +#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 +    allowed_decoders.push_back("hevc");
 +#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
- #if BUILDFLAG(IS_CHROMEOS)
-     if (base::FeatureList::IsEnabled(kCrOSLegacyMediaFormats)) {
-       allowed_decoders.push_back("mpeg4");
+     return base::JoinString(allowed_decoders, ",");
+ #else
+     return std::string();
 diff --git a/media/filters/ffmpeg_video_decoder.cc b/media/filters/ffmpeg_video_decoder.cc
-index bd75477feeabb..b395ba7995b22 100644
+index 5b8acb47e3848..24475a2f336d0 100644
 --- a/media/filters/ffmpeg_video_decoder.cc
 +++ b/media/filters/ffmpeg_video_decoder.cc
 @@ -76,7 +76,6 @@ static int GetFFmpegVideoDecoderThreadCount(const VideoDecoderConfig& config) {
@@ -94,4 +94,4 @@ index bd75477feeabb..b395ba7995b22 100644
        // Normalize to three threads for 1080p content, then scale linearly
        // with number of pixels.
 -- 
-2.43.0
+2.45.0
