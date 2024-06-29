@@ -423,6 +423,8 @@ Electron >= v22.0.0 已集成好 macOS, Windows, 和 Linux (仅 VAAPI) 平台的
 
 ## 更新历史
 
+`2024-06-29` 新增启用 HEVC WebRTC 支持的 Patch (Chrome >= `128.0.6564.0`)
+
 `2024-05-30` 修复了 GBR 色彩空间 Matrix 编码的 HEVC 视频，存在的颜色渲染异常的问题 (Chrome >= `127.0.6510.0`).
 
 `2024-04-18` 修复了某些 AMD GPU 上的视频帧卡顿的问题 (Edge >= `124.0.2478.49`)，以及 Windows 平台上 Edge 的 HEVC Main10 HDR Tone-mapping 颜色异常，性能不佳的问题 (Edge >= `125.0.2530.0`)
