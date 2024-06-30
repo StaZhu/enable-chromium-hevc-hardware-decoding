@@ -63,7 +63,7 @@ Linux (版本号须 >= `108.0.5354.0`, 仅支持 VAAPI 接口支持的 GPU，比
 
 ## 支持哪些 API？
 
-视频解码：支持 File, Media Source Extensions, WebCodec (8Bit >= `107.0.5272.0`, 10Bit + HEVC with Alpha >= `108.0.5343.0`), Clearkey 以及 Widevine L1 (不支持L3) Encrypted Media Extensions, WebRTC (实验性功能，需使用 Chrome Canary 传入 `--enable-features=PlatformHEVCEncoderSupport,WebRtcAllowH265Send,WebRtcAllowH265Receive --force-fieldtrials=WebRTC-Video-H26xPacketBuffer/Enabled` 开启，或直接使用本仓库提供 Chromium 测试)。
+视频解码：支持 File, Media Source Extensions, WebCodec (8Bit >= `107.0.5272.0`, 10Bit + HEVC with Alpha >= `108.0.5343.0`), Clearkey 以及 Widevine L1 (不支持L3) Encrypted Media Extensions, WebRTC (实验性功能，需使用 Chrome Canary 传入 `--enable-features=PlatformHEVCEncoderSupport,WebRtcAllowH265Send,WebRtcAllowH265Receive --force-fieldtrials=WebRTC-Video-H26xPacketBuffer/Enabled` 开启，或直接使用本仓库提供的 Chromium 测试，一些可用的测试地址供参考：[Media Capabilities](https://webrtc.internaut.com/mc/), [Demo](https://webrtc.github.io/samples/src/content/peerconnection/change-codecs/))。
 
 视频编码：支持 WebCodec (支持 macOS, Windows, Androird，需要传启动参数：`--enable-features=PlatformHEVCEncoderSupport` 手动开启)。
 
