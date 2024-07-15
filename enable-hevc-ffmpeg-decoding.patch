@@ -1,22 +1,22 @@
-From c29ca1852fe6d975b0b772dd78e36de23641f14f Mon Sep 17 00:00:00 2001
+From f2690de69556f1a3cde4cd83ebbc966eb2d7740c Mon Sep 17 00:00:00 2001
 From: Sta Zhu <zhusidayoyo@hotmail.com>
-Date: Wed, 5 Jun 2024 22:55:04 +0800
+Date: Mon, 15 Jul 2024 17:12:05 +0800
 Subject: [PATCH] Video: Enable HEVC ffmpeg decoding
 
 This will consider all HEVC profile as to supported, let FFMpegVideoDecoder
 handle SW fallback and help you be able to play video's like HEVC Rext, SCC 
 etc... as long as ffmpeg support it.
 ---
- media/base/supported_types.cc         | 28 +--------------------------
+ media/base/supported_types.cc         | 29 ++++-----------------------
  media/filters/ffmpeg_glue.cc          |  3 +++
  media/filters/ffmpeg_video_decoder.cc |  2 +-
- 3 files changed, 5 insertions(+), 28 deletions(-)
+ 3 files changed, 8 insertions(+), 26 deletions(-)
 
 diff --git a/media/base/supported_types.cc b/media/base/supported_types.cc
-index b3ca9c106e406..a6e3b0d5ea5db 100644
+index b3ca9c106e406..787272cd6d623 100644
 --- a/media/base/supported_types.cc
 +++ b/media/base/supported_types.cc
-@@ -222,33 +222,7 @@ bool IsAudioCodecProprietary(AudioCodec codec) {
+@@ -222,33 +222,12 @@ bool IsAudioCodecProprietary(AudioCodec codec) {
  #endif  // !BUILDFLAG(USE_PROPRIETARY_CODECS)
  
  bool IsHevcProfileSupported(const VideoType& type) {
@@ -40,17 +40,20 @@ index b3ca9c106e406..a6e3b0d5ea5db 100644
 -    return false;
 -  }
 -#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
--  return GetSupplementalProfileCache()->IsProfileSupported(type.profile);
--#else
++#if BUILDFLAG(IS_ANDROID)
++  // Android doesn't bundle FFMpegVideoDecoder, so this is not always supported.
+   return GetSupplementalProfileCache()->IsProfileSupported(type.profile);
+ #else
    return true;
 -#endif  // BUIDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
 -#else
 -  return false;
 -#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
++#endif  // BUILDFLAG(IS_ANDROID)
  }
  
  bool IsVp9ProfileSupported(const VideoType& type) {
-@@ -441,7 +415,7 @@ bool IsDefaultSupportedAudioType(const AudioType& type) {
+@@ -441,7 +420,7 @@ bool IsDefaultSupportedAudioType(const AudioType& type) {
  
  bool IsBuiltInVideoCodec(VideoCodec codec) {
  #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) && BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -60,21 +63,21 @@ index b3ca9c106e406..a6e3b0d5ea5db 100644
    }
  #endif  // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) &&
 diff --git a/media/filters/ffmpeg_glue.cc b/media/filters/ffmpeg_glue.cc
-index e3a8c01362707..3d30a437e010d 100644
+index e3a8c01362707..5e542172a0e20 100644
 --- a/media/filters/ffmpeg_glue.cc
 +++ b/media/filters/ffmpeg_glue.cc
-@@ -156,6 +156,9 @@ const char* FFmpegGlue::GetAllowedVideoDecoders() {
+@@ -155,6 +155,9 @@ const char* FFmpegGlue::GetAllowedVideoDecoders() {
+     std::vector<std::string> allowed_decoders;
  #if BUILDFLAG(USE_PROPRIETARY_CODECS)
      allowed_decoders.push_back("h264");
- #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 +#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 +    allowed_decoders.push_back("hevc");
 +#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+ #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
      return base::JoinString(allowed_decoders, ",");
  #else
-     return std::string();
 diff --git a/media/filters/ffmpeg_video_decoder.cc b/media/filters/ffmpeg_video_decoder.cc
-index 5b8acb47e3848..24475a2f336d0 100644
+index 4935ef5fd6122..f85f7dda8cf0b 100644
 --- a/media/filters/ffmpeg_video_decoder.cc
 +++ b/media/filters/ffmpeg_video_decoder.cc
 @@ -76,7 +76,6 @@ static int GetFFmpegVideoDecoderThreadCount(const VideoDecoderConfig& config) {
@@ -85,13 +88,13 @@ index 5b8acb47e3848..24475a2f336d0 100644
      case VideoCodec::kVP9:
      case VideoCodec::kAV1:
      case VideoCodec::kDolbyVision:
-@@ -89,6 +88,7 @@ static int GetFFmpegVideoDecoderThreadCount(const VideoDecoderConfig& config) {
-       break;
+@@ -87,6 +86,7 @@ static int GetFFmpegVideoDecoderThreadCount(const VideoDecoderConfig& config) {
+       NOTREACHED();
  
      case VideoCodec::kH264:
 +    case VideoCodec::kHEVC:
-     case VideoCodec::kVP8:
        // Normalize to three threads for 1080p content, then scale linearly
        // with number of pixels.
+       // Examples:
 -- 
-2.45.0
+2.45.2
