@@ -1,22 +1,22 @@
-From f2690de69556f1a3cde4cd83ebbc966eb2d7740c Mon Sep 17 00:00:00 2001
+From 71024c860e2d86c2ff02d5cb78bea617f466d7a7 Mon Sep 17 00:00:00 2001
 From: Sta Zhu <zhusidayoyo@hotmail.com>
-Date: Mon, 15 Jul 2024 17:12:05 +0800
+Date: Tue, 30 Jul 2024 22:45:31 +0800
 Subject: [PATCH] Video: Enable HEVC ffmpeg decoding
 
 This will consider all HEVC profile as to supported, let FFMpegVideoDecoder
 handle SW fallback and help you be able to play video's like HEVC Rext, SCC 
 etc... as long as ffmpeg support it.
 ---
- media/base/supported_types.cc         | 29 ++++-----------------------
- media/filters/ffmpeg_glue.cc          |  3 +++
- media/filters/ffmpeg_video_decoder.cc |  2 +-
- 3 files changed, 8 insertions(+), 26 deletions(-)
+ media/base/supported_types.cc         | 29 ++++++---------------------
+ media/filters/ffmpeg_glue.cc          |  2 +-
+ media/filters/ffmpeg_video_decoder.cc |  8 +++++---
+ 3 files changed, 12 insertions(+), 27 deletions(-)
 
 diff --git a/media/base/supported_types.cc b/media/base/supported_types.cc
-index b3ca9c106e406..787272cd6d623 100644
+index 31c77aff03d0d..0599bbd7be607 100644
 --- a/media/base/supported_types.cc
 +++ b/media/base/supported_types.cc
-@@ -222,33 +222,12 @@ bool IsAudioCodecProprietary(AudioCodec codec) {
+@@ -222,33 +222,14 @@ bool IsAudioCodecProprietary(AudioCodec codec) {
  #endif  // !BUILDFLAG(USE_PROPRIETARY_CODECS)
  
  bool IsHevcProfileSupported(const VideoType& type) {
@@ -32,16 +32,16 @@ index b3ca9c106e406..787272cd6d623 100644
 -  // for HEVC support.
 -  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
 -          switches::kLacrosEnablePlatformHevc)) {
--    return true;
--  }
++#if BUILDFLAG(IS_ANDROID)
++  if (base::FeatureList::IsEnabled(kBuiltInH264Decoder)) {
+     return true;
+   }
 -#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 -#if BUILDFLAG(IS_CHROMEOS_ASH)
 -  if (!base::FeatureList::IsEnabled(kPlatformHEVCDecoderSupport)) {
 -    return false;
 -  }
 -#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-+#if BUILDFLAG(IS_ANDROID)
-+  // Android doesn't bundle FFMpegVideoDecoder, so this is not always supported.
    return GetSupplementalProfileCache()->IsProfileSupported(type.profile);
  #else
    return true;
@@ -53,34 +53,43 @@ index b3ca9c106e406..787272cd6d623 100644
  }
  
  bool IsVp9ProfileSupported(const VideoType& type) {
-@@ -441,7 +420,7 @@ bool IsDefaultSupportedAudioType(const AudioType& type) {
+@@ -441,7 +422,9 @@ bool IsDefaultSupportedAudioType(const AudioType& type) {
  
  bool IsBuiltInVideoCodec(VideoCodec codec) {
  #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) && BUILDFLAG(USE_PROPRIETARY_CODECS)
--  if (codec == VideoCodec::kH264) {
-+  if (codec == VideoCodec::kH264 || codec == VideoCodec::kHEVC) {
+-  if (codec == VideoCodec::kH264 &&
++  // Android does bundle `FFMpegVideoDecoder` for `non-arm32` devices,
++  // but not enabled by default.
++  if ((codec == VideoCodec::kH264 || codec == VideoCodec::kHEVC) &&
+       base::FeatureList::IsEnabled(kBuiltInH264Decoder)) {
      return true;
    }
- #endif  // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) &&
 diff --git a/media/filters/ffmpeg_glue.cc b/media/filters/ffmpeg_glue.cc
-index e3a8c01362707..5e542172a0e20 100644
+index 7d5c6e63b1906..8c08b5ae93cc2 100644
 --- a/media/filters/ffmpeg_glue.cc
 +++ b/media/filters/ffmpeg_glue.cc
-@@ -155,6 +155,9 @@ const char* FFmpegGlue::GetAllowedVideoDecoders() {
-     std::vector<std::string> allowed_decoders;
- #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-     allowed_decoders.push_back("h264");
-+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-+    allowed_decoders.push_back("hevc");
-+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
- #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
-     return base::JoinString(allowed_decoders, ",");
+@@ -164,7 +164,7 @@ const char* FFmpegGlue::GetAllowedAudioDecoders() {
+ const char* FFmpegGlue::GetAllowedVideoDecoders() {
+   // This should match the configured lists in //third_party/ffmpeg.
+ #if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+-  return IsBuiltInVideoCodec(VideoCodec::kH264) ? "h264" : "";
++  return IsBuiltInVideoCodec(VideoCodec::kH264) ? "h264,hevc" : "";
  #else
+   return "";
+ #endif
 diff --git a/media/filters/ffmpeg_video_decoder.cc b/media/filters/ffmpeg_video_decoder.cc
-index 4935ef5fd6122..f85f7dda8cf0b 100644
+index 3f9cef0391af5..a5954f298ca38 100644
 --- a/media/filters/ffmpeg_video_decoder.cc
 +++ b/media/filters/ffmpeg_video_decoder.cc
-@@ -76,7 +76,6 @@ static int GetFFmpegVideoDecoderThreadCount(const VideoDecoderConfig& config) {
+@@ -2,6 +2,7 @@
+ // Use of this source code is governed by a BSD-style license that can be
+ // found in the LICENSE file.
+ 
++#include "media/base/video_codecs.h"
+ #ifdef UNSAFE_BUFFERS_BUILD
+ // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+ #pragma allow_unsafe_buffers
+@@ -82,7 +83,6 @@ static int GetFFmpegVideoDecoderThreadCount(const VideoDecoderConfig& config) {
      case VideoCodec::kUnknown:
      case VideoCodec::kVC1:
      case VideoCodec::kMPEG2:
@@ -88,7 +97,7 @@ index 4935ef5fd6122..f85f7dda8cf0b 100644
      case VideoCodec::kVP9:
      case VideoCodec::kAV1:
      case VideoCodec::kDolbyVision:
-@@ -87,6 +86,7 @@ static int GetFFmpegVideoDecoderThreadCount(const VideoDecoderConfig& config) {
+@@ -93,6 +93,7 @@ static int GetFFmpegVideoDecoderThreadCount(const VideoDecoderConfig& config) {
        NOTREACHED();
  
      case VideoCodec::kH264:
@@ -96,5 +105,18 @@ index 4935ef5fd6122..f85f7dda8cf0b 100644
        // Normalize to three threads for 1080p content, then scale linearly
        // with number of pixels.
        // Examples:
+@@ -126,8 +127,9 @@ static void ReleaseVideoBufferImpl(void* opaque, uint8_t* data) {
+ 
+ // static
+ bool FFmpegVideoDecoder::IsCodecSupported(VideoCodec codec) {
+-  // We only build support for H.264.
+-  return codec == VideoCodec::kH264 && IsBuiltInVideoCodec(codec);
++  // We only build support for H.264 / H.264.
++  return (codec == VideoCodec::kH264 || codec == VideoCodec::kHEVC) &&
++         IsBuiltInVideoCodec(codec);
+ }
+ 
+ FFmpegVideoDecoder::FFmpegVideoDecoder(MediaLog* media_log)
 -- 
-2.45.2
+2.39.3 (Apple Git-146)
+

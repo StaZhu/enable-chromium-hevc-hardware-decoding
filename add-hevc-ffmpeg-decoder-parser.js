@@ -37,9 +37,12 @@ const encodingConfig = { encoding: 'utf8' };
 const patches = [
   {
     condition: [
-      'if ((is_apple && ffmpeg_branding == "Chrome") ||',
+      'if ((current_cpu == "arm64" && ffmpeg_branding == "Chrome") ||',
+      '    (current_cpu == "x64" && ffmpeg_branding == "Chrome") ||',
+      '    (is_android && current_cpu == "x86" && ffmpeg_branding == "Chrome") ||',
+      '    (is_apple && ffmpeg_branding == "Chrome") ||',
       '    (is_win && ffmpeg_branding == "Chrome") ||',
-      '    (use_linux_config && ffmpeg_branding == "Chrome")) {',
+      '    (use_linux_config && ffmpeg_branding == "Chrome")) {'
     ].join('\n'),
     ffmpeg_c_sources : [
       'libavcodec/aom_film_grain.c',
@@ -63,10 +66,9 @@ const patches = [
   },
   {
     condition: [
-      'if ((is_apple && current_cpu == "x64" && ffmpeg_branding == "Chrome") ||',
-      '    (is_win && current_cpu == "x64" && ffmpeg_branding == "Chrome") ||',
+      'if ((current_cpu == "x64" && ffmpeg_branding == "Chrome") ||',
+      '    (is_android && current_cpu == "x86" && ffmpeg_branding == "Chrome") ||',
       '    (is_win && current_cpu == "x86" && ffmpeg_branding == "Chrome") ||',
-      '    (use_linux_config && current_cpu == "x64" && ffmpeg_branding == "Chrome") ||',
       '    (use_linux_config && current_cpu == "x86" && ffmpeg_branding == "Chrome")) {',
     ].join('\n'),
     ffmpeg_c_sources: [
@@ -87,10 +89,7 @@ const patches = [
   },
   {
     condition: [
-      'if ((is_apple && current_cpu == "arm64" && ffmpeg_branding == "Chrome") ||',
-      '    (is_win && current_cpu == "arm64" && ffmpeg_branding == "Chrome") ||',
-      '    (use_linux_config && current_cpu == "arm64" &&',
-      '     ffmpeg_branding == "Chrome")) {',
+      'if (current_cpu == "arm64" && ffmpeg_branding == "Chrome") {',
     ].join('\n'),
     ffmpeg_c_sources: [
       'libavcodec/aarch64/hevcdsp_init_aarch64.c',
@@ -176,7 +175,7 @@ function modifyFFMPEGGenerated(filename) {
   let content = fs.readFileSync(filename, encodingConfig);
   for (const patch of patches) {
     if (!content.includes(patch.condition)) {
-      console.error(`Failed to modify ffmpeg_generated.gni, please upgrade the script!`);
+      console.error(`Failed to modify ffmpeg_generated.gni, please upgrade the script!`, patch);
       process.exit(1);
     }
     let toAdd = '';
@@ -214,6 +213,10 @@ function enableSoftwreDecodeHEVC() {
   enableFFMPEGHevc('Chrome', 'linux', 'arm64');
   enableFFMPEGHevc('Chrome', 'linux', 'arm');
   enableFFMPEGHevc('Chrome', 'linux', 'arm-neon');
+  enableFFMPEGHevc('Chrome', 'android', 'arm-neon');
+  enableFFMPEGHevc('Chrome', 'android', 'arm64');
+  enableFFMPEGHevc('Chrome', 'android', 'ia32');
+  enableFFMPEGHevc('Chrome', 'android', 'x64');
 
   enableFFMPEGHevc('Chromium', 'win', 'ia32');
   enableFFMPEGHevc('Chromium', 'win', 'x64');
@@ -229,6 +232,10 @@ function enableSoftwreDecodeHEVC() {
   enableFFMPEGHevc('Chromium', 'linux', 'arm');
   enableFFMPEGHevc('Chromium', 'linux', 'arm-neon');
   enableFFMPEGHevc('Chromium', 'linux-noasm', 'x64');
+  enableFFMPEGHevc('Chromium', 'android', 'arm-neon');
+  enableFFMPEGHevc('Chromium', 'android', 'arm64');
+  enableFFMPEGHevc('Chromium', 'android', 'ia32');
+  enableFFMPEGHevc('Chromium', 'android', 'x64');
 
   // 2. Create auto rename file
   const prefix = '// File automatically generated. See crbug.com/495833.';
