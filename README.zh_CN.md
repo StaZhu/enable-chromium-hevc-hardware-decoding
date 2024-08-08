@@ -16,7 +16,7 @@ HEVC Main (最高支持 8192x8192 px)
 
 HEVC Main 10 (最高支持 8192x8192 px)
 
-HEVC Main Still Picture (Windows 不支持，最高支持 8192x8192 px)
+HEVC Main Still Picture (最高支持 8192x8192 px)
 
 HEVC Rext (部分支持，细节见下表，最高支持 8192x8192 px)
 
@@ -425,6 +425,8 @@ Safari 和 Chrome 二者均使用 `VideoToolbox` 解码器完成解码，如果�
 Electron >= v22.0.0 已集成好 macOS, Windows, 和 Linux (仅 VAAPI) 平台的 HEVC 硬解功能，且开箱即用。若要集成软解，方法同上述 Chromium 教程相同。
 
 ## 更新历史
+
+`2024-07-19` Windows 平台新增 HEVC Main Still Picture Profile 支持 (Chrome >= `128.0.6607.0`)
 
 `2024-06-29` 新增启用 HEVC WebRTC 支持的 Patch (Chrome >= `128.0.6564.0`)
 

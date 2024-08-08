@@ -16,7 +16,7 @@ HEVC Main (Up to 8192x8192 pixels)
 
 HEVC Main 10 (Up to 8192x8192 pixels)
 
-HEVC Main Still Picture (only Windows is not supported, up to 8192x8192 pixels)
+HEVC Main Still Picture (up to 8192x8192 pixels)
 
 HEVC Rext (partially supported, see the table below for details, up to 8192x8192 pixels)
 
@@ -428,6 +428,8 @@ Some GPU hardware may has bug which will cause `D3D11VideoDecoder` forbidden to 
 If Electron >= v22.0.0, the HEVC HW decoding feature for macOS, Windows, and Linux (VAAPI only) should have already been integrated. To add HEVC SW decoding, the method should be the same with Chromium guide above.
 
 ## Change Log
+
+`2024-07-19` Added HEVC Main Still Picture Profile support for Windows (Chrome >= `128.0.6607.0`)
 
 `2024-06-29` Added patches to enable HEVC WebRTC support (Chrome >= `128.0.6564.0`)
 
