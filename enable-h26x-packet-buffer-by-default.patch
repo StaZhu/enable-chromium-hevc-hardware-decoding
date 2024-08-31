@@ -1,6 +1,6 @@
-From 3b904bcefa7743f1e0220992f77288c7d105e7b6 Mon Sep 17 00:00:00 2001
+From 62645d3feba0a8043c04651ed018b5ed39b7f417 Mon Sep 17 00:00:00 2001
 From: Sta Zhu <zhusidayoyo@hotmail.com>
-Date: Sat, 29 Jun 2024 16:44:16 +0800
+Date: Sat, 31 Aug 2024 20:51:29 +0800
 Subject: [PATCH] Video: Enable WebRTC H26xPacketBuffer feature by default
 
 This will enable WebRTC H26xPacketBuffer feature which is
@@ -10,14 +10,14 @@ neccesary to make WebRTC related API start working.
  1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/video/rtp_video_stream_receiver2.cc b/video/rtp_video_stream_receiver2.cc
-index ae9cb190a0..e875a5e109 100644
+index 4c43bec9ce..9ce9b79306 100644
 --- a/video/rtp_video_stream_receiver2.cc
 +++ b/video/rtp_video_stream_receiver2.cc
-@@ -1246,8 +1246,7 @@ void RtpVideoStreamReceiver2::StartReceive() {
+@@ -1239,8 +1239,7 @@ void RtpVideoStreamReceiver2::StartReceive() {
    RTC_DCHECK_RUN_ON(&packet_sequence_checker_);
    // |h26x_packet_buffer_| is created here instead of in the ctor because we
    // need to know the value of |sps_pps_id_is_h264_keyframe_|.
--  if (field_trials_.IsEnabled("WebRTC-Video-H26xPacketBuffer") &&
+-  if (env_.field_trials().IsEnabled("WebRTC-Video-H26xPacketBuffer") &&
 -      !h26x_packet_buffer_) {
 +  if (!h26x_packet_buffer_) {
      h26x_packet_buffer_ =
