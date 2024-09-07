@@ -4,12 +4,6 @@
 
 ##### 简体中文 | [English](./README.md)
 
-## 启动方式
-
-#### Chrome & Edge (Mac) & Chromium
-
-确保版本号 >= 107, 双击打开。
-
 ## 支持硬解码哪些Profile？
 
 HEVC Main (最高支持 8192x8192 px)
@@ -43,11 +37,13 @@ HEVC Rext (部分支持，细节见下表，最高支持 8192x8192 px)
 
 ## 支持硬编码哪些Profile？
 
-HEVC Main (macOS & Windows & Android, macOS 最高支持 4096x2304 px & 120 fps, Windows 最高支持 1920*1088 px & 30 fps, 安卓取决于硬件最高支持)
+HEVC Main (macOS & Windows & Android, macOS 最高支持 4096x2304 px & 120 fps, Windows 最高支持取决于硬件<sup>[3]</sup>, 安卓最高支持取决于硬件)
 
-*注1：需要通过 Chrome Switch（`--enable-features=PlatformHEVCEncoderSupport`）的方式测试使用，[测试页面](https://w3c.github.io/webcodecs/samples/encode-decode-worker/index.html)。*
+*注1：Chrome >= `130.0.6703.0` 默认启用，无需启动参数，< `130.0.6703.0` 时需要通过 Chrome Switch（`--enable-features=PlatformHEVCEncoderSupport`）的方式测试使用，[测试页面](https://w3c.github.io/webcodecs/samples/encode-decode-worker/index.html)。*
 
 *注2: Windows / Mac 须确保 Chrome 版本号 >= `109.0.5397.0`，Android 须确保 Chrome 版本号 >= `117.0.5899.0`。*
+
+*注3: Windows Chrome >= `130.0.6703.0` 时最高分辨率取决于硬件，最高可达 `7680x4320 & 30 fps`，< `130.0.6703.0` 时统一为 `1920x1088 & 30fps`。*
 
 ## 操作系统要求？
 
@@ -65,7 +61,7 @@ Linux (版本号须 >= `108.0.5354.0`, 仅支持 VAAPI 接口支持的 GPU，比
 
 视频解码：支持 File, Media Source Extensions, WebCodec (8Bit >= `107.0.5272.0`, 10Bit + HEVC with Alpha >= `108.0.5343.0`), Clearkey 以及 Widevine L1 (不支持L3) Encrypted Media Extensions, WebRTC (实验性功能，需使用 Chrome Canary 传入 `--enable-features=PlatformHEVCEncoderSupport,WebRtcAllowH265Send,WebRtcAllowH265Receive --force-fieldtrials=WebRTC-Video-H26xPacketBuffer/Enabled` 开启，或直接使用本仓库提供的 Chromium 测试，一些可用的测试地址供参考：[Media Capabilities](https://webrtc.internaut.com/mc/), [Demo](https://webrtc.github.io/samples/src/content/peerconnection/change-codecs/))。
 
-视频编码：支持 WebCodec (支持 macOS, Windows, Androird，需要传启动参数：`--enable-features=PlatformHEVCEncoderSupport` 手动开启)。
+视频编码：支持 WebCodec (支持 macOS, Windows, Androird, Chrome >= `130.0.6703.0` 版本默认启用，< `130.0.6703.0` 版本需要传启动参数：`--enable-features=PlatformHEVCEncoderSupport` 手动开启), WebRTC (测试方式见视频解码部分描述)，MediaRecorder 暂不支持。
 
 ## GPU要求？
 
@@ -364,7 +360,7 @@ try {
 }
 ```
 
-## 技术实现区别？(与 Edge / Safari / Firefox 的对比)
+## 硬解技术实现区别？(与 Edge / Safari / Firefox 的对比)
 
 #### Windows
 
@@ -384,10 +380,16 @@ Safari 和 Chrome 二者均使用 `VideoToolbox` 解码器完成解码，如果�
 
 ## 如何验证视频播放是否走硬解？
 
-1. 打开 `chrome://gpu`, 搜索 `Video Acceleration Information`, 如果能看到 **Decode hevc main** 和 **Decode hevc main 10** (macOS 还会显示 **Decode hevc main still-picture** 和 **Decode hevc range extensions**，Windows Intel Gen10+ iGPU 会显示 **Decode hevc range extensions**) 说明支持硬解（这里 macOS 是个例外，显示仅代表支持 VideoToolbox 解码，至于是否硬解取决于 GPU 支持情况）。
+1. 打开 `chrome://gpu`, 搜索 `Video Acceleration Information`, 如果能看到 **Decode hevc main** 和 **Decode hevc main 10**, 以及 **Decode hevc main still-picture** (macOS 和 Windows Intel Gen10+ iGPU 还会显示 **Decode hevc range extensions**) 说明支持硬解（这里 macOS 是个例外，显示仅代表支持 VideoToolbox 解码，至于是否硬解取决于 GPU 支持情况）。
 2. 打开 `chrome://media-internals` 并尝试播放一些 HEVC 视频 ([测试页面](https://lf3-cdn-tos.bytegoofy.com/obj/tcs-client/resources/video_demo_hevc.html))，如果最终使用的 Decoder 是 `VDAVideoDecoder` 或 `VideoToolboxVideoDecoder` 或 `D3D11VideoDecoder` 或 `VaapiVideoDecoder` 说明走了硬解（这里 macOS 是个例外，macOS Big Sur 以上版本，在不支持的 GPU 上，VideoToolbox 会自动 fallback 到软解，性能相比 FFMPEG 软解更好，Decoder 同样为 `VDAVideoDecoder` 或 `VideoToolboxVideoDecoder`）, 如果 Decoder 是 `FFMpegVideoDecoder` 说明走的是软解。
 3. 如果是 Mac，请打开 `活动监视器`并搜索 `VTDecoderXPCService`, 如果播放时进程的 CPU 利用率大于 0 说明走了硬解（或软解）。
 4. 如果是 Windows，请打开 `任务管理器` 并切换到 `性能` - `GPU` 面板，如果 `Video Decode`(Intel, NVIDIA) 或 `Video Codec`(AMD) 的利用率大于 0 说明走了硬解，对于一些初代支持 HEVC 的显卡（例如: NVIDIA RTX 745），由于没有专用解码电路，虽然支持 `D3D11` 解码 API，但解码时仅占用通用的 `3D` 利用率。
+
+## 如何验证视频编码是否走硬编？
+
+1. 打开 `chrome://gpu`, 搜索 `Video Acceleration Information`, 如果能看到 **Encode hevc main** 说明支持硬编码。
+2. 如果是 Mac，请打开 `活动监视器`并搜索 `VTDecoderXPCService`, 如果编码时进程的 CPU 利用率大于 0 说明走了硬编码。
+3. 如果是 Windows，请打开 `任务管理器` 并切换到 `性能` - `GPU` 面板，如果编码时 `Video Encode`(Intel, NVIDIA) 或 `Video Codec`(AMD) 的利用率大于 0 说明走了硬编码。
 
 ## 为什么我的显卡支持，但仍无法使用硬解？
 
@@ -413,24 +415,27 @@ Safari 和 Chrome 二者均使用 `VideoToolbox` 解码器完成解码，如果�
 
 1. 请参考 [Chrome编译手册](https://www.chromium.org/developers/how-tos/get-the-code/) 配置环境并拉取 `main` 分支（硬解代码已合入）的代码。
 2. (可选) 支持 HEVC 软解：切换到 `src/third_party/ffmpeg` 目录，执行 `git am /path/to/add-hevc-ffmpeg-decoder-parser.patch` 。如果有冲突，也可尝试使用 `node /path/to/add-hevc-ffmpeg-decoder-parser.js` 直接修改代码（需要确保Node.js已安装再执行该命令）, 然后切换回 `src` 目录，执行 `git am /path/to/enable-hevc-ffmpeg-decoding.patch`。
-3. (可选) 默认启用 Windows / macOS / Android 的 HEVC 编码功能，切换到 `src` 目录，执行 `git am /path/to/enable-hevc-encoding-by-default.patch`。
-4. (可选) 默认启用 HEVC WebRTC 功能，切换到 `src` 目录，执行 `git am /path/to/enable-hevc-webrtc-send-receive-by-default.patch`，然后切到 `src/third_party/webrtc` 目录，执行 `git am /path/to/enable-h26x-packet-buffer-by-default.patch`。
-5. (可选) 集成 Widevine CDM，以支持 EME 加密视频 (例：Netflix) 播放：切换到 `src` 目录，执行 `cp -R /path/to/widevine/* third_party/widevine/cdm` (Windows 请执行: `xcopy /path/to/widevine third_party\widevine\cdm /E/H`)。
-6. 假设你想编译 `Mac` + `x64` 架构（其他可选的架构有：`x86`, `arm64`, `arm`）+ 支持 CDM 的 Chromium，请执行 `gn gen out/Release64 --args="is_component_build = false is_official_build = true is_debug = false ffmpeg_branding = \"Chrome\" target_cpu = \"x64\" proprietary_codecs = true media_use_ffmpeg = true enable_widevine = true bundle_widevine_cdm = true"`，如果想编译 `Windows`，请额外添加 `enable_media_foundation_widevine_cdm = true`。
-7. 执行 `autoninja -C out/Release64 chrome` 以开始编译。
-8. 双击打开 Chromium。
+3. (可选) 默认启用 HEVC WebRTC 功能，切换到 `src` 目录，执行 `git am /path/to/enable-hevc-webrtc-send-receive-by-default.patch`，然后切到 `src/third_party/webrtc` 目录，执行 `git am /path/to/enable-h26x-packet-buffer-by-default.patch`。
+4. (可选) 集成 Widevine CDM，以支持 EME 加密视频 (例：Netflix) 播放：切换到 `src` 目录，执行 `cp -R /path/to/widevine/* third_party/widevine/cdm` (Windows 请执行: `xcopy /path/to/widevine third_party\widevine\cdm /E/H`)。
+5. 假设你想编译 `Mac` + `x64` 架构（其他可选的架构有：`x86`, `arm64`, `arm`）+ 支持 CDM 的 Chromium，请执行 `gn gen out/Release64 --args="is_component_build = false is_official_build = true is_debug = false ffmpeg_branding = \"Chrome\" target_cpu = \"x64\" proprietary_codecs = true media_use_ffmpeg = true enable_widevine = true bundle_widevine_cdm = true"`，如果想编译 `Windows`，请额外添加 `enable_media_foundation_widevine_cdm = true`。
+6. 执行 `autoninja -C out/Release64 chrome` 以开始编译。
+7. 双击打开 Chromium。
 
 ## 如何集成到 Electron 等基于 Chromium 的项目？
 
 Electron >= v22.0.0 已集成好 macOS, Windows, 和 Linux (仅 VAAPI) 平台的 HEVC 硬解功能，且开箱即用。若要集成软解，方法同上述 Chromium 教程相同。
 
+Electron >= v33.0.0 已集成好 macOS, Windows 平台的 HEVC 硬编码功能，且开箱即用。
+
 ## 更新历史
+
+`2024-09-07` Window, macOS, Android 默认启用 HEVC 硬编码，Windows 平台硬编码最大分辨率限制从 1080P&30fps 提升到 4K/8K&30fps (Chrome >= `130.0.6703.0`)
 
 `2024-07-19` Windows 平台新增 HEVC Main Still Picture Profile 支持 (Chrome >= `128.0.6607.0`)
 
 `2024-06-29` 新增启用 HEVC WebRTC 支持的 Patch (Chrome >= `128.0.6564.0`)
 
-`2024-05-30` 修复了 GBR 色彩空间 Matrix 编码的 HEVC 视频，存在的颜色渲染异常的问题 (Chrome >= `127.0.6510.0`).
+`2024-05-30` 修复了 GBR 色彩空间 Matrix 编码的 HEVC 视频，存在的颜色渲染异常的问题 (Chrome >= `127.0.6510.0`)
 
 `2024-04-18` 修复了某些 AMD GPU 上的视频帧卡顿的问题 (Edge >= `124.0.2478.49`)，以及 Windows 平台上 Edge 的 HEVC Main10 HDR Tone-mapping 颜色异常，性能不佳的问题 (Edge >= `125.0.2530.0`)
 

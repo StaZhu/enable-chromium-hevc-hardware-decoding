@@ -4,12 +4,6 @@ A guide that teach you enable hardware HEVC decoding & encoding for Chrome / Edg
 
 ##### English | [简体中文](./README.zh_CN.md)
 
-## Usage
-
-#### Chrome & Edge (Mac) & Chromium
-
-Make sure version >= 107 then open directly.
-
 ## What's the hardware decoding supported HEVC profile?
 
 HEVC Main (Up to 8192x8192 pixels)
@@ -43,11 +37,13 @@ HEVC Rext (partially supported, see the table below for details, up to 8192x8192
 
 ## What's the hardware encoding supported HEVC profile?
 
-HEVC Main (macOS & Windows & Android, macOS up to 4096x2304 px & 120 fps, Windows up to 1920*1088 px & 30 fps, Android up to the hardware)
+HEVC Main (macOS & Windows & Android, macOS up to 4096x2304 px & 120 fps, Windows up to the hardware<sup>[3]</sup>, Android up to the hardware)
 
-*Note 1: You need to pass a chrome switch to enable it（`--enable-features=PlatformHEVCEncoderSupport`）[Test Page](https://w3c.github.io/webcodecs/samples/encode-decode-worker/index.html).*
+*Note 1: Chrome >= `130.0.6703.0` no need any switch. Chrome < `130.0.6703.0` need to pass a chrome switch to enable it（`--enable-features=PlatformHEVCEncoderSupport`）[Test Page](https://w3c.github.io/webcodecs/samples/encode-decode-worker/index.html).*
 
-*Note 2: Windows / Mac need to make sure Chrome version >= `109.0.5397.0`，Android need to make sure Chrome version >= `117.0.5899.0`。*
+*Note 2: Windows / Mac need to make sure Chrome version >= `109.0.5397.0`，Android need to make sure Chrome version >= `117.0.5899.0`.*
+
+*Note 3: Chrome >= `130.0.6703.0` on Windows no longer have the hardcode limit, max resolution up to the hardware, max support `7680x4320 & 30 fps`. Chrome < `130.0.6703.0` on Windows, the max resolution is a hardcode value of `1920x1088 & 30fps`.*
 
 ## What's the OS requirement?
 
@@ -65,7 +61,7 @@ Linux (Chrome version >= `108.0.5354.0`, and only supports GPUs that support VAA
 
 Video Decode: File, Media Source Extensions, WebCodec (8Bit requires >= `107.0.5272.0`, 10Bit + HEVC with Alpha requires >= `108.0.5343.0`), Clearkey and Widevine L1 (HW only) Encrypted Media Extensions, WebRTC (experimental, need to use Chrome Canary passing `--enable-features=PlatformHEVCEncoderSupport,WebRtcAllowH265Send,WebRtcAllowH265Receive --force-fieldtrials=WebRTC-Video-H26xPacketBuffer/Enabled` to enable the feature, or use the Chromium binary provided by this repo, some useful sites here: [Media Capabilities](https://webrtc.internaut.com/mc/), [Demo](https://webrtc.github.io/samples/src/content/peerconnection/change-codecs/)) are supported.
 
-Video Encode: WebCodec (Windows, macOS, and Android, when passing `--enable-features=PlatformHEVCEncoderSupport`) is supported.
+Video Encode: WebCodec (Windows, macOS, and Android, Chrome >= `130.0.6703.0` no need any switch, Chrome < `130.0.6703.0` need to pass `--enable-features=PlatformHEVCEncoderSupport` to enable the support), WebRTC (same description as above) is supported, MediaRecorder is not supported.
 
 ## What's the GPU requirement?
 
@@ -367,7 +363,7 @@ try {
 }
 ```
 
-## What's the tech diff? (Compared with Edge / Safari / Firefox)
+## What's the hardware decoding tech diff? (Compared with Edge / Safari / Firefox)
 
 #### Windows
 
@@ -385,12 +381,18 @@ Edge and Chrome use the same decoding implementations on macOS.
 
 Safari and Chrome use the same `VideoToolbox` to finish the HEVC decoding, if the device does not have hardware support, it will automatically fallback to use software decoding. Compared with Safari, Chrome requires higher OS version (10.13 vs 11.0).
 
-## How to verify HEVC hardware support is enabled?
+## How to verify HEVC hardware decoding support is enabled?
 
-1. Open `chrome://gpu`, and search `Video Acceleration Information`, you should see **Decode hevc main** field and **Decode hevc main 10** field (macOS will show **Decode hevc main still-picture** and **Decode hevc range extensions** as well, Windows Intel Gen10+ iGPU will show **Decode hevc range extensions** as well) present if hardware decoding is supported (macOS is an exception here, you see this field doesn't means the decode will use hardware, it actually depends on your GPU).
+1. Open `chrome://gpu`, and search `Video Acceleration Information`, you should see **Decode hevc main** field, **Decode hevc main 10** field, and **Decode hevc main still-picture** field (macOS and indows Intel Gen10+ iGPU will show **Decode hevc range extensions** as well) present if hardware decoding is supported (macOS is an exception here, you see this field doesn't means the decode will use hardware, it actually depends on your GPU).
 2. Open `chrome://media-internals` and play some HEVC video ([Test Page](https://lf-tk-sg.ibytedtos.com/obj/tcs-client-sg/resources/video_demo_hevc.html)) if the decoder is `VDAVideoDecoder` or `VideoToolboxVideoDecoder` or `D3D11VideoDecoder` or `VaapiVideoDecoder` that means the video is using hardware decoding (macOS is an exception here, if the OS >= Big Sur, and the GPU doesn't support HEVC, VideoToolbox will fallback to software decode which has a better performance compared with FFMPEG, the decoder is `VDAVideoDecoder` or `VideoToolboxVideoDecoder` in this case indeed), and if the decoder is `FFMpegVideoDecoder` that means the video is using software decoding.
 3. Open `Activity Monitor` on Mac and search `VTDecoderXPCService`, if the cpu usage larger than 0 when playing video, that means hardware (or software) decoding is being used.
 4. Open `Windows Task Manager` on Windows and switch to `Performance` - `GPU`, if `Video Decode`(Intel, NVIDIA) or `Video Codec`(AMD) usage larger than 0 when playing video, that means hardware decoding is being used. For some first generation GPU (i.e: NVIDIA RTX 745) that support HEVC, since there is no dedicated hw decoding circuit inside the GPU, although the `D3D11` decoding API is supported, it will only occupy the general `3D` utilization when decoding.
+
+## How to verify HEVC hardware encoding support is enabled?
+
+1. Open `chrome://gpu`, and search `Video Acceleration Information`, you should see **Encode hevc main** field present if hardware encoding is supported (macOS is an exception here, you see this field doesn't means the decode will use hardware, it actually depends on your GPU).
+2. Open `Activity Monitor` and encode some HEVC video on Mac and search `VTEncoderXPCService`, if the cpu usage larger than 0 when encoding video, that means hardware encoding is being used.
+3. Open `Windows Task Manager` and encode some HEVC video on Windows and switch to `Performance` - `GPU`, if `Video Encode`(Intel, NVIDIA) or `Video Codec`(AMD) usage larger than 0 when encoding video, that means hardware encoding is being used.
 
 ## Why my GPU support HEVC, but still not able to hardware decode?
 
@@ -416,24 +418,27 @@ Some GPU hardware may has bug which will cause `D3D11VideoDecoder` forbidden to 
 
 1. Follow [the official build doc](https://www.chromium.org/developers/how-tos/get-the-code/) to prepare the build environment then fetch the source code from `main` branch (HEVC HW codes has been merged).
 2. (Optional) To enable HEVC software decoding: switch to `src/third_party/ffmpeg` dir, then execute `git am /path/to/add-hevc-ffmpeg-decoder-parser.patch`. If failed to apply the patch, could also try `node /path/to/add-hevc-ffmpeg-decoder-parser.js` to enable software decoding (Node.js is required to run the script), then switch to `src` dir, and execute `git am /path/to/enable-hevc-ffmpeg-decoding.patch`.
-3. (Optional) To enable HEVC encoding support by default on Windows / macOS / Android, switch to `src` dir, then execute `git am /path/to/enable-hevc-encoding-by-default.patch`.
-4. (Optional) To integrate Widevine CDM to support EME API (like Netflix): switch to `src` dir, then execute `cp -R /path/to/widevine/* third_party/widevine/cdm` (Windows: `xcopy /path/to/widevine third_party\widevine\cdm /E/H`).
-5. (Optional) To enable HEVC WebRTC support by default, switch to `src` dir, then execute `git am /path/to/enable-hevc-webrtc-send-receive-by-default.patch`, and then switch to `src/third_party/webrtc` dir, execute `git am /path/to/enable-h26x-packet-buffer-by-default.patch`.
-6. If you are using `Mac` + want to build `x64` arch (target_cpu to `x86` , `arm64` , `arm` also available) + want to add CDM support, then run `gn gen out/Release64 --args="is_component_build = false is_official_build = true is_debug = false ffmpeg_branding = \"Chrome\" target_cpu = \"x64\" proprietary_codecs = true media_use_ffmpeg = true enable_widevine = true bundle_widevine_cdm = true"`, if you are using `Windows`, you need to add `enable_media_foundation_widevine_cdm = true` as well.
-7. Run `autoninja -C out/Release64 chrome` to start the build.
-8. Open Chromium directly.
+3. (Optional) To integrate Widevine CDM to support EME API (like Netflix): switch to `src` dir, then execute `cp -R /path/to/widevine/* third_party/widevine/cdm` (Windows: `xcopy /path/to/widevine third_party\widevine\cdm /E/H`).
+4. (Optional) To enable HEVC WebRTC support by default, switch to `src` dir, then execute `git am /path/to/enable-hevc-webrtc-send-receive-by-default.patch`, and then switch to `src/third_party/webrtc` dir, execute `git am /path/to/enable-h26x-packet-buffer-by-default.patch`.
+5. If you are using `Mac` + want to build `x64` arch (target_cpu to `x86` , `arm64` , `arm` also available) + want to add CDM support, then run `gn gen out/Release64 --args="is_component_build = false is_official_build = true is_debug = false ffmpeg_branding = \"Chrome\" target_cpu = \"x64\" proprietary_codecs = true media_use_ffmpeg = true enable_widevine = true bundle_widevine_cdm = true"`, if you are using `Windows`, you need to add `enable_media_foundation_widevine_cdm = true` as well.
+6. Run `autoninja -C out/Release64 chrome` to start the build.
+7. Open Chromium directly.
 
 ## How to integrate this into Chromium based project like Electron?
 
 If Electron >= v22.0.0, the HEVC HW decoding feature for macOS, Windows, and Linux (VAAPI only) should have already been integrated. To add HEVC SW decoding, the method should be the same with Chromium guide above.
 
+If Electron >= v33.0.0, the HEVC HW encoding feature for macOS, Windows should have already been integrated.
+
 ## Change Log
+
+`2024-09-07` Enable HEVC hardware encoding for Window, macOS, Android by default, Windows encoding unlock the max resolution limit from 1080P&30fps to 4k/8k&30fps (Chrome >= `130.0.6703.0`)
 
 `2024-07-19` Added HEVC Main Still Picture Profile support for Windows (Chrome >= `128.0.6607.0`)
 
 `2024-06-29` Added patches to enable HEVC WebRTC support (Chrome >= `128.0.6564.0`)
 
-`2024-05-30` Fixed issue of abnormal color when HEVC video encoded with GBR color space matrix (Chrome >= `127.0.6510.0`).
+`2024-05-30` Fixed issue of abnormal color when HEVC video encoded with GBR color space matrix (Chrome >= `127.0.6510.0`)
 
 `2024-04-18` Fixed issue of video frame stuttering on some AMD GPUs (Edge >= `124.0.2478.49`), and issue of bad HEVC Main10 HDR tone-mapping performance for Edge on Windows platform (Edge >= `125.0.2530.0`)
 
