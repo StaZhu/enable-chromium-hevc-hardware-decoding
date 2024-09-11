@@ -432,6 +432,8 @@ If Electron >= v33.0.0, the HEVC HW encoding feature for macOS, Windows should h
 
 ## Change Log
 
+`2024-09-11` Fixed a HEVC playback failure caused by incorrect `TemporalId` calculation (Chrome >= `130.0.6711.0`)
+
 `2024-09-07` Enable HEVC hardware encoding for Window, macOS, Android by default, Windows encoding unlock the max resolution limit from 1080P&30fps to 4k/8k&30fps (Chrome >= `130.0.6703.0`)
 
 `2024-07-19` Added HEVC Main Still Picture Profile support for Windows (Chrome >= `128.0.6607.0`)
