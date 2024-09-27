@@ -432,6 +432,8 @@ If Electron >= v33.0.0, the HEVC HW encoding feature for macOS, Windows should h
 
 ## Change Log
 
+`2024-09-27` Fixed a issue where on Apple Silicon Mac using macOS 15.0, H264/HEVC can't HW encode (Chrome >= `131.0.6742.0`)
+
 `2024-09-11` Fixed a HEVC playback failure caused by incorrect `TemporalId` calculation (Chrome >= `130.0.6711.0`)
 
 `2024-09-07` Enable HEVC hardware encoding for Window, macOS, Android by default, Windows encoding unlock the max resolution limit from 1080P&30fps to 4k/8k&30fps (Chrome >= `130.0.6703.0`)
@@ -454,7 +456,7 @@ If Electron >= v33.0.0, the HEVC HW encoding feature for macOS, Windows should h
 
 `2023-11-16` Support MV-HEVC Base Layer playback (Chrome >= `121.0.6131.0`)
 
-`2023-10-20` Fixed Winodows CRA/RASL image artifact issue when seeking (Chrome >= `120.0.6076.0`)
+`2023-10-20` Fixed Windows CRA/RASL image artifact issue when seeking (Chrome >= `120.0.6076.0`)
 
 `2023-10-10` Block Intel driver version between `20.19.15.4284` and `20.19.15.5172` that could cause HEVC playback crash (Chrome >= `120.0.6059.0`)
 
