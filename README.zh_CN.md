@@ -37,13 +37,15 @@ HEVC Rext (部分支持，细节见下表，最高支持 8192x8192 px)
 
 ## 支持硬编码哪些Profile？
 
-HEVC Main (macOS & Windows & Android, macOS 最高支持 4096x2304 px & 120 fps, Windows 最高支持取决于硬件<sup>[3]</sup>, 安卓最高支持取决于硬件)
+HEVC Main (macOS & Windows & Android, macOS 最高支持取决于硬件<sup>[4]<sup>, Windows 最高支持取决于硬件<sup>[3]</sup>, 安卓最高支持取决于硬件)
 
 *注1：Chrome >= `130.0.6703.0` 默认启用，无需启动参数，< `130.0.6703.0` 时需要通过 Chrome Switch（`--enable-features=PlatformHEVCEncoderSupport`）的方式测试使用，[测试页面](https://w3c.github.io/webcodecs/samples/encode-decode-worker/index.html)。*
 
 *注2: Windows / Mac 须确保 Chrome 版本号 >= `109.0.5397.0`，Android 须确保 Chrome 版本号 >= `117.0.5899.0`。*
 
-*注3: Windows Chrome >= `130.0.6703.0` 时最高分辨率取决于硬件，最高可达 `7680x4320 & 30 fps`，< `130.0.6703.0` 时统一为 `1920x1088 & 30fps`。*
+*注3: Windows Chrome >= `131.0.6759.0` 时最高分辨率与帧率组合，基于 MF 获取值计算，取决于硬件，最高分辨率可达 `7680x4320`，最高帧率可达 `300fps`，< `130.0.6703.0` 时统一为 `1920x1088 & 30fps`。*
+
+*注4: Mac Chrome >= `131.0.6771.0` 时，最高分辨率取决于硬件，Apple Silicon 芯片的 Mac，最高支持到 `8192x4352 & 120fps`，否则，最高支持到 `4096x2304 & 120fps`*
 
 ## 操作系统要求？
 
@@ -61,7 +63,7 @@ Linux (版本号须 >= `108.0.5354.0`, 仅支持 VAAPI 接口支持的 GPU，比
 
 视频解码：支持 File, Media Source Extensions, WebCodec (8Bit >= `107.0.5272.0`, 10Bit + HEVC with Alpha >= `108.0.5343.0`), Clearkey 以及 Widevine L1 (不支持L3) Encrypted Media Extensions, WebRTC (实验性功能，需使用 Chrome Canary 传入 `--enable-features=PlatformHEVCEncoderSupport,WebRtcAllowH265Send,WebRtcAllowH265Receive --force-fieldtrials=WebRTC-Video-H26xPacketBuffer/Enabled` 开启，或直接使用本仓库提供的 Chromium 测试，一些可用的测试地址供参考：[Media Capabilities](https://webrtc.internaut.com/mc/), [Demo](https://webrtc.github.io/samples/src/content/peerconnection/change-codecs/))。
 
-视频编码：支持 WebCodec (支持 macOS, Windows, Androird, Chrome >= `130.0.6703.0` 版本默认启用，< `130.0.6703.0` 版本需要传启动参数：`--enable-features=PlatformHEVCEncoderSupport` 手动开启), WebRTC (测试方式见视频解码部分描述)，MediaRecorder 暂不支持。
+视频编码：支持 WebCodec (支持 macOS, Windows, Androird, Chrome >= `130.0.6703.0` 版本默认启用，< `130.0.6703.0` 版本需要传启动参数：`--enable-features=PlatformHEVCEncoderSupport` 手动开启), WebRTC (测试方式见视频解码部分描述)，MediaRecorder (Chrome >= `132.0.6784.0` 版本需要传启动参数 `--enable-features=MediaRecorderHEVCSupport` 手动开启, [Demo](https://webrtc.github.io/samples/src/content/getusermedia/record/))。
 
 ## GPU要求？
 
@@ -428,6 +430,14 @@ Electron >= v22.0.0 已集成好 macOS, Windows, 和 Linux (仅 VAAPI) 平台的
 Electron >= v33.0.0 已集成好 macOS, Windows 平台的 HEVC 硬编码功能，且开箱即用。
 
 ## 更新历史
+
+`2024-10-18` 新增 MediaRecorder HEVC 编码支持 (Chrome >= `132.0.6784.0`)
+
+`2024-10-11` 提高 Apple Silicon Mac 编码分辨率至 `8192x4352` (Chrome >= `131.0.6771.0`)
+
+`2024-10-10` 添加 Mac HEVC VideoToolbox 软编支持 (Chrome >= `131.0.6769.0`)
+
+`2024-10-05` Windows 平台高帧率编码支持 (Chrome >= `131.0.6759.0`)
 
 `2024-09-27` 修复了 Apple Silicon Mac 在 macOS 15.0 无法硬编码 H264/HEVC 的问题 (Chrome >= `131.0.6742.0`)
 

@@ -20,8 +20,8 @@ HEVC Rext (partially supported, see the table below for details, up to 8192x8192
 | Intel ICL ~ TGLx (Win) |   ✅    |✅<sup>[5]</sup>|✅<sup>[4]</sup>|    ✅    |    ✅    |    ✅   |    ❌   |       ❌       |       ❌       |
 |    Intel TGLx+ (Win)   |   ✅    |✅<sup>[5]</sup>|✅<sup>[4]</sup>|    ✅    |    ✅    |    ✅   |    ✅   |✅<sup>[4]</sup>|✅<sup>[4]</sup>|
 
-✅：GPU + software support
-❌：GPU not support
+✅: GPU + software support
+❌: GPU not support
 
 *Note 1: Intel Macs support HEVC Rext software decoding of 8 ~ 12b 400, 420, 422, 444 contents. Apple Silicon Mac supports HEVC Rext hardware decoding of 8 ~ 10b 400, 420, 422, 444 contents, and software decoding of 12b 400, 420, 422, 444 contents on macOS 13+.*
 
@@ -37,13 +37,15 @@ HEVC Rext (partially supported, see the table below for details, up to 8192x8192
 
 ## What's the hardware encoding supported HEVC profile?
 
-HEVC Main (macOS & Windows & Android, macOS up to 4096x2304 px & 120 fps, Windows up to the hardware<sup>[3]</sup>, Android up to the hardware)
+HEVC Main (macOS & Windows & Android, macOS up to the hardware<sup>[4]</sup>, Windows up to the hardware<sup>[3]</sup>, Android up to the hardware)
 
-*Note 1: Chrome >= `130.0.6703.0` no need any switch. Chrome < `130.0.6703.0` need to pass a chrome switch to enable it（`--enable-features=PlatformHEVCEncoderSupport`）[Test Page](https://w3c.github.io/webcodecs/samples/encode-decode-worker/index.html).*
+*Note 1: Chrome >= `130.0.6703.0` no need any switch. Chrome < `130.0.6703.0` need to pass a chrome switch to enable it (`--enable-features=PlatformHEVCEncoderSupport`)[Test Page](https://w3c.github.io/webcodecs/samples/encode-decode-worker/index.html).*
 
-*Note 2: Windows / Mac need to make sure Chrome version >= `109.0.5397.0`，Android need to make sure Chrome version >= `117.0.5899.0`.*
+*Note 2: Windows / Mac need to make sure Chrome version >= `109.0.5397.0`, Android need to make sure Chrome version >= `117.0.5899.0`.*
 
-*Note 3: Chrome >= `130.0.6703.0` on Windows no longer have the hardcode limit, max resolution up to the hardware, max support `7680x4320 & 30 fps`. Chrome < `130.0.6703.0` on Windows, the max resolution is a hardcode value of `1920x1088 & 30fps`.*
+*Note 3: Chrome >= `131.0.6759.0` on Windows no longer have the hardcode resolution and framerate limit, it will call MediaFoundation to calculate a resolution and framerate combination based on hardware, resolution up to `7680x4320` and framerate up to `300fps`. Chrome < `130.0.6703.0` on Windows, the max resolution is a hardcode value of `1920x1088 & 30fps`.*
+
+*Note 4: If Chrome >= `131.0.6771.0` and Mac has Apple Silicon chips, the max HEVC resolution can support up to `8192x4352 & 120fps`. Otherwise the max resolution up to `4096x2304 & 120fps`.*
 
 ## What's the OS requirement?
 
@@ -61,7 +63,7 @@ Linux (Chrome version >= `108.0.5354.0`, and only supports GPUs that support VAA
 
 Video Decode: File, Media Source Extensions, WebCodec (8Bit requires >= `107.0.5272.0`, 10Bit + HEVC with Alpha requires >= `108.0.5343.0`), Clearkey and Widevine L1 (HW only) Encrypted Media Extensions, WebRTC (experimental, need to use Chrome Canary passing `--enable-features=PlatformHEVCEncoderSupport,WebRtcAllowH265Send,WebRtcAllowH265Receive --force-fieldtrials=WebRTC-Video-H26xPacketBuffer/Enabled` to enable the feature, or use the Chromium binary provided by this repo, some useful sites here: [Media Capabilities](https://webrtc.internaut.com/mc/), [Demo](https://webrtc.github.io/samples/src/content/peerconnection/change-codecs/)) are supported.
 
-Video Encode: WebCodec (Windows, macOS, and Android, Chrome >= `130.0.6703.0` no need any switch, Chrome < `130.0.6703.0` need to pass `--enable-features=PlatformHEVCEncoderSupport` to enable the support), WebRTC (same description as above) is supported, MediaRecorder is not supported.
+Video Encode: WebCodec (Windows, macOS, and Android, Chrome >= `130.0.6703.0` no need any switch, Chrome < `130.0.6703.0` need to pass `--enable-features=PlatformHEVCEncoderSupport` to enable the support), WebRTC (same description as above), and MediaRecorder (requires Chrome >= `132.0.6784.0`, need to pass `--enable-features=MediaRecorderHEVCSupport` to enable the support, [Demo](https://webrtc.github.io/samples/src/content/getusermedia/record/`)) are supported.
 
 ## What's the GPU requirement?
 
@@ -431,6 +433,14 @@ If Electron >= v22.0.0, the HEVC HW decoding feature for macOS, Windows, and Lin
 If Electron >= v33.0.0, the HEVC HW encoding feature for macOS, Windows should have already been integrated.
 
 ## Change Log
+
+`2024-10-18` Add MediaRecorder HEVC encoding support (Chrome >= `132.0.6784.0`)
+
+`2024-10-11` Increase Apple Silicon HEVC HW encode resolution limit to `8192x4352` (Chrome >= `131.0.6771.0`)
+
+`2024-10-10` Add Software HEVC encode support for macOS (Chrome >= `131.0.6769.0`)
+
+`2024-10-05` High framerate encoding support for Windows (Chrome >= `131.0.6759.0`)
 
 `2024-09-27` Fixed a issue where on Apple Silicon Mac using macOS 15.0, H264/HEVC can't HW encode (Chrome >= `131.0.6742.0`)
 
