@@ -106,7 +106,7 @@ On Windows platform, Chrome supports PQ, HDR10 (PQ with static metadata), and HL
 
 On macOS platform, Chrome supports PQ, HDR10 (PQ with static metadata), HLG. In SDR / HDR / Hybrid mode, the macOS system will automatically perform EDR to ensure that HDR is displayed correctly. Chrome / Edge shared the same code thus has the same decoding ability, Safari also supports the above all HDR formats.
 
-*Note 1: Firefox >= 120 just added HEVC decoding support (Windows platform only, experimental, need to manually set `media.wmf.hevc.enabled=1` to enable the feature). Based on my testing, Firefox supports HEVC Main profile while doesn't support Main10 profile (HDR contents usually encoded with Main10 profile) yet, if the bug got fixed, I will re-test and update the table later.*
+*Note 1: Firefox >= 133 enables HEVC decoding support by default (Windows platform only). It also supports HEVC Main and Main10 profile (HDR contents usually encoded with Main10 profile), but doesn't seems able to render HLG/PQ correctly.*
 
 #### Dolby Vision Supports Status
 
@@ -433,6 +433,8 @@ If Electron >= v22.0.0, the HEVC HW decoding feature for macOS, Windows, and Lin
 If Electron >= v33.0.0, the HEVC HW encoding feature for macOS, Windows should have already been integrated.
 
 ## Change Log
+
+`2024-11-18` Firefox >= 133 enable HEVC decoding by default (Windows platform only), update the document of HDR support comparison.
 
 `2024-10-18` Add MediaRecorder HEVC encoding support (Chrome >= `132.0.6784.0`)
 

@@ -106,7 +106,7 @@ Apple M1, M1 Pro, M1 Max, M1 Ultra 及以上
 
 在 macOS 平台，Chrome 支持 PQ、HDR10 (含静态元数据的 PQ)、HLG。在 SDR / HDR / 自动模式下，macOS 系统会自动进行 EDR 以确保 HDR 显示正确，Chrome / Edge 实现相同，支持情况一致，Safari 同样支持上述所有 HDR 格式。
 
-*注1：Firefox >= 120 新增 HEVC 解码支持 (仅 Windows 平台，实验功能，需手动设置 `media.wmf.hevc.enabled=1` 开启)，经测试 Firefox 支持 HEVC Main profile，但还暂不支持 HEVC Main10 profile (通常 HDR 视频以 Main10 profile 编码)，如 Firefox 后续修复，我会重新测试并更新上表。*
+*注1：Firefox >= 133 默认启用 HEVC 解码支持 (仅 Windows 平台)，支持 HEVC Main 以及 Main10 profile (通常 HDR 视频以 Main10 profile 编码)，但无法正常渲染 HLG/PQ HDR*
 
 #### Dolby Vision 支持情况说明
 
@@ -430,6 +430,8 @@ Electron >= v22.0.0 已集成好 macOS, Windows, 和 Linux (仅 VAAPI) 平台的
 Electron >= v33.0.0 已集成好 macOS, Windows 平台的 HEVC 硬编码功能，且开箱即用。
 
 ## 更新历史
+
+`2024-11-18` Firefox >= 133 默认启用 HEVC 解码支持（仅支持 Windows 平台），更新与 Firefox HDR 支持的对比。
 
 `2024-10-18` 新增 MediaRecorder HEVC 编码支持 (Chrome >= `132.0.6784.0`)
 
