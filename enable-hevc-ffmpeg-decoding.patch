@@ -1,30 +1,31 @@
-From 71024c860e2d86c2ff02d5cb78bea617f466d7a7 Mon Sep 17 00:00:00 2001
+From 29d0f1c452297a0dc47ff3c3d2f5229ef38f71e2 Mon Sep 17 00:00:00 2001
 From: Sta Zhu <zhusidayoyo@hotmail.com>
-Date: Tue, 30 Jul 2024 22:45:31 +0800
+Date: Mon, 18 Nov 2024 14:47:58 +0800
 Subject: [PATCH] Video: Enable HEVC ffmpeg decoding
 
 This will consider all HEVC profile as to supported, let FFMpegVideoDecoder
-handle SW fallback and help you be able to play video's like HEVC Rext, SCC 
+handle SW fallback and help you be able to play video's like HEVC Rext, SCC
 etc... as long as ffmpeg support it.
 ---
- media/base/supported_types.cc         | 29 ++++++---------------------
+ media/base/supported_types.cc         | 32 ++++-----------------------
  media/filters/ffmpeg_glue.cc          |  2 +-
- media/filters/ffmpeg_video_decoder.cc |  8 +++++---
- 3 files changed, 12 insertions(+), 27 deletions(-)
+ media/filters/ffmpeg_video_decoder.cc |  7 +++---
+ 3 files changed, 9 insertions(+), 32 deletions(-)
 
 diff --git a/media/base/supported_types.cc b/media/base/supported_types.cc
-index 31c77aff03d0d..0599bbd7be607 100644
+index 8db4b2d5cf1f5..4a8b64b3fc911 100644
 --- a/media/base/supported_types.cc
 +++ b/media/base/supported_types.cc
-@@ -222,33 +222,14 @@ bool IsAudioCodecProprietary(AudioCodec codec) {
+@@ -230,35 +230,11 @@ bool IsAudioCodecProprietary(AudioCodec codec) {
  #endif  // !BUILDFLAG(USE_PROPRIETARY_CODECS)
  
- bool IsHevcProfileSupported(const VideoType& type) {
--  if (!IsColorSpaceSupported(type.color_space))
+ bool IsDecoderHevcProfileSupported(const VideoType& type) {
+-  if (!IsDecoderColorSpaceSupported(type.color_space)) {
 -    return false;
+-  }
 -
 -#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
--#if BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
+-#if BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_DECODE_SUPPORT)
 -#if BUILDFLAG(IS_CHROMEOS_LACROS)
 -  // TODO(b/171813538): For Lacros, the supplemental profile cache will be
 -  // asking lacros-gpu, but we will be doing decoding in ash-gpu. Until the
@@ -32,64 +33,55 @@ index 31c77aff03d0d..0599bbd7be607 100644
 -  // for HEVC support.
 -  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
 -          switches::kLacrosEnablePlatformHevc)) {
-+#if BUILDFLAG(IS_ANDROID)
-+  if (base::FeatureList::IsEnabled(kBuiltInH264Decoder)) {
-     return true;
-   }
+-    return true;
+-  }
 -#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 -#if BUILDFLAG(IS_CHROMEOS_ASH)
 -  if (!base::FeatureList::IsEnabled(kPlatformHEVCDecoderSupport)) {
 -    return false;
 -  }
 -#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-   return GetSupplementalProfileCache()->IsProfileSupported(type.profile);
- #else
-   return true;
--#endif  // BUIDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
+-  return GetSupplementalDecoderVideoProfileCache()->IsProfileSupported(
+-      type.profile);
 -#else
++#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+   return true;
+-#endif  // BUIDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_DECODE_SUPPORT)
+ #else
 -  return false;
 -#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
-+#endif  // BUILDFLAG(IS_ANDROID)
++  return GetSupplementalProfileCache()->IsProfileSupported(type.profile);
++#endif  // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
  }
  
- bool IsVp9ProfileSupported(const VideoType& type) {
-@@ -441,7 +422,9 @@ bool IsDefaultSupportedAudioType(const AudioType& type) {
+ bool IsDecoderVp9ProfileSupported(const VideoType& type) {
+@@ -580,7 +556,7 @@ bool IsDefaultEncoderSupportedVideoType(const VideoType& type) {
  
- bool IsBuiltInVideoCodec(VideoCodec codec) {
+ bool IsDecoderBuiltInVideoCodec(VideoCodec codec) {
  #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) && BUILDFLAG(USE_PROPRIETARY_CODECS)
--  if (codec == VideoCodec::kH264 &&
-+  // Android does bundle `FFMpegVideoDecoder` for `non-arm32` devices,
-+  // but not enabled by default.
-+  if ((codec == VideoCodec::kH264 || codec == VideoCodec::kHEVC) &&
-       base::FeatureList::IsEnabled(kBuiltInH264Decoder)) {
+-  if (codec == VideoCodec::kH264) {
++  if (codec == VideoCodec::kH264 || codec == VideoCodec::kHEVC) {
      return true;
    }
+ #endif  // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) &&
 diff --git a/media/filters/ffmpeg_glue.cc b/media/filters/ffmpeg_glue.cc
-index 7d5c6e63b1906..8c08b5ae93cc2 100644
+index 0e7195c66f449..42614bd619779 100644
 --- a/media/filters/ffmpeg_glue.cc
 +++ b/media/filters/ffmpeg_glue.cc
-@@ -164,7 +164,7 @@ const char* FFmpegGlue::GetAllowedAudioDecoders() {
+@@ -154,7 +154,7 @@ const char* FFmpegGlue::GetAllowedAudioDecoders() {
  const char* FFmpegGlue::GetAllowedVideoDecoders() {
    // This should match the configured lists in //third_party/ffmpeg.
  #if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
--  return IsBuiltInVideoCodec(VideoCodec::kH264) ? "h264" : "";
-+  return IsBuiltInVideoCodec(VideoCodec::kH264) ? "h264,hevc" : "";
+-  return "h264";
++  return "h264,hevc";
  #else
    return "";
  #endif
 diff --git a/media/filters/ffmpeg_video_decoder.cc b/media/filters/ffmpeg_video_decoder.cc
-index 3f9cef0391af5..a5954f298ca38 100644
+index 30eec44d0ee12..befa3291d1729 100644
 --- a/media/filters/ffmpeg_video_decoder.cc
 +++ b/media/filters/ffmpeg_video_decoder.cc
-@@ -2,6 +2,7 @@
- // Use of this source code is governed by a BSD-style license that can be
- // found in the LICENSE file.
- 
-+#include "media/base/video_codecs.h"
- #ifdef UNSAFE_BUFFERS_BUILD
- // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
- #pragma allow_unsafe_buffers
-@@ -82,7 +83,6 @@ static int GetFFmpegVideoDecoderThreadCount(const VideoDecoderConfig& config) {
+@@ -82,7 +82,6 @@ static int GetFFmpegVideoDecoderThreadCount(const VideoDecoderConfig& config) {
      case VideoCodec::kUnknown:
      case VideoCodec::kVC1:
      case VideoCodec::kMPEG2:
@@ -97,7 +89,7 @@ index 3f9cef0391af5..a5954f298ca38 100644
      case VideoCodec::kVP9:
      case VideoCodec::kAV1:
      case VideoCodec::kDolbyVision:
-@@ -93,6 +93,7 @@ static int GetFFmpegVideoDecoderThreadCount(const VideoDecoderConfig& config) {
+@@ -93,6 +92,7 @@ static int GetFFmpegVideoDecoderThreadCount(const VideoDecoderConfig& config) {
        NOTREACHED();
  
      case VideoCodec::kH264:
@@ -105,18 +97,18 @@ index 3f9cef0391af5..a5954f298ca38 100644
        // Normalize to three threads for 1080p content, then scale linearly
        // with number of pixels.
        // Examples:
-@@ -126,8 +127,9 @@ static void ReleaseVideoBufferImpl(void* opaque, uint8_t* data) {
+@@ -126,8 +126,9 @@ static void ReleaseVideoBufferImpl(void* opaque, uint8_t* data) {
  
  // static
  bool FFmpegVideoDecoder::IsCodecSupported(VideoCodec codec) {
 -  // We only build support for H.264.
--  return codec == VideoCodec::kH264 && IsBuiltInVideoCodec(codec);
-+  // We only build support for H.264 / H.264.
+-  return codec == VideoCodec::kH264 && IsDecoderBuiltInVideoCodec(codec);
++  // We only build support for H.264 / H.265.
 +  return (codec == VideoCodec::kH264 || codec == VideoCodec::kHEVC) &&
-+         IsBuiltInVideoCodec(codec);
++         IsDecoderBuiltInVideoCodec(codec);
  }
  
  FFmpegVideoDecoder::FFmpegVideoDecoder(MediaLog* media_log)
 -- 
-2.39.3 (Apple Git-146)
+2.45.2
 
