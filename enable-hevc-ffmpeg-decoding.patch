@@ -50,7 +50,7 @@ index 8db4b2d5cf1f5..4a8b64b3fc911 100644
  #else
 -  return false;
 -#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
-+  return GetSupplementalProfileCache()->IsProfileSupported(type.profile);
++  return GetSupplementalDecoderVideoProfileCache()->IsProfileSupported(type.profile);
 +#endif  // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
  }
  

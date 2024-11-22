@@ -1,20 +1,22 @@
-From d58359a07a2f806187c6afafe8b34aa6c0285763 Mon Sep 17 00:00:00 2001
+From 69cc2e1434a78213b02e942d0efab36196b845fb Mon Sep 17 00:00:00 2001
 From: Sta Zhu <zhusidayoyo@hotmail.com>
-Date: Sat, 29 Jun 2024 16:39:50 +0800
+Date: Fri, 22 Nov 2024 20:33:05 +0800
 Subject: [PATCH] Video: Enable HEVC WebRTC Send/Receive feature by default
 
 This will enable WebRTC HEVC Send/Receive feature which is 
 neccesary to make WebRTC related API start working.
 
+Also enable HEVC L1T2/L1T3 enabling by default.
+
 ---
- media/webrtc/webrtc_features.cc | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ media/webrtc/webrtc_features.cc | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/media/webrtc/webrtc_features.cc b/media/webrtc/webrtc_features.cc
-index a0a0649d5e5f6..ed1ffd27092fb 100644
+index bc2c76deab799..9bef86809713f 100644
 --- a/media/webrtc/webrtc_features.cc
 +++ b/media/webrtc/webrtc_features.cc
-@@ -75,14 +75,14 @@ BASE_FEATURE(kWebRtcApmTellsIfPlayoutReferenceIsNeeded,
+@@ -75,27 +75,27 @@ BASE_FEATURE(kWebRtcApmTellsIfPlayoutReferenceIsNeeded,
  // negotiate usage of H.265 in SDP in the direction of sending.
  BASE_FEATURE(kWebRtcAllowH265Send,
               "WebRtcAllowH265Send",
@@ -29,8 +31,23 @@ index a0a0649d5e5f6..ed1ffd27092fb 100644
 -             base::FEATURE_DISABLED_BY_DEFAULT);
 +             base::FEATURE_ENABLED_BY_DEFAULT);
  
+ // When enabled, allows H.265 L1T2 to be used for sending WebRTC streams, if the
+ // accelerator reports support of encoding in L1T2.
+ BASE_FEATURE(kWebRtcH265L1T2,
+              "WebRtcH265L1T2",
+-             base::FEATURE_DISABLED_BY_DEFAULT);
++             base::FEATURE_ENABLED_BY_DEFAULT);
+ 
+ // When enabled, allows H.265 L1T3 to be used for sending WebRTC streams, if the
+ // accelerator reports support of encoding in L1T3. If this is enabled, L1T2 is
+ // also implied to be enabled.
+ BASE_FEATURE(kWebRtcH265L1T3,
+              "WebRtcH265L1T3",
+-             base::FEATURE_DISABLED_BY_DEFAULT);
++             base::FEATURE_ENABLED_BY_DEFAULT);
+ 
  #if BUILDFLAG(IS_ANDROID)
  // Kill-switch for using 48 kHz as sample rate for Audio Processing Module
 -- 
-2.45.2
+2.47.0
 
