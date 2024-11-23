@@ -236,7 +236,6 @@ function enableSoftwareDecodeHEVC() {
   enableFFMPEGHevc('Chrome', 'linux', 'arm64');
   enableFFMPEGHevc('Chrome', 'linux', 'arm');
   enableFFMPEGHevc('Chrome', 'linux', 'arm-neon');
-  enableFFMPEGHevc('Chrome', 'android', 'arm-neon');
   enableFFMPEGHevc('Chrome', 'android', 'arm64');
   enableFFMPEGHevc('Chrome', 'android', 'ia32');
   enableFFMPEGHevc('Chrome', 'android', 'x64');
@@ -255,7 +254,6 @@ function enableSoftwareDecodeHEVC() {
   enableFFMPEGHevc('Chromium', 'linux', 'arm');
   enableFFMPEGHevc('Chromium', 'linux', 'arm-neon');
   enableFFMPEGHevc('Chromium', 'linux-noasm', 'x64');
-  enableFFMPEGHevc('Chromium', 'android', 'arm-neon');
   enableFFMPEGHevc('Chromium', 'android', 'arm64');
   enableFFMPEGHevc('Chromium', 'android', 'ia32');
   enableFFMPEGHevc('Chromium', 'android', 'x64');

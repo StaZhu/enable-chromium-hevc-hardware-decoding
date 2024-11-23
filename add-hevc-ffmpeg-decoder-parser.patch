@@ -1,6 +1,6 @@
-From 8fe1e3e7c87d7cba9ccf28b4d0a6de9601ca0b23 Mon Sep 17 00:00:00 2001
+From 24ad27561966f0214b99f238e17b6fd5691c6ec1 Mon Sep 17 00:00:00 2001
 From: Sta Zhu <zhusidayoyo@hotmail.com>
-Date: Mon, 18 Nov 2024 19:38:27 +0800
+Date: Sat, 23 Nov 2024 10:34:04 +0800
 Subject: [PATCH] Video: Add HEVC ffmpeg decoder & parser
 
 Add ffmpeg software decoder and parser for HEVC, this will make
@@ -8,10 +8,6 @@ sure those users using macOS version < 11 or Windows < 8 or those
 users who disabled gpu acceleration or hardware not supported
 profiles to have software HEVC decoding ability.
 ---
- .../config/Chrome/android/arm-neon/config.h   |  6 +-
- .../android/arm-neon/config_components.h      |  4 +-
- .../android/arm-neon/libavcodec/codec_list.c  |  1 +
- .../android/arm-neon/libavcodec/parser_list.c |  1 +
  chromium/config/Chrome/android/arm64/config.h |  8 +--
  .../Chrome/android/arm64/config_components.h  |  4 +-
  .../android/arm64/libavcodec/codec_list.c     |  1 +
@@ -79,10 +75,6 @@ profiles to have software HEVC decoding ability.
  .../config/Chrome/win/x64/config_components.h |  4 +-
  .../Chrome/win/x64/libavcodec/codec_list.c    |  1 +
  .../Chrome/win/x64/libavcodec/parser_list.c   |  1 +
- .../config/Chromium/android/arm-neon/config.h |  6 +-
- .../android/arm-neon/config_components.h      |  4 +-
- .../android/arm-neon/libavcodec/codec_list.c  |  1 +
- .../android/arm-neon/libavcodec/parser_list.c |  1 +
  .../config/Chromium/android/arm64/config.h    |  6 +-
  .../android/arm64/config_components.h         |  4 +-
  .../android/arm64/libavcodec/codec_list.c     |  1 +
@@ -159,78 +151,12 @@ profiles to have software HEVC decoding ability.
  .../hevc/autorename_libavcodec_hevc_cabac.c   |  2 +
  .../hevc/autorename_libavcodec_hevc_parse.c   |  2 +
  .../hevc/autorename_libavcodec_hevc_parser.c  |  2 +
- 151 files changed, 369 insertions(+), 221 deletions(-)
+ 143 files changed, 355 insertions(+), 211 deletions(-)
  create mode 100644 libavcodec/aarch64/autorename_libavcodec_aarch64_hevcdsp_idct_neon.S
  create mode 100644 libavcodec/hevc/autorename_libavcodec_hevc_cabac.c
  create mode 100644 libavcodec/hevc/autorename_libavcodec_hevc_parse.c
  create mode 100644 libavcodec/hevc/autorename_libavcodec_hevc_parser.c
 
-diff --git a/chromium/config/Chrome/android/arm-neon/config.h b/chromium/config/Chrome/android/arm-neon/config.h
-index eadb74d2a2..a92ad0cf4e 100644
---- a/chromium/config/Chrome/android/arm-neon/config.h
-+++ b/chromium/config/Chrome/android/arm-neon/config.h
-@@ -689,7 +689,7 @@
- #define CONFIG_AUDIO_FRAME_QUEUE 0
- #define CONFIG_AUDIODSP 0
- #define CONFIG_BLOCKDSP 0
--#define CONFIG_BSWAPDSP 0
-+#define CONFIG_BSWAPDSP 1
- #define CONFIG_CABAC 0
- #define CONFIG_CBS 0
- #define CONFIG_CBS_AV1 0
-@@ -724,8 +724,8 @@
- #define CONFIG_H264PRED 0
- #define CONFIG_H264QPEL 0
- #define CONFIG_H264_SEI 0
--#define CONFIG_HEVCPARSE 0
--#define CONFIG_HEVC_SEI 0
-+#define CONFIG_HEVCPARSE 1
-+#define CONFIG_HEVC_SEI 1
- #define CONFIG_HPELDSP 0
- #define CONFIG_HUFFMAN 0
- #define CONFIG_HUFFYUVDSP 0
-diff --git a/chromium/config/Chrome/android/arm-neon/config_components.h b/chromium/config/Chrome/android/arm-neon/config_components.h
-index 85cf820753..7a49b8d047 100644
---- a/chromium/config/Chrome/android/arm-neon/config_components.h
-+++ b/chromium/config/Chrome/android/arm-neon/config_components.h
-@@ -136,7 +136,7 @@
- #define CONFIG_H264_QSV_DECODER 0
- #define CONFIG_H264_RKMPP_DECODER 0
- #define CONFIG_HAP_DECODER 0
--#define CONFIG_HEVC_DECODER 0
-+#define CONFIG_HEVC_DECODER 1
- #define CONFIG_HEVC_QSV_DECODER 0
- #define CONFIG_HEVC_RKMPP_DECODER 0
- #define CONFIG_HEVC_V4L2M2M_DECODER 0
-@@ -995,7 +995,7 @@
- #define CONFIG_H261_PARSER 0
- #define CONFIG_H263_PARSER 0
- #define CONFIG_H264_PARSER 0
--#define CONFIG_HEVC_PARSER 0
-+#define CONFIG_HEVC_PARSER 1
- #define CONFIG_HDR_PARSER 0
- #define CONFIG_IPU_PARSER 0
- #define CONFIG_JPEG2000_PARSER 0
-diff --git a/chromium/config/Chrome/android/arm-neon/libavcodec/codec_list.c b/chromium/config/Chrome/android/arm-neon/libavcodec/codec_list.c
-index dfe1c0ac28..8ed11252f5 100644
---- a/chromium/config/Chrome/android/arm-neon/libavcodec/codec_list.c
-+++ b/chromium/config/Chrome/android/arm-neon/libavcodec/codec_list.c
-@@ -13,4 +13,5 @@ static const FFCodec * const codec_list[] = {
-     &ff_pcm_s32le_decoder,
-     &ff_pcm_u8_decoder,
-     &ff_libopus_decoder,
-+    &ff_hevc_decoder,
-     NULL };
-diff --git a/chromium/config/Chrome/android/arm-neon/libavcodec/parser_list.c b/chromium/config/Chrome/android/arm-neon/libavcodec/parser_list.c
-index b1e4dd0061..7cdcadbe2f 100644
---- a/chromium/config/Chrome/android/arm-neon/libavcodec/parser_list.c
-+++ b/chromium/config/Chrome/android/arm-neon/libavcodec/parser_list.c
-@@ -5,4 +5,5 @@ static const AVCodecParser * const parser_list[] = {
-     &ff_opus_parser,
-     &ff_vorbis_parser,
-     &ff_vp9_parser,
-+    &ff_hevc_parser,
-     NULL };
 diff --git a/chromium/config/Chrome/android/arm64/config.h b/chromium/config/Chrome/android/arm64/config.h
 index eba743be04..dbb15614c2 100644
 --- a/chromium/config/Chrome/android/arm64/config.h
@@ -1566,72 +1492,6 @@ index 3e4fa9c320..c85087a596 100644
 --- a/chromium/config/Chrome/win/x64/libavcodec/parser_list.c
 +++ b/chromium/config/Chrome/win/x64/libavcodec/parser_list.c
 @@ -6,4 +6,5 @@ static const AVCodecParser * const parser_list[] = {
-     &ff_opus_parser,
-     &ff_vorbis_parser,
-     &ff_vp9_parser,
-+    &ff_hevc_parser,
-     NULL };
-diff --git a/chromium/config/Chromium/android/arm-neon/config.h b/chromium/config/Chromium/android/arm-neon/config.h
-index 6ab1c6434b..5a91e93ba8 100644
---- a/chromium/config/Chromium/android/arm-neon/config.h
-+++ b/chromium/config/Chromium/android/arm-neon/config.h
-@@ -689,7 +689,7 @@
- #define CONFIG_AUDIO_FRAME_QUEUE 0
- #define CONFIG_AUDIODSP 0
- #define CONFIG_BLOCKDSP 0
--#define CONFIG_BSWAPDSP 0
-+#define CONFIG_BSWAPDSP 1
- #define CONFIG_CABAC 0
- #define CONFIG_CBS 0
- #define CONFIG_CBS_AV1 0
-@@ -724,8 +724,8 @@
- #define CONFIG_H264PRED 0
- #define CONFIG_H264QPEL 0
- #define CONFIG_H264_SEI 0
--#define CONFIG_HEVCPARSE 0
--#define CONFIG_HEVC_SEI 0
-+#define CONFIG_HEVCPARSE 1
-+#define CONFIG_HEVC_SEI 1
- #define CONFIG_HPELDSP 0
- #define CONFIG_HUFFMAN 0
- #define CONFIG_HUFFYUVDSP 0
-diff --git a/chromium/config/Chromium/android/arm-neon/config_components.h b/chromium/config/Chromium/android/arm-neon/config_components.h
-index f064aeccac..1641e2ea93 100644
---- a/chromium/config/Chromium/android/arm-neon/config_components.h
-+++ b/chromium/config/Chromium/android/arm-neon/config_components.h
-@@ -136,7 +136,7 @@
- #define CONFIG_H264_QSV_DECODER 0
- #define CONFIG_H264_RKMPP_DECODER 0
- #define CONFIG_HAP_DECODER 0
--#define CONFIG_HEVC_DECODER 0
-+#define CONFIG_HEVC_DECODER 1
- #define CONFIG_HEVC_QSV_DECODER 0
- #define CONFIG_HEVC_RKMPP_DECODER 0
- #define CONFIG_HEVC_V4L2M2M_DECODER 0
-@@ -995,7 +995,7 @@
- #define CONFIG_H261_PARSER 0
- #define CONFIG_H263_PARSER 0
- #define CONFIG_H264_PARSER 0
--#define CONFIG_HEVC_PARSER 0
-+#define CONFIG_HEVC_PARSER 1
- #define CONFIG_HDR_PARSER 0
- #define CONFIG_IPU_PARSER 0
- #define CONFIG_JPEG2000_PARSER 0
-diff --git a/chromium/config/Chromium/android/arm-neon/libavcodec/codec_list.c b/chromium/config/Chromium/android/arm-neon/libavcodec/codec_list.c
-index 7d9debfe61..f9faf1d332 100644
---- a/chromium/config/Chromium/android/arm-neon/libavcodec/codec_list.c
-+++ b/chromium/config/Chromium/android/arm-neon/libavcodec/codec_list.c
-@@ -12,4 +12,5 @@ static const FFCodec * const codec_list[] = {
-     &ff_pcm_s32le_decoder,
-     &ff_pcm_u8_decoder,
-     &ff_libopus_decoder,
-+    &ff_hevc_decoder,
-     NULL };
-diff --git a/chromium/config/Chromium/android/arm-neon/libavcodec/parser_list.c b/chromium/config/Chromium/android/arm-neon/libavcodec/parser_list.c
-index fdc533b38f..520472e237 100644
---- a/chromium/config/Chromium/android/arm-neon/libavcodec/parser_list.c
-+++ b/chromium/config/Chromium/android/arm-neon/libavcodec/parser_list.c
-@@ -4,4 +4,5 @@ static const AVCodecParser * const parser_list[] = {
      &ff_opus_parser,
      &ff_vorbis_parser,
      &ff_vp9_parser,
