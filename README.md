@@ -63,7 +63,7 @@ Linux (Chrome version >= `108.0.5354.0`, and only supports GPUs that support VAA
 
 Video Decode: File, Media Source Extensions, WebCodec (8Bit requires >= `107.0.5272.0`, 10Bit + HEVC with Alpha requires >= `108.0.5343.0`), Clearkey and Widevine L1 (HW only) Encrypted Media Extensions, WebRTC (experimental, need to use Chrome Canary passing `--enable-features=PlatformHEVCEncoderSupport,WebRtcAllowH265Send,WebRtcAllowH265Receive --force-fieldtrials=WebRTC-Video-H26xPacketBuffer/Enabled` to enable the feature, or use the Chromium binary provided by this repo, some useful sites here: [Media Capabilities](https://webrtc.internaut.com/mc/), [Demo](https://webrtc.github.io/samples/src/content/peerconnection/change-codecs/)) are supported.
 
-Video Encode: WebCodec (Windows, macOS, and Android, Chrome >= `130.0.6703.0` no need any switch, Chrome < `130.0.6703.0` need to pass `--enable-features=PlatformHEVCEncoderSupport` to enable the support), WebRTC (same description as above), and MediaRecorder (requires Chrome >= `132.0.6784.0`, need to pass `--enable-features=MediaRecorderHEVCSupport` to enable the support, [Demo](https://webrtc.github.io/samples/src/content/getusermedia/record/) are supported.
+Video Encode: WebCodec (Windows, macOS, and Android, Chrome >= `130.0.6703.0` no need any switch, Chrome < `130.0.6703.0` need to pass `--enable-features=PlatformHEVCEncoderSupport` to enable the support), WebRTC (same description as above), and MediaRecorder (requires Chrome >= `132.0.6784.0`, need to pass `--enable-features=MediaRecorderHEVCSupport` to enable the support, [Demo](https://webrtc.github.io/samples/src/content/getusermedia/record/)) are supported.
 
 ## What's the GPU requirement?
 
