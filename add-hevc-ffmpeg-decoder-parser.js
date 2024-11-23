@@ -159,7 +159,7 @@ function enableHevcConfig(filename) {
     .replace('define CONFIG_BSWAPDSP 0', 'define CONFIG_BSWAPDSP 1')
     .replace('define CONFIG_DOVI_RPU 0', 'define CONFIG_DOVI_RPU 1')
     .replace("--enable-decoder='aac,h264'", "--enable-decoder='aac,h264,hevc'")
-    .replace("--enable-parser='aac,h264'", "--enable-decoder='aac,h264,hevc'");
+    .replace("--enable-parser='aac,h264'", "--enable-parser='aac,h264,hevc'");
   fs.writeFileSync(filename, content, encodingConfig);
 }
 
