@@ -1,22 +1,22 @@
-From 29d0f1c452297a0dc47ff3c3d2f5229ef38f71e2 Mon Sep 17 00:00:00 2001
+From d67270fd70a71770d3a91c117c847333f289bad1 Mon Sep 17 00:00:00 2001
 From: Sta Zhu <zhusidayoyo@hotmail.com>
-Date: Mon, 18 Nov 2024 14:47:58 +0800
+Date: Sat, 23 Nov 2024 20:11:24 +0800
 Subject: [PATCH] Video: Enable HEVC ffmpeg decoding
 
 This will consider all HEVC profile as to supported, let FFMpegVideoDecoder
 handle SW fallback and help you be able to play video's like HEVC Rext, SCC
 etc... as long as ffmpeg support it.
 ---
- media/base/supported_types.cc         | 32 ++++-----------------------
- media/filters/ffmpeg_glue.cc          |  2 +-
+ media/base/supported_types.cc         | 33 ++++-----------------------
+ media/ffmpeg/ffmpeg_common.cc         |  2 +-
  media/filters/ffmpeg_video_decoder.cc |  7 +++---
- 3 files changed, 9 insertions(+), 32 deletions(-)
+ 3 files changed, 10 insertions(+), 32 deletions(-)
 
 diff --git a/media/base/supported_types.cc b/media/base/supported_types.cc
-index 8db4b2d5cf1f5..4a8b64b3fc911 100644
+index 8db4b2d5cf1f5..2a338248f6f0b 100644
 --- a/media/base/supported_types.cc
 +++ b/media/base/supported_types.cc
-@@ -230,35 +230,11 @@ bool IsAudioCodecProprietary(AudioCodec codec) {
+@@ -230,35 +230,12 @@ bool IsAudioCodecProprietary(AudioCodec codec) {
  #endif  // !BUILDFLAG(USE_PROPRIETARY_CODECS)
  
  bool IsDecoderHevcProfileSupported(const VideoType& type) {
@@ -50,12 +50,13 @@ index 8db4b2d5cf1f5..4a8b64b3fc911 100644
  #else
 -  return false;
 -#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
-+  return GetSupplementalDecoderVideoProfileCache()->IsProfileSupported(type.profile);
++  return GetSupplementalDecoderVideoProfileCache()->IsProfileSupported(
++      type.profile);
 +#endif  // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
  }
  
  bool IsDecoderVp9ProfileSupported(const VideoType& type) {
-@@ -580,7 +556,7 @@ bool IsDefaultEncoderSupportedVideoType(const VideoType& type) {
+@@ -580,7 +557,7 @@ bool IsDefaultEncoderSupportedVideoType(const VideoType& type) {
  
  bool IsDecoderBuiltInVideoCodec(VideoCodec codec) {
  #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) && BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -64,12 +65,12 @@ index 8db4b2d5cf1f5..4a8b64b3fc911 100644
      return true;
    }
  #endif  // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) &&
-diff --git a/media/filters/ffmpeg_glue.cc b/media/filters/ffmpeg_glue.cc
-index 0e7195c66f449..42614bd619779 100644
---- a/media/filters/ffmpeg_glue.cc
-+++ b/media/filters/ffmpeg_glue.cc
-@@ -154,7 +154,7 @@ const char* FFmpegGlue::GetAllowedAudioDecoders() {
- const char* FFmpegGlue::GetAllowedVideoDecoders() {
+diff --git a/media/ffmpeg/ffmpeg_common.cc b/media/ffmpeg/ffmpeg_common.cc
+index d2c70a53c5743..3dae58c8611f5 100644
+--- a/media/ffmpeg/ffmpeg_common.cc
++++ b/media/ffmpeg/ffmpeg_common.cc
+@@ -67,7 +67,7 @@ VideoColorSpace GetGuessedColorSpace(const VideoColorSpace& color_space) {
+ const char* GetAllowedVideoDecoders() {
    // This should match the configured lists in //third_party/ffmpeg.
  #if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 -  return "h264";
@@ -78,7 +79,7 @@ index 0e7195c66f449..42614bd619779 100644
    return "";
  #endif
 diff --git a/media/filters/ffmpeg_video_decoder.cc b/media/filters/ffmpeg_video_decoder.cc
-index 30eec44d0ee12..befa3291d1729 100644
+index b3b22e2d0045f..96cc8c3640737 100644
 --- a/media/filters/ffmpeg_video_decoder.cc
 +++ b/media/filters/ffmpeg_video_decoder.cc
 @@ -82,7 +82,6 @@ static int GetFFmpegVideoDecoderThreadCount(const VideoDecoderConfig& config) {
@@ -110,5 +111,5 @@ index 30eec44d0ee12..befa3291d1729 100644
  
  FFmpegVideoDecoder::FFmpegVideoDecoder(MediaLog* media_log)
 -- 
-2.45.2
+2.47.0
 
