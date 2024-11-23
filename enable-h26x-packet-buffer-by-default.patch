@@ -4,7 +4,7 @@ Date: Sat, 31 Aug 2024 20:51:29 +0800
 Subject: [PATCH] Video: Enable WebRTC H26xPacketBuffer feature by default
 
 This will enable WebRTC H26xPacketBuffer feature which is
-neccesary to make WebRTC related API start working.
+necessary to make WebRTC related API start working.
 ---
  video/rtp_video_stream_receiver2.cc | 3 +--
  1 file changed, 1 insertion(+), 2 deletions(-)

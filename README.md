@@ -27,7 +27,7 @@ HEVC Rext (partially supported, see the table below for details, up to 8192x8192
 
 *Note 2: Intel Gen10 GPUs support HEVC Rext hardware decoding of 8b 420, 8b 422, 8b 444, 10b 420, 10b 422, 10b 444 contents on Windows. Gen11+ GPUs additionally support HEVC Rext hardware decoding of 12b 420, 12b 422, 12b 444 contents.*
 
-*Note 3: Although NVIDIA GPUs support HEVC Rext hardware decoding of 8 ~ 12b non-422 contents via CUVIA or NVDEC, but because they did not provide a D3D11 interface, thus Chromium will not support it in the future.*
+*Note 3: Although NVIDIA GPUs support HEVC Rext hardware decoding of 8 ~ 12b non-422 contents via CUVID or NVDEC, but because they did not provide a D3D11 interface, thus Chromium will not support it in the future.*
 
 *Note 4: HEVC 8b 444, 12b 422, 12b 444 support requires Chrome >= `117.0.5866.0`.*
 
@@ -163,9 +163,9 @@ Versions 107 ~ 109 of Chrome, if constructing source buffer with `hvc1`, `hev1`,
 
 #### HDR support by version of Chrome/Edge
 
-Chrome 107 does not support the ability to extract HEVC static metadata, and all HDR10 video playback are downgraded to PQ only mode. HLG videos uses the video processor API provided by the GPU vendor for processing tone-mapping has a poor performance on some laptops, and playing 4K video may cause frame droping.
+Chrome 107 does not support the ability to extract HEVC static metadata, and all HDR10 video playback are downgraded to PQ only mode. HLG videos uses the video processor API provided by the GPU vendor for processing tone-mapping has a poor performance on some laptops, and playing 4K video may cause frame dropping.
 
-Chrome 108 supports the ability to extract HEVC static metadata. For videos with static metadata written in the container, the playback is okey on 108, but some videos are not written static metadata to their containers, thus Chrome 108 can not extract the static metadata from these videos which causing the playback to be downgraded to PQ only mode, and the max content light level maybe cutted to a low value for these videos. In addition, the HLG Tone-mapping algorithm on Windows platform has been switched to Chrome's own algorithm, which solves the problem of bad performance on the laptop when using video processor for HLG Tone-mapping. However, Chrome has been using 8 bit for Tone-mapping, which resulting an insufficient contrast ratio of the Tone-mapping result.
+Chrome 108 supports the ability to extract HEVC static metadata. For videos with static metadata written in the container, the playback is okay on 108, but some videos are not written static metadata to their containers, thus Chrome 108 can not extract the static metadata from these videos which causing the playback to be downgraded to PQ only mode, and the max content light level maybe cut to a low value for these videos. In addition, the HLG Tone-mapping algorithm on Windows platform has been switched to Chrome's own algorithm, which solves the problem of bad performance on the laptop when using video processor for HLG Tone-mapping. However, Chrome has been using 8 bit for Tone-mapping, which resulting an insufficient contrast ratio of the Tone-mapping result.
 
 Chrome 109 makes the HDR -> SDR process to a 16 bit + zero copy process, which improves the accuracy of PQ Tone-mapping on Windows platform, thus the problem of the insufficient contrast ratio for HLG has been also solved, and the video memory usage has been reduced by about 50%.
 
@@ -369,9 +369,9 @@ try {
 
 #### Windows
 
-Edge uses `VDAVideoDecocder` to call `MFT` (need to install `HEVC Video Extension`, Edge 117 ~ 121 uses `MediaFoundationRenderer`, and switch back to the original `VDAVideoDecocder` after version 122) to finish the HEVC decoding which is the same tech behind `Movies and TV` builtin system app.
+Edge uses `VDAVideoDecoder` to call `MFT` (need to install `HEVC Video Extension`, Edge 117 ~ 121 uses `MediaFoundationRenderer`, and switch back to the original `VDAVideoDecoder` after version 122) to finish the HEVC decoding which is the same tech behind `Movies and TV` builtin system app.
 
-Firefox (>= 120, experimental, need to manually set `media.wmf.hevc.enabled=1` to enable the feature) uses `MFT` (need to install `HEVC Video Extension`) to finish the HEVC decoding which is the same tech behind `Movies and TV` builtin system app.
+Firefox (>= 133) uses `MFT` (need to install `HEVC Video Extension`) to finish the HEVC decoding which is the same tech behind `Movies and TV` builtin system app.
 
 When using `MFT`, If the device does not have hardware decoding support of a specific profile (i.e. NVIDIA GTX 745 does not support Main10 profile) or resolution (i.e. NVIDIA GTX 960 does not support resolutions above 4K), `MFT` will automatically switch to software decoding.
 

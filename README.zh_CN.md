@@ -27,7 +27,7 @@ HEVC Rext (部分支持，细节见下表，最高支持 8192x8192 px)
 
 *注2：Intel 10 代 GPU 支持硬解 HEVC Rext 8b 420, 8b 422, 8b 444, 10b 420, 10b 422, 10b 444 的内容。11 代及以后的 GPU 还支持硬解 HEVC Rext 12b 420, 12b 422, 12b 444 的内容。*
 
-*注3：尽管 NVIDIA GPU 支持 8 ~ 12b 非 422 HEVC Rext CUVIA 或 NVDEC 硬解码，但由于 NVIDIA 没有给 D3D11 接口暴露这部分能力，因此 Chromium 以后也不会支持它们。*
+*注3：尽管 NVIDIA GPU 支持 8 ~ 12b 非 422 HEVC Rext CUVID 或 NVDEC 硬解码，但由于 NVIDIA 没有给 D3D11 接口暴露这部分能力，因此 Chromium 以后也不会支持它们。*
 
 *注4：Windows HEVC 8b 444, 12b 422, 12b 444 支持需要 Chrome >= `117.0.5866.0`。*
 
@@ -63,7 +63,7 @@ Linux (版本号须 >= `108.0.5354.0`, 仅支持 VAAPI 接口支持的 GPU，比
 
 视频解码：支持 File, Media Source Extensions, WebCodec (8Bit >= `107.0.5272.0`, 10Bit + HEVC with Alpha >= `108.0.5343.0`), Clearkey 以及 Widevine L1 (不支持L3) Encrypted Media Extensions, WebRTC (实验性功能，需使用 Chrome Canary 传入 `--enable-features=PlatformHEVCEncoderSupport,WebRtcAllowH265Send,WebRtcAllowH265Receive --force-fieldtrials=WebRTC-Video-H26xPacketBuffer/Enabled` 开启，或直接使用本仓库提供的 Chromium 测试，一些可用的测试地址供参考：[Media Capabilities](https://webrtc.internaut.com/mc/), [Demo](https://webrtc.github.io/samples/src/content/peerconnection/change-codecs/))。
 
-视频编码：支持 WebCodec (支持 macOS, Windows, Androird, Chrome >= `130.0.6703.0` 版本默认启用，< `130.0.6703.0` 版本需要传启动参数：`--enable-features=PlatformHEVCEncoderSupport` 手动开启), WebRTC (测试方式见视频解码部分描述)，MediaRecorder (Chrome >= `132.0.6784.0` 版本需要传启动参数 `--enable-features=MediaRecorderHEVCSupport` 手动开启, [Demo](https://webrtc.github.io/samples/src/content/getusermedia/record/))。
+视频编码：支持 WebCodec (支持 macOS, Windows, Android, Chrome >= `130.0.6703.0` 版本默认启用，< `130.0.6703.0` 版本需要传启动参数：`--enable-features=PlatformHEVCEncoderSupport` 手动开启), WebRTC (测试方式见视频解码部分描述)，MediaRecorder (Chrome >= `132.0.6784.0` 版本需要传启动参数 `--enable-features=MediaRecorderHEVCSupport` 手动开启, [Demo](https://webrtc.github.io/samples/src/content/getusermedia/record/))。
 
 ## GPU要求？
 
@@ -163,7 +163,7 @@ if (isTypeSupported('video/mp4;codecs="dvh1.08.07"')) {
 
 Chrome 107 不支持提取 HEVC 静态元数据的能力，所有 HDR10 视频均以降级为 PQ 的方式播放。HLG 视频使用显卡厂商自带的 Video Processor API 进行 Tone-mapping，在部分笔记本上性能较差，播放 4K 视频可能会导致卡顿。
 
-Chrome 108 支持了提取 HEVC 静态元数据的能力，对于容器内写入元数据的视频，播放效果很好，但有部分视频由于静态元数据没有写入容器，由于提取不到静态元数据，导致这部分 HDR10 视频被降级为 PQ 视频播放，高光细节可能会缺失。此外 Windows 平台的 HLG Tone-mapping 算法切换为了 Chrome 自己的算法，解决了卡顿的问题，但 Chrome 一直使用 8bit 做 Tone-maping，这又导致 HLG Tone-mapping 结果存在对比度不足的问题。
+Chrome 108 支持了提取 HEVC 静态元数据的能力，对于容器内写入元数据的视频，播放效果很好，但有部分视频由于静态元数据没有写入容器，由于提取不到静态元数据，导致这部分 HDR10 视频被降级为 PQ 视频播放，高光细节可能会缺失。此外 Windows 平台的 HLG Tone-mapping 算法切换为了 Chrome 自己的算法，解决了卡顿的问题，但 Chrome 一直使用 8bit 做 Tone-mapping，这又导致 HLG Tone-mapping 结果存在对比度不足的问题。
 
 Chrome 109 开始，HDR -> SDR 流程切换为 16bit + 零拷贝，提升了 Windows 下的 PQ Tone-mapping 的精准度，HLG 对比度不足问题也得以解决，还降低了大概 50% 的显存占用。
 
@@ -366,9 +366,9 @@ try {
 
 #### Windows
 
-Edge 使用 `VDAVideoDecoder` 调用 `MFT`（需要安装 `HEVC视频扩展` 插件, Edge 117 ~ 121 使用 `MediaFoundationRenderer`, 在 122 及以后版本切换回了之前的 `VDAVideoDecocder`）完成解码，和系统自带的 `电影与电视` 用的解码器相同。
+Edge 使用 `VDAVideoDecoder` 调用 `MFT`（需要安装 `HEVC视频扩展` 插件, Edge 117 ~ 121 使用 `MediaFoundationRenderer`, 在 122 及以后版本切换回了之前的 `VDAVideoDecoder`）完成解码，和系统自带的 `电影与电视` 用的解码器相同。
 
-Firefox (>= 120, 实验功能, 需手动设置 `media.wmf.hevc.enabled=1` 开启) 调用 `MFT`（需要安装 `HEVC视频扩展` 插件）完成解码，和系统自带的 `电影与电视` 用的解码器相同。
+Firefox (>= 133) 调用 `MFT`（需要安装 `HEVC视频扩展` 插件）完成解码，和系统自带的 `电影与电视` 用的解码器相同。
 
 当使用 `MFT` 解码时，如果设备不支持特定的 Profile（比如：NVIDIA GTX 745 不支持 Main10 Profile）或者分辨率（比如：NVIDIA GTX 960 不支持 4K 以上分辨率）的硬解，`MFT` 会自动切换到软解。
 
@@ -415,7 +415,7 @@ Safari 和 Chrome 二者均使用 `VideoToolbox` 解码器完成解码，如果�
 
 ## 如何编译？
 
-1. 请参考 [Chrome编译手册](https://www.chromium.org/developers/how-tos/get-the-code/) 配置环境并拉取 `main` 分支（硬解代码已合入）的代码。
+1. 请参考 [官方 Chromium 编译手册](https://www.chromium.org/developers/how-tos/get-the-code/) 配置环境并拉取 `main` 分支（硬解代码已合入）的代码。
 2. (可选) 支持 HEVC 软解：切换到 `src/third_party/ffmpeg` 目录，执行 `git am /path/to/add-hevc-ffmpeg-decoder-parser.patch` 。如果有冲突，也可尝试使用 `node /path/to/add-hevc-ffmpeg-decoder-parser.js` 直接修改代码（需要确保Node.js已安装再执行该命令）, 然后继续执行 `git am /path/to/change-libavcodec-header.patch` (如果本仓库同步上游不及时，这条命令也可能失败，如遇失败可提 Issue 反馈，或直接提交修复的 Merge Request)，最后切换回 `src` 目录，执行 `git am /path/to/enable-hevc-ffmpeg-decoding.patch`。
 3. (可选) 默认启用 HEVC WebRTC 功能，切换到 `src` 目录，执行 `git am /path/to/enable-hevc-webrtc-send-receive-by-default.patch`，然后切到 `src/third_party/webrtc` 目录，执行 `git am /path/to/enable-h26x-packet-buffer-by-default.patch`。
 4. (可选) 默认启用 HEVC MediaRecorder 支持，切换到 `src` 目录，执行 `git am /path/to/enable-hevc-media-recorder-support.patch`。

@@ -4,7 +4,7 @@ Date: Fri, 22 Nov 2024 20:33:05 +0800
 Subject: [PATCH] Video: Enable HEVC WebRTC Send/Receive feature by default
 
 This will enable WebRTC HEVC Send/Receive feature which is 
-neccesary to make WebRTC related API start working.
+necessary to make WebRTC related API start working.
 
 Also enable HEVC L1T2/L1T3 enabling by default.
 
