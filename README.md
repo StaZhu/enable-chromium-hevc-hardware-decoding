@@ -63,7 +63,7 @@ Linux (Chrome version >= `108.0.5354.0`, and only supports GPUs that support VAA
 
 Video Decode: File, Media Source Extensions, WebCodec (8Bit requires >= `107.0.5272.0`, 10Bit + HEVC with Alpha requires >= `108.0.5343.0`), Clearkey and Widevine L1 (HW only) Encrypted Media Extensions, WebRTC (experimental, need to use Chrome Canary passing `--enable-features=PlatformHEVCEncoderSupport,WebRtcAllowH265Send,WebRtcAllowH265Receive --force-fieldtrials=WebRTC-Video-H26xPacketBuffer/Enabled` to enable the feature, or use the Chromium binary provided by this repo, some useful sites here: [Media Capabilities](https://webrtc.internaut.com/mc/), [Demo](https://webrtc.github.io/samples/src/content/peerconnection/change-codecs/)) are supported.
 
-Video Encode: WebCodec (Windows, macOS, and Android, Chrome >= `130.0.6703.0` no need any switch, Chrome < `130.0.6703.0` need to pass `--enable-features=PlatformHEVCEncoderSupport` to enable the support), WebRTC (same description as above), and MediaRecorder (requires Chrome >= `132.0.6784.0`, need to pass `--enable-features=MediaRecorderHEVCSupport` to enable the support, [Demo](https://webrtc.github.io/samples/src/content/getusermedia/record/)) are supported.
+Video Encode: WebCodec (Windows, macOS, and Android, requires Chrome >= `130.0.6703.0`), WebRTC (same description as above), and MediaRecorder (Windows, macOS, and Android, requires Chrome >=`133.0.6878.0`, [Demo](https://webrtc.github.io/samples/src/content/getusermedia/record/)) are supported.
 
 ## What's the GPU requirement?
 
@@ -421,11 +421,10 @@ Some GPU hardware may has bug which will cause `D3D11VideoDecoder` forbidden to 
 1. Follow [the official build doc](https://www.chromium.org/developers/how-tos/get-the-code/) to prepare the build environment then fetch the source code from `main` branch (HEVC HW codes has been merged).
 2. (Optional) To enable HEVC software decoding: switch to `src/third_party/ffmpeg` dir, then execute `git am /path/to/add-hevc-ffmpeg-decoder-parser.patch`. If failed to apply the patch, could also try `node /path/to/add-hevc-ffmpeg-decoder-parser.js` to enable software decoding (Node.js is required to run the script), then execute `git am /path/to/change-libavcodec-header.patch` manually (this may still fail if the upstream got updated but this repo doesn't sync the code in time, you could submit an issue or patch to report or fix this), finally switch to `src` dir, and execute `git am /path/to/enable-hevc-ffmpeg-decoding.patch`.
 3. (Optional) To enable HEVC WebRTC support by default, switch to `src` dir, then execute `git am /path/to/enable-hevc-webrtc-send-receive-by-default.patch`, and then switch to `src/third_party/webrtc` dir, execute `git am /path/to/enable-h26x-packet-buffer-by-default.patch`.
-4. (Optional) To enable HEVC MediaRecorder support by default, switch to `src` dir, then execute `git am /path/to/enable-hevc-media-recorder-support.patch`.
-5. (Optional) To integrate Widevine CDM to support EME API (like Netflix): switch to `src` dir, then execute `cp -R /path/to/widevine/* third_party/widevine/cdm` (Windows: `xcopy /path/to/widevine third_party\widevine\cdm /E/H`).
-6. If you are using `Mac` + want to build `x64` arch (target_cpu to `x86` , `arm64` , `arm` also available) + want to add CDM support, then run `gn gen out/Release64 --args="is_component_build = false is_official_build = true is_debug = false ffmpeg_branding = \"Chrome\" target_cpu = \"x64\" proprietary_codecs = true media_use_ffmpeg = true enable_widevine = true bundle_widevine_cdm = true"`, if you are using `Windows`, you need to add `enable_media_foundation_widevine_cdm = true` as well.
-7. Run `autoninja -C out/Release64 chrome` to start the build.
-8. Open Chromium directly.
+4. (Optional) To integrate Widevine CDM to support EME API (like Netflix): switch to `src` dir, then execute `cp -R /path/to/widevine/* third_party/widevine/cdm` (Windows: `xcopy /path/to/widevine third_party\widevine\cdm /E/H`).
+5. If you are using `Mac` + want to build `x64` arch (target_cpu to `x86` , `arm64` , `arm` also available) + want to add CDM support, then run `gn gen out/Release64 --args="is_component_build = false is_official_build = true is_debug = false ffmpeg_branding = \"Chrome\" target_cpu = \"x64\" proprietary_codecs = true media_use_ffmpeg = true enable_widevine = true bundle_widevine_cdm = true"`, if you are using `Windows`, you need to add `enable_media_foundation_widevine_cdm = true` as well.
+6. Run `autoninja -C out/Release64 chrome` to start the build.
+7. Open Chromium directly.
 
 ## How to integrate this into Chromium based project like Electron?
 
@@ -434,6 +433,8 @@ If Electron >= v22.0.0, the HEVC HW decoding feature for macOS, Windows, and Lin
 If Electron >= v33.0.0, the HEVC HW encoding feature for macOS, Windows should have already been integrated.
 
 ## Change Log
+
+`2024-12-05` Enable MediaRecorder HEVC Support by default (Chrome >= `133.0.6878.0`)
 
 `2024-11-18` Firefox >= 133 enable HEVC decoding by default (Windows platform only), update the document of HDR support comparison.
 
