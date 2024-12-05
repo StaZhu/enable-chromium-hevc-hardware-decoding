@@ -65,7 +65,7 @@ Linux (版本号须 >= `108.0.5354.0`, 仅支持 VAAPI 接口支持的 GPU，比
 
 视频编码：支持 WebCodec (支持 macOS, Windows, Android, Chrome >= `130.0.6703.0` 版本默认启用), WebRTC (测试方式见视频解码部分描述)，MediaRecorder (Windows, macOS, and Android, Chrome >=`133.0.6878.0` 版本默认启用，[Demo](https://webrtc.github.io/samples/src/content/getusermedia/record/))。
 
-## GPU要求？
+## 解码 GPU 要求？
 
 #### 独显
 
@@ -83,13 +83,17 @@ AMD Radeon R7, Vega M 及以上
 
 Apple M1, M1 Pro, M1 Max, M1 Ultra 及以上
 
-#### 详细支持列表
+Qualcomm Adreno 618 及以上
+
+#### 解码支持列表详细
 
 [Intel](https://bluesky-soft.com/en/dxvac/deviceInfo/decoder/intel.html)
 
 [AMD](https://bluesky-soft.com/en/dxvac/deviceInfo/decoder/amd.html)
 
 [NVIDIA](https://bluesky-soft.com/en/dxvac/deviceInfo/decoder/nvidia.html)
+
+[Qualcomm](https://bluesky-soft.com/en/dxvac/deviceInfo/decoder/qualcomm.html)
 
 ## HDR 支持？(与 Edge / Safari / Firefox 的对比)
 

@@ -65,7 +65,7 @@ Video Decode: File, Media Source Extensions, WebCodec (8Bit requires >= `107.0.5
 
 Video Encode: WebCodec (Windows, macOS, and Android, requires Chrome >= `130.0.6703.0`), WebRTC (same description as above), and MediaRecorder (Windows, macOS, and Android, requires Chrome >=`133.0.6878.0`, [Demo](https://webrtc.github.io/samples/src/content/getusermedia/record/)) are supported.
 
-## What's the GPU requirement?
+## What's the HW decoding GPU requirement?
 
 #### Discrete GPU
 
@@ -83,13 +83,17 @@ AMD Radeon R7, Vega M and above
 
 Apple M1, M1 Pro, M1 Max, M1 Ultra and above
 
-#### Detail Table
+Qualcomm Adreno 618 and above
+
+#### HW Decoding Detail Table
 
 [Intel](https://bluesky-soft.com/en/dxvac/deviceInfo/decoder/intel.html)
 
 [AMD](https://bluesky-soft.com/en/dxvac/deviceInfo/decoder/amd.html)
 
 [NVIDIA](https://bluesky-soft.com/en/dxvac/deviceInfo/decoder/nvidia.html)
+
+[Qualcomm](https://bluesky-soft.com/en/dxvac/deviceInfo/decoder/qualcomm.html)
 
 ## HDR Supports? (Compared with Edge / Safari / Firefox)
 
