@@ -438,6 +438,12 @@ If Electron >= v33.0.0, the HEVC HW encoding feature for macOS, Windows should h
 
 ## Change Log
 
+`2024-12-16` Add support for the `avc3` and `hev1` MediaRecorder mime types to solve the problem that MP4 doesn't support video sources with dynamic resolutions (Chrome >= `133.0.6901.0`)
+
+`2024-12-05` Enable VideoToolbox L1T2 HEVC support for WebRTC (Chrome >= `133.0.6878.0`)
+
+`2024-12-05` Fixed the issue where on old NVIDIA GTX 745, which doesn't actually support HEVC encoding, but reported as supporting it. (Chrome >= `133.0.6878.0`)
+
 `2024-12-05` Enable MediaRecorder HEVC Support by default (Chrome >= `133.0.6878.0`)
 
 `2024-11-18` Firefox >= 133 enable HEVC decoding by default (Windows platform only), update the document of HDR support comparison.

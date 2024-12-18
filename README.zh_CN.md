@@ -435,6 +435,12 @@ Electron >= v33.0.0 已集成好 macOS, Windows 平台的 HEVC 硬编码功能�
 
 ## 更新历史
 
+`2024-12-16` 新增 `avc3`, `hev1` MediaRecorder mime type 支持，解决 `mp4` 不支持录制动态分辨率视频的问题（Chrome >= `133.0.6901.0`
+
+`2024-12-05` 默认为 WebRTC 启用 VideoToolbox L1T2 HEVC 编码支持 (Chrome >= `133.0.6878.0`)
+
+`2024-12-05` 修复 NVIDIA GTX 745 不支持 HEVC 编码但却汇报为支持的问题 (Chrome >= `133.0.6878.0`)
+
 `2024-12-05` 默认启用 MediaRecorder HEVC 编码支持 (Chrome >= `133.0.6878.0`)
 
 `2024-11-18` Firefox >= 133 默认启用 HEVC 解码支持（仅支持 Windows 平台），更新与 Firefox HDR 支持的对比。
