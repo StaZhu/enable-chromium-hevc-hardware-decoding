@@ -185,7 +185,7 @@ Chrome 125 在解决了 Intel HDR10 MPO 的各种问题后，重启启用了该�
 
 Edge 125 解决了 Windows 平台 `VDAVideoDecoder` 解码 HEVC Main10 10bit 视频后，没有零拷贝输出的问题，PQ/HDR10/HLG Tone-mapping 异常的问题方可亦得到解决。后期版本的 HDR 渲染结果预期将与 Chrome 完全一致，由于统一由 Skia 渲染，最终各显卡厂商的渲染结果在 HDR 模式开启/关闭前后，都可以保持一致（在 HDR 模式开启后，11 代以后的 Intel GPU, Intel HDR10 MPO 可能会被启用，此时与 Skia 渲染的结果有少许不一致）。
 
-## 如何验证特定 Profile, 分辨率的视频是否可以播放？
+## HEVC 解码验证
 
 ### 非加密内容
 
@@ -197,7 +197,7 @@ const mediaConfig = {
    * 这里写 `file` 或 `media-source` 都可以, 结果一致。当要检测 `webrtc`
    * 可用性时，`contentType` 应该被替换为 `video/h265` (注意: `webrtc` 功能 
    * 仅用于测试目的, Chrome 官方可能未来不会默认启用该功能, 你可以传入命令行开启，
-   * 或在本仓库使用自定义 Chromium v128 二进制测试)
+   * 或在本仓库使用自定义 Chromium 二进制测试)
    */
   type: 'file',
   video: {
@@ -210,24 +210,24 @@ const mediaConfig = {
      * Range extensions: `hvc1.4.10.L93.B0`
      */
     contentType : 'video/mp4;codecs="hev1.1.6.L120.90"',
-    /* 视频的宽度 */
+    /** 视频的宽度 */
     width: 1920,
-    /* 视频的高度 */
+    /** 视频的高度 */
     height: 1080,
-    /* 随便写 */
+    /** 随便写 */
     bitrate: 10000, 
-    /* 随便写 */
+    /** 随便写 */
     framerate: 30
   }
 }
 
 navigator.mediaCapabilities.decodingInfo(mediaConfig)
   .then(result => {
-    /* 指定的 Profile + 宽高的视频是否可解码 */
+    /** 指定的 Profile + 宽高的视频是否可解码 */
     if (result.supported) {
-      console.log('Video can play!');
+      console.log('Video can decode!');
     } else {
-      console.log('Video can\'t play!');
+      console.log('Video can\'t decode!');
     }
   });
 ```
@@ -287,25 +287,25 @@ const videoConfig = {
    * Range extensions: `hvc1.4.10.L93.B0`
    */
   codec: 'hev1.1.6.L120.90',
-  /* HEVC 只支持硬解 */
+  /** HEVC 只支持硬解 */
   hardwareAcceleration: 'prefer-hardware',
-  /* 视频的宽度 */
+  /** 视频的宽度 */
   codedWidth: 1280,
-  /* 视频的高度 */
+  /** 视频的高度 */
   codedHeight: 720,
 }
 
 try {
   const result = await VideoDecoder.isConfigSupported(videoConfig);
-  /* 指定的 Profile + 宽高的视频是否可解码 */
+  /** 指定的 Profile + 宽高的视频是否可解码 */
   if (result.supported) {
-    console.log('Video can play!');
+    console.log('Video can decode!');
   } else {
-    console.log('Video can\'t play!');
+    console.log('Video can\'t decode!');
   }
 } catch (e) {
-  /* 老版本 Chromium 可能对不支持的 Profile, throw Error */
-  console.log('Video can\'t play!');
+  /** 老版本 Chromium 可能对不支持的 Profile, throw Error */
+  console.log('Video can\'t decode!');
 }
 ```
 
@@ -363,6 +363,91 @@ try {
   console.log('Widevine L1 DV profile 5 is supported!');
 } catch (e) {
   console.log('Widevine L1 DV profile 5 is not supported!');
+}
+```
+
+## HEVC 编码验证
+
+### MediaRecorder
+
+Chromium 133 及以上版本默认启用，支持 `Windows`, `macOS`, `Android` 三个平台，支持 `hvc1` 和 `hev1` 两种格式，支持 `mkv` 和 `mp4` 两种封装。
+
+```javascript
+/**
+ * 注1：`mp4` 和 `mkv` (底层实现和 `webm` 一样) 两种封装，建议无脑选 `mp4` 以保证 duration 无问题，可正常 Seek。
+ * 
+ * 注2：Chromium `hev1` 和 `hvc1` 两种 Tag 都支持，codecs 为 `hev1.1.6.L93.B0` 时，优点是支持 `MediaStream`
+ * 动态分辨率变换，但是录出来的 mp4 在 Apple 设备上的 Safari, QuickTime 等播放器无法原生播放，codecs 为 
+ * `hvc1.1.6.L93.B0` 时，优点和缺点刚好反过来，如果录制视频仅在 Chromium 上播，建议选 `hev1`，如果录制分辨率永远不变，
+ * 建议选 `hvc1`.
+ * 
+ * 注3：mp4 录制音频目前仅支持 `opus` 和 `mp4a.40.2` (AAC), 其中 AAC 依赖平台硬件编码器，但具有更好的压缩比
+ * 
+ * 注4：即使 `isTypeSupported()` 返回 true 也不代表一定能录制，例如实际录制时如果 `VideoStream` 的录制分辨率
+ * 大于硬件编码器支持的最大分辨率（e.g. 部分 Intel 核显只支持 1080p，但视频源是 4k 的情况），此时 `onerror` 
+ * 回调会触发，此时需要做好切换到 `avc3` 或 `avc1` 重建 Recorder 的兜底处理。
+ */
+const supported = MediaRecorder.isTypeSupported('video/mp4;codecs=hev1.1.6.L93.B0,opus');
+/** 是否可使用 MediaRecorder 硬件编码 HEVC. */
+if (supported) {
+  console.log('Video can encode!');
+} else {
+  console.log('Video can\'t encode!');
+}
+```
+
+### VideoEncoder
+
+Chromium 130 及以上版本默认启用，支持 `Windows`, `macOS`, `Android` 三个平台。
+
+```javascript
+const videoConfig = {
+  /** Chromium 目前只支持 HEVC Main Profile */
+  codec: 'hev1.1.6.L120.90',
+  /** HEVC 只支持硬编 (注: macOS 是个例外, 它也支持软编) */
+  hardwareAcceleration: 'prefer-hardware',
+  /**
+   * 视频的宽度，高度，以及帧率
+   * 
+   * - `macOS`: `arm64` 架构最高支持 `8192x4352 & 120fps`, `x64` 架构最高支持 `4096x2304 & 120fps`
+   * - `Windows`: 最新款 Nvidia 显卡最高支持 `7680x4360 & 68fps` (RTX 4080), 最新款 AMD, Intel,
+   *              Qualcomm 显卡最高支持 `3840 x 2160 & 96fps`, 部分 Intel 核显最高仅支持到
+   *              `1920x1080 & 30fps`
+   * - `Android`: 部分 Qualcomm 芯片最高支持 `8192 x 4352 & 60fps`，大部分芯片最高支持到 4K
+   * 
+   * 注：实际编码帧率以送 `VideoFrame` 的速度为准，通常情况要求不高的情况，`1920x1080 & 30fps` 可以保证
+   * Windows 老核显可安全硬编
+   */
+  width: 1920,
+  height: 1080,
+  framerate: 30,
+  /** 除 macOS HEVC 软编码器不支持 `realtime` 模式外，硬编码器基本两种都支持，请根据实际需要设置 */
+  latencyMode: 'quality',
+  /** 
+   * 设置输出的格式是 `hevc` (4字节 NALU size 起始头，SPS/PPS/VPS 通过 `codecDescription` 暴露)
+   * 还是 `annexb` (4字节 `00 00 00 01` 起始头 + SPS/PPS/VPS 插入在 I 帧前面)
+   */
+  hevc: {
+    format: 'annexb'
+  },
+  /**
+   * SVC 模式，仅当设置 `latencyMode` 为 `realtime` 时生效，当设置为 `L1T2` 时，仅 macOS14+ Arm64
+   * 机型或 Windows 部分 Intel 显卡机型支持
+   */
+  scalabilityMode: 'L1T1',
+}
+
+try {
+  const result = await VideoEncoder.isConfigSupported(videoConfig);
+  /** 指定的 Profile + 宽高 + 帧率等配置的视频是否可编码 */
+  if (result.supported) {
+    console.log('Video can encode!');
+  } else {
+    console.log('Video can\'t encode!');
+  }
+} catch (e) {
+  /** 老版本 Chromium 可能对不支持的 Profile, throw Error */
+  console.log('Video can\'t encode!');
 }
 ```
 
@@ -435,7 +520,7 @@ Electron >= v33.0.0 已集成好 macOS, Windows 平台的 HEVC 硬编码功能�
 
 ## 更新历史
 
-`2024-12-16` 新增 `avc3`, `hev1` MediaRecorder mime type 支持，解决 `mp4` 不支持录制动态分辨率视频的问题（Chrome >= `133.0.6901.0`
+`2024-12-16` 新增 `avc3`, `hev1` MediaRecorder mime type 支持，解决 `mp4` 不支持录制动态分辨率视频的问题 (Chrome >= `133.0.6901.0`)
 
 `2024-12-05` 默认为 WebRTC 启用 VideoToolbox L1T2 HEVC 编码支持 (Chrome >= `133.0.6878.0`)
 

@@ -187,7 +187,7 @@ Chrome 125 solves all issues with Intel HDR10 MPO, the feature has been re-enabl
 
 Edge 125 solves the issue of no zero-copy output when using `VDAVideoDecoder` decodes HEVC Main10 10bit contents on the Windows platform, and the issue of PQ/HDR10/HLG bad tone-mapping result could also be solved. The HDR rendering results of later versions of Edge are expected to be exactly the same as Chrome, performed by Skia, and the rendering results of various GPU manufacturers will remain consistent no matter system HDR mode on or off (Intel HDR10 MPO may be enabled if system HDR mode is turned on and GPU generation >= 11, which may result in slight inconsistencies with Skia rendering results).
 
-## How to verify certain profile or resolution is supported？
+## HEVC Decoding Support Verification
 
 ### Clear Content
 
@@ -199,7 +199,7 @@ const mediaConfig = {
    * You can use `file` or `media-source` and the result are same here. And if type is `webrtc`,
    * `contentType` should be replaced with `video/h265` (NOTE: `webrtc` feature is only for
    * testing purpose, official Chrome may won't enable this by default, so you should find 
-   * chromium v128 binary in this repo and test by yourself).
+   * chromium binary in this repo and test by yourself).
    */
   type: 'file',
   video: {
@@ -212,24 +212,24 @@ const mediaConfig = {
      * Range extensions: `hvc1.4.10.L93.B0`
      */
     contentType : 'video/mp4;codecs="hev1.1.6.L120.90"',
-    /* Width */
+    /** Width */
     width: 1920,
-    /* Height */
+    /** Height */
     height: 1080,
-    /* Any number */
+    /** Any number */
     bitrate: 10000, 
-    /* Any number */
+    /** Any number */
     framerate: 30
   }
 }
 
 navigator.mediaCapabilities.decodingInfo(mediaConfig)
   .then(result => {
-     /* Indicate whether or not the video with given profile, width, and height can played well on the browser */
+     /** Indicate whether or not the video with given profile, width, and height can played well on the browser */
     if (result.supported) {
-      console.log('Video can play!');
+      console.log('Video can decode!');
     } else {
-      console.log('Video can\'t play!');
+      console.log('Video can\'t decode!');
     }
   });
 ```
@@ -289,25 +289,31 @@ const videoConfig = {
    * Range extensions: `hvc1.4.10.L93.B0`
    */
   codec: 'hev1.1.6.L120.90',
-  /* HEVC is always hw accelerated */
+  /** HEVC is always hw accelerated */
   hardwareAcceleration: 'prefer-hardware',
-  /* Width */
+  /** Width */
   codedWidth: 1280,
-  /* Height */
+  /** Height */
   codedHeight: 720,
 }
 
 try {
   const result = await VideoDecoder.isConfigSupported(videoConfig);
-  /* Indicate whether or not the video with given profile, width, and height can be decoded by WebCodecs API */
+  /**
+   * Indicate whether or not the video with given profile, width, and height can be decoded
+   * by WebCodecs API.
+   */
   if (result.supported) {
-    console.log('Video can play!');
+    console.log('Video can decode!');
   } else {
-    console.log('Video can\'t play!');
+    console.log('Video can\'t decode!');
   }
 } catch (e) {
-  /* There is a bug that in previous version of Chromium, the api may throw Error if config is not supported */
-  console.log('Video can\'t play!');
+  /**
+   * There is a bug that in previous version of Chromium, the api may throw Error if config
+   * is not supported.
+   */
+  console.log('Video can\'t decode!');
 }
 ```
 
@@ -368,6 +374,120 @@ try {
   console.log('Widevine L1 DV profile 5 is not supported!');
 }
 ```
+
+## HEVC Encoding Support Verification
+
+### MediaRecorder
+
+The feature has been enabled by default in Chromium >= 133, supports three platforms including `Windows`, `macOS`, and `Android`, supports two formats, namely `hvc1` and `hev1`, as well as two muxer formats, `mkv` and `mp4`.
+
+```javascript
+/**
+ * Note 1: For the two formats, `mp4` and `mkv` (whose underlying implementation is
+ * the same as that of `webm`), it is always recommended to choose `mp4` without hesitation
+ * to ensure that there will be no issues with the duration and that normal seeking can
+ * be achieved.
+ * 
+ * Note 2: Chromium supports both `hev1` and `hvc1` tags. When the codecs is set to
+ * `hev1.1.6.L93.B0`, the advantage is that it supports the dynamic resolution change of
+ * `MediaStream`. However, the recorded `mp4` file cannot be played natively on Apple
+ * devices' players like Safari and QuickTime. When it is set to `hvc1.1.6.L93.B0`,
+ * the advantages and disadvantages are just the opposite. If the recorded video is
+ * only to be played on Chromium, it is recommended to choose `hev1`. If the recording
+ * resolution will never change, it is recommended to choose `hvc1`.
+ * 
+ * Note 3: Currently, `mp4` only supports two audio encoding formats for recording,
+ * namely `opus` and `mp4a.40.2` (AAC). Among them, AAC relies on the platform's
+ * hardware encoder but has a better compression ratio.
+ * 
+ * Note 4: Even if `isTypeSupported()` returns `true`, it doesn't necessarily mean
+ * that recording can be carried out. For example, if the recording resolution of
+ * the `VideoStream` during actual recording is greater than the maximum resolution
+ * supported by the hardware encoder (for example, some Intel iGPU only support 1080p
+ * while the video source is 4K), then the `onerror` callback will be triggered. In
+ * this case, it is necessary to handle the fallback situation of switching to `avc3`
+ * or `avc1` to re-create the recorder.
+ */
+const supported = MediaRecorder.isTypeSupported('video/mp4;codecs=hev1.1.6.L93.B0,opus');
+/** Indicate whether or not the HEVC main profile be encoded by MediaRecorder API */
+if (supported) {
+  console.log('Video can encode!');
+} else {
+  console.log('Video can\'t encode!');
+}
+```
+
+### VideoEncoder
+
+The feature has been enabled by default in Chromium >= 130, supports three platforms including `Windows`, `macOS`, and `Android`.
+
+```javascript
+const videoConfig = {
+  /** Chromium currently only supports the HEVC Main profile. */
+  codec: 'hev1.1.6.L120.90',
+  /**
+   * HEVC only supports hardware encoding (Note: macOS is an exception as it also supports 
+   * software encoding)
+   */
+  hardwareAcceleration: 'prefer-hardware',
+  /**
+   * The width, height, and framerate of the video.
+   * 
+   * - `macOS`: On the `arm64` Macs, it supports up to `8192x4352 & 120fps`, and on
+   *            the `x64` Macs, it supports up to `4096x2304 & 120fps`.
+   * - `Windows`: Latest Nvidia GPUs support up to `7680x4360 & 68fps` (RTX 4080).
+   *              Latest AMD, Intel, Qualcomm GPUs support up to `3840 x 2160 & 96fps`.
+   *              Some Intel iGPU only support up to `1920x1080 & 30fps`.
+   * - `Android`: Some Qualcomm chips support up to `8192 x 4352 & 60fps`, and most
+   *              chips support up to 4K.
+   * 
+   * Note: The actual encoding frame rate is based on the speed at which `VideoFrame`
+   * is sent. In general, when the requirements are not high, `1920x1080 & 30fps` can
+   * ensure that the old Intel iGPU on Windows can perform hardware encoding safely.
+   */
+  width: 1920,
+  height: 1080,
+  framerate: 30,
+  /** 
+   * Except that macOS HEVC software encoder does not support the `realtime` mode,
+   * hardware encoder basically supports both. Please set it according to actual needs.
+   */
+  latencyMode: 'quality',
+  /** 
+   * Set the output format to be `hevc` (with a 4-byte NALU size start code, and
+   * SPS/PPS/VPS exposed through `codecDescription`) or `annexb` (with a 4-byte 
+   * `00 00 00 01` start code + SPS/PPS/VPS inserted in front of the I frame).
+   */
+  hevc: {
+    format: 'annexb'
+  },
+  /**
+   * SVC mode, It is meaningful only when the latencyMode is `realtime`. When set
+   * to `L1T2`, it is only supported on macOS 14+ Arm64 models or some Intel GPU
+   * models on Windows.
+   */
+  scalabilityMode: 'L1T1',
+}
+
+try {
+  const result = await VideoEncoder.isConfigSupported(videoConfig);
+  /**
+   * Indicate whether or not the video with given profile, width, height, and
+   * framerate can be encoded by WebCodecs API.
+   */
+  if (result.supported) {
+    console.log('Video can encode!');
+  } else {
+    console.log('Video can\'t encode!');
+  }
+} catch (e) {
+  /**
+   * There is a bug that in previous version of Chromium, the api may throw
+   * Error if config is not supported.
+   */
+  console.log('Video can\'t encode!');
+}
+``` 
 
 ## What's the hardware decoding tech diff? (Compared with Edge / Safari / Firefox)
 
