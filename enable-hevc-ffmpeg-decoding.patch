@@ -1,6 +1,6 @@
-From d67270fd70a71770d3a91c117c847333f289bad1 Mon Sep 17 00:00:00 2001
+From e916b70b8a904cb7e69cc6c00229a9ae914030b6 Mon Sep 17 00:00:00 2001
 From: Sta Zhu <zhusidayoyo@hotmail.com>
-Date: Sat, 23 Nov 2024 20:11:24 +0800
+Date: Sun, 12 Jan 2025 19:08:56 +0800
 Subject: [PATCH] Video: Enable HEVC ffmpeg decoding
 
 This will consider all HEVC profile as to supported, let FFMpegVideoDecoder
@@ -13,7 +13,7 @@ etc... as long as ffmpeg support it.
  3 files changed, 10 insertions(+), 32 deletions(-)
 
 diff --git a/media/base/supported_types.cc b/media/base/supported_types.cc
-index 8db4b2d5cf1f5..2a338248f6f0b 100644
+index 5127b5ee0708b..54e081bba71f0 100644
 --- a/media/base/supported_types.cc
 +++ b/media/base/supported_types.cc
 @@ -230,35 +230,12 @@ bool IsAudioCodecProprietary(AudioCodec codec) {
@@ -56,7 +56,7 @@ index 8db4b2d5cf1f5..2a338248f6f0b 100644
  }
  
  bool IsDecoderVp9ProfileSupported(const VideoType& type) {
-@@ -580,7 +557,7 @@ bool IsDefaultEncoderSupportedVideoType(const VideoType& type) {
+@@ -597,7 +574,7 @@ bool IsEncoderOptionalVideoType(const media::VideoType& type) {
  
  bool IsDecoderBuiltInVideoCodec(VideoCodec codec) {
  #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) && BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -66,7 +66,7 @@ index 8db4b2d5cf1f5..2a338248f6f0b 100644
    }
  #endif  // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) &&
 diff --git a/media/ffmpeg/ffmpeg_common.cc b/media/ffmpeg/ffmpeg_common.cc
-index d2c70a53c5743..3dae58c8611f5 100644
+index cfd0552ee3108..29452291bde43 100644
 --- a/media/ffmpeg/ffmpeg_common.cc
 +++ b/media/ffmpeg/ffmpeg_common.cc
 @@ -67,7 +67,7 @@ VideoColorSpace GetGuessedColorSpace(const VideoColorSpace& color_space) {
