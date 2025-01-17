@@ -23,7 +23,7 @@ HEVC Rext (部分支持，细节见下表，最高支持 8192x8192 px)
 ✅：显卡+软件都支持
 ❌：显卡不支持
 
-*注1：Intel Mac 支持软解 HEVC Rext 8 ~ 12b 400, 420, 422, 444 的内容。Apple Silicon Mac 支持硬解 HEVC Rext 8 ～ 10b 400, 420, 422, 444 的内容，在 macOS 13+ 支持软解 HEVC Rext 12b 400, 420, 422, 444 的内容。*
+*注1：Intel Mac 支持软解 HEVC Rext 8 ~ 12b 400, 420, 422, 444 的内容。Apple Silicon Mac 支持硬解 HEVC Rext 8 ～ 10b 400, 420, 422, 444 的内容，软解 HEVC Rext 12b 400, 420, 422, 444 的内容。*
 
 *注2：Intel 10 代 GPU 支持硬解 HEVC Rext 8b 420, 8b 422, 8b 444, 10b 420, 10b 422, 10b 444 的内容。11 代及以后的 GPU 还支持硬解 HEVC Rext 12b 420, 12b 422, 12b 444 的内容。*
 
@@ -519,6 +519,10 @@ Electron >= v22.0.0 已集成好 macOS, Windows, 和 Linux (仅 VAAPI) 平台的
 Electron >= v33.0.0 已集成好 macOS, Windows 平台的 HEVC 硬编码功能，且开箱即用。
 
 ## 更新历史
+
+`2025-01-16` Windows 平台新增 Per-Frame QP HEVC WebCodecs 编码支持 (Chrome >= `134.0.6961.0`)
+
+`2025-01-07` 修复 macOS 11, 12 HEVC Rext profile 解码 8b/10b 4:4:4 内容会产生花条纹的问题 (Chrome >= `133.0.6943.0`)
 
 `2024-12-16` 新增 `avc3`, `hev1` MediaRecorder mime type 支持，解决 `mp4` 不支持录制动态分辨率视频的问题 (Chrome >= `133.0.6901.0`)
 

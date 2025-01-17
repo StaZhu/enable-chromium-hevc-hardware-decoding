@@ -23,7 +23,7 @@ HEVC Rext (partially supported, see the table below for details, up to 8192x8192
 ✅: GPU + software support
 ❌: GPU not support
 
-*Note 1: Intel Macs support HEVC Rext software decoding of 8 ~ 12b 400, 420, 422, 444 contents. Apple Silicon Mac supports HEVC Rext hardware decoding of 8 ~ 10b 400, 420, 422, 444 contents, and software decoding of 12b 400, 420, 422, 444 contents on macOS 13+.*
+*Note 1: Intel Macs support HEVC Rext software decoding of 8 ~ 12b 400, 420, 422, 444 contents. Apple Silicon Mac supports HEVC Rext hardware decoding of 8 ~ 10b 400, 420, 422, 444 contents, and software decoding of 12b 400, 420, 422, 444 contents.*
 
 *Note 2: Intel Gen10 GPUs support HEVC Rext hardware decoding of 8b 420, 8b 422, 8b 444, 10b 420, 10b 422, 10b 444 contents on Windows. Gen11+ GPUs additionally support HEVC Rext hardware decoding of 12b 420, 12b 422, 12b 444 contents.*
 
@@ -557,6 +557,10 @@ If Electron >= v22.0.0, the HEVC HW decoding feature for macOS, Windows, and Lin
 If Electron >= v33.0.0, the HEVC HW encoding feature for macOS, Windows should have already been integrated.
 
 ## Change Log
+
+`2025-01-16` Add WebCodecs Per-Frame QP HEVC encoding support for Windows (Chrome >= `134.0.6961.0`)
+
+`2025-01-07` Fixed HEVC Rext profile 8b/10b 4:4:4 decoding artifact issue on macOS 11, 12 (Chrome >= `133.0.6943.0`)
 
 `2024-12-16` Add support for the `avc3` and `hev1` MediaRecorder mime types to solve the problem that MP4 doesn't support video sources with dynamic resolutions (Chrome >= `133.0.6901.0`)
 
