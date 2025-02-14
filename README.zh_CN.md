@@ -63,7 +63,7 @@ Linux (版本号须 >= `108.0.5354.0`, 仅支持 VAAPI 接口支持的 GPU，比
 
 视频解码：支持 File, Media Source Extensions, WebCodec (8Bit >= `107.0.5272.0`, 10Bit + HEVC with Alpha >= `108.0.5343.0`), Clearkey 以及 Widevine L1 (不支持L3) Encrypted Media Extensions, WebRTC (实验性功能，需使用 Chrome Canary 传入 `--enable-features=PlatformHEVCEncoderSupport,WebRtcAllowH265Send,WebRtcAllowH265Receive --force-fieldtrials=WebRTC-Video-H26xPacketBuffer/Enabled` 开启，或直接使用本仓库提供的 Chromium 测试，一些可用的测试地址供参考：[Media Capabilities](https://webrtc.internaut.com/mc/), [Demo](https://webrtc.github.io/samples/src/content/peerconnection/change-codecs/))。
 
-视频编码：支持 WebCodec (支持 macOS, Windows, Android, Chrome >= `130.0.6703.0` 版本默认启用), WebRTC (测试方式见视频解码部分描述)，MediaRecorder (Windows, macOS, and Android, Chrome >=`133.0.6878.0` 版本默认启用，[Demo](https://webrtc.github.io/samples/src/content/getusermedia/record/))。
+视频编码：支持 WebCodec (支持 macOS, Windows, Android, Chrome >= `130.0.6703.0` 版本默认启用), WebRTC (测试方式见视频解码部分描述)，MediaRecorder (Windows, macOS, and Android, Chrome >=`133.0.6878.0` 版本， 传入 `--enable-features=MediaRecorderHEVCSupport` 启用，[Demo](https://webrtc.github.io/samples/src/content/getusermedia/record/))。
 
 ## 解码 GPU 要求？
 
@@ -370,7 +370,7 @@ try {
 
 ### MediaRecorder
 
-Chromium 133 及以上版本默认启用，支持 `Windows`, `macOS`, `Android` 三个平台，支持 `hvc1` 和 `hev1` 两种格式，支持 `mkv` 和 `mp4` 两种封装。
+Chromium 133 及以上版本，传入 `--enable-features=MediaRecorderHEVCSupport` 启用，支持 `Windows`, `macOS`, `Android` 三个平台，支持 `hvc1` 和 `hev1` 两种格式，支持 `mkv` 和 `mp4` 两种封装。
 
 ```javascript
 /**
@@ -529,8 +529,6 @@ Electron >= v33.0.0 已集成好 macOS, Windows 平台的 HEVC 硬编码功能�
 `2024-12-05` 默认为 WebRTC 启用 VideoToolbox L1T2 HEVC 编码支持 (Chrome >= `133.0.6878.0`)
 
 `2024-12-05` 修复 NVIDIA GTX 745 不支持 HEVC 编码但却汇报为支持的问题 (Chrome >= `133.0.6878.0`)
-
-`2024-12-05` 默认启用 MediaRecorder HEVC 编码支持 (Chrome >= `133.0.6878.0`)
 
 `2024-11-18` Firefox >= 133 默认启用 HEVC 解码支持（仅支持 Windows 平台），更新与 Firefox HDR 支持的对比。
 

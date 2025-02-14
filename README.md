@@ -63,7 +63,7 @@ Linux (Chrome version >= `108.0.5354.0`, and only supports GPUs that support VAA
 
 Video Decode: File, Media Source Extensions, WebCodec (8Bit requires >= `107.0.5272.0`, 10Bit + HEVC with Alpha requires >= `108.0.5343.0`), Clearkey and Widevine L1 (HW only) Encrypted Media Extensions, WebRTC (experimental, need to use Chrome Canary passing `--enable-features=PlatformHEVCEncoderSupport,WebRtcAllowH265Send,WebRtcAllowH265Receive --force-fieldtrials=WebRTC-Video-H26xPacketBuffer/Enabled` to enable the feature, or use the Chromium binary provided by this repo, some useful sites here: [Media Capabilities](https://webrtc.internaut.com/mc/), [Demo](https://webrtc.github.io/samples/src/content/peerconnection/change-codecs/)) are supported.
 
-Video Encode: WebCodec (Windows, macOS, and Android, requires Chrome >= `130.0.6703.0`), WebRTC (same description as above), and MediaRecorder (Windows, macOS, and Android, requires Chrome >=`133.0.6878.0`, [Demo](https://webrtc.github.io/samples/src/content/getusermedia/record/)) are supported.
+Video Encode: WebCodec (Windows, macOS, and Android, requires Chrome >= `130.0.6703.0`), WebRTC (same description as above), and MediaRecorder (Windows, macOS, and Android, requires Chrome >=`133.0.6878.0`, need to passing `--enable-features=MediaRecorderHEVCSupport`, [Demo](https://webrtc.github.io/samples/src/content/getusermedia/record/)) are supported.
 
 ## What's the HW decoding GPU requirement?
 
@@ -379,7 +379,7 @@ try {
 
 ### MediaRecorder
 
-The feature has been enabled by default in Chromium >= 133, supports three platforms including `Windows`, `macOS`, and `Android`, supports two formats, namely `hvc1` and `hev1`, as well as two muxer formats, `mkv` and `mp4`.
+The feature has been supported in Chromium >= 133 (need to passing `--enable-features=MediaRecorderHEVCSupport`), supports three platforms including `Windows`, `macOS`, and `Android`, supports two formats, namely `hvc1` and `hev1`, as well as two muxer formats, `mkv` and `mp4`.
 
 ```javascript
 /**
@@ -567,8 +567,6 @@ If Electron >= v33.0.0, the HEVC HW encoding feature for macOS, Windows should h
 `2024-12-05` Enable VideoToolbox L1T2 HEVC support for WebRTC (Chrome >= `133.0.6878.0`)
 
 `2024-12-05` Fixed the issue where on old NVIDIA GTX 745, which doesn't actually support HEVC encoding, but reported as supporting it. (Chrome >= `133.0.6878.0`)
-
-`2024-12-05` Enable MediaRecorder HEVC Support by default (Chrome >= `133.0.6878.0`)
 
 `2024-11-18` Firefox >= 133 enable HEVC decoding by default (Windows platform only), update the document of HDR support comparison.
 
