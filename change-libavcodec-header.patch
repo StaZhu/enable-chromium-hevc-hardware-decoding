@@ -1,24 +1,24 @@
-From 776f957791b3bcac91f949fab2e1b785f829f4c5 Mon Sep 17 00:00:00 2001
+From 0213b4b5cec448375e8c806241f1b04f80998adb Mon Sep 17 00:00:00 2001
 From: Sta Zhu <zhusidayoyo@hotmail.com>
-Date: Mon, 18 Nov 2024 19:39:32 +0800
+Date: Fri, 14 Feb 2025 20:08:58 +0800
 Subject: [PATCH] Video: Update `libavcodec` header
 
 The recent ffmpeg changes doesn't match with chromium include
 configs, need to change the header manually to fix this.
 ---
  libavcodec/hevc/cabac.c         |  2 +-
- libavcodec/hevc/dsp_template.c  | 10 ++++-----
+ libavcodec/hevc/dsp_template.c  | 10 +++++-----
  libavcodec/hevc/filter.c        |  2 +-
- libavcodec/hevc/hevcdec.c       | 36 ++++++++++++++++-----------------
+ libavcodec/hevc/hevcdec.c       | 29 ++++++++++++++---------------
  libavcodec/hevc/mvs.c           |  2 +-
  libavcodec/hevc/parse.c         |  4 ++--
  libavcodec/hevc/parser.c        |  6 +++---
  libavcodec/hevc/pred_template.c |  2 +-
- libavcodec/hevc/ps.c            |  8 ++++----
+ libavcodec/hevc/ps.c            |  6 +++---
  libavcodec/hevc/ps_enc.c        |  4 ++--
- libavcodec/hevc/refs.c          |  8 ++++----
+ libavcodec/hevc/refs.c          |  4 ++--
  libavcodec/hevc/sei.c           |  4 ++--
- 12 files changed, 43 insertions(+), 45 deletions(-)
+ 12 files changed, 37 insertions(+), 38 deletions(-)
 
 diff --git a/libavcodec/hevc/cabac.c b/libavcodec/hevc/cabac.c
 index 892dd1c215..362dda6beb 100644
@@ -78,10 +78,10 @@ index 68ae0e9ef6..e897ad5d58 100644
  #define LUMA 0
  #define CB 1
 diff --git a/libavcodec/hevc/hevcdec.c b/libavcodec/hevc/hevcdec.c
-index 57881bc995..f108dbdd78 100644
+index 5d0adb2f07..12d84fbdb0 100644
 --- a/libavcodec/hevc/hevcdec.c
 +++ b/libavcodec/hevc/hevcdec.c
-@@ -37,24 +37,24 @@
+@@ -38,23 +38,23 @@
  #include "libavutil/stereo3d.h"
  #include "libavutil/timecode.h"
  
@@ -89,14 +89,12 @@ index 57881bc995..f108dbdd78 100644
 -#include "bswapdsp.h"
 -#include "cabac_functions.h"
 -#include "codec_internal.h"
--#include "container_fifo.h"
 -#include "decode.h"
 -#include "golomb.h"
 +#include "libavcodec/aom_film_grain.h"
 +#include "libavcodec/bswapdsp.h"
 +#include "libavcodec/cabac_functions.h"
 +#include "libavcodec/codec_internal.h"
-+#include "libavcodec/container_fifo.h"
 +#include "libavcodec/decode.h"
 +#include "libavcodec/golomb.h"
  #include "hevc.h"
@@ -107,31 +105,20 @@ index 57881bc995..f108dbdd78 100644
 -#include "internal.h"
 -#include "profiles.h"
 -#include "progressframe.h"
--#include "refstruct.h"
--#include "thread.h"
--#include "threadprogress.h"
 +#include "libavcodec/hwaccel_internal.h"
 +#include "libavcodec/hwconfig.h"
 +#include "libavcodec/internal.h"
 +#include "libavcodec/profiles.h"
 +#include "libavcodec/progressframe.h"
-+#include "libavcodec/refstruct.h"
+ #include "libavutil/refstruct.h"
+-#include "thread.h"
+-#include "threadprogress.h"
 +#include "libavcodec/thread.h"
 +#include "libavcodec/threadprogress.h"
  
  static const uint8_t hevc_pel_weight[65] = { [2] = 0, [4] = 1, [6] = 2, [8] = 3, [12] = 4, [16] = 5, [24] = 6, [32] = 7, [48] = 8, [64] = 9 };
  
-@@ -414,8 +414,7 @@ static int export_stream_params_from_sei(HEVCContext *s)
- 
-     if ((s->sei.common.film_grain_characteristics &&
-          s->sei.common.film_grain_characteristics->present) ||
--        (s->sei.common.aom_film_grain &&
--         s->sei.common.aom_film_grain->enable)) {
-+        (s->sei.common.aom_film_grain.enable)) {
-       avctx->properties |= FF_CODEC_PROPERTY_FILM_GRAIN;
-     }
- 
-@@ -3273,8 +3272,7 @@ static int hevc_frame_start(HEVCContext *s, HEVCLayerContext *l,
+@@ -3275,8 +3275,7 @@ static int hevc_frame_start(HEVCContext *s, HEVCLayerContext *l,
      s->cur_frame->needs_fg =
          ((s->sei.common.film_grain_characteristics &&
            s->sei.common.film_grain_characteristics->present) ||
@@ -204,10 +191,10 @@ index b4c2fcf506..d873c1c5b6 100644
  
  #define POS(x, y) src[(x) + stride * (y)]
 diff --git a/libavcodec/hevc/ps.c b/libavcodec/hevc/ps.c
-index a1d352eec5..3eabe6c965 100644
+index 285084685b..da26dfc749 100644
 --- a/libavcodec/hevc/ps.c
 +++ b/libavcodec/hevc/ps.c
-@@ -25,12 +25,12 @@
+@@ -25,11 +25,11 @@
  
  #include "libavutil/imgutils.h"
  #include "libavutil/mem.h"
@@ -218,12 +205,10 @@ index a1d352eec5..3eabe6c965 100644
  #include "data.h"
  #include "ps.h"
 -#include "profiles.h"
--#include "refstruct.h"
 +#include "libavcodec/profiles.h"
-+#include "libavcodec/refstruct.h"
+ #include "libavutil/refstruct.h"
  
  static const uint8_t default_scaling_list_intra[] = {
-     16, 16, 16, 16, 17, 18, 21, 24,
 diff --git a/libavcodec/hevc/ps_enc.c b/libavcodec/hevc/ps_enc.c
 index 7fbcb3ba4e..4e44f849ba 100644
 --- a/libavcodec/hevc/ps_enc.c
@@ -241,26 +226,22 @@ index 7fbcb3ba4e..4e44f849ba 100644
  static void write_ptl_layer(PutBitContext *pb, PTLCommon *ptl)
  {
 diff --git a/libavcodec/hevc/refs.c b/libavcodec/hevc/refs.c
-index 6ba667e9f5..ee6f5a3f11 100644
+index dd7f7f95a8..56842fd993 100644
 --- a/libavcodec/hevc/refs.c
 +++ b/libavcodec/hevc/refs.c
-@@ -24,12 +24,12 @@
+@@ -25,10 +25,10 @@
  #include "libavutil/mem.h"
  #include "libavutil/stereo3d.h"
  
--#include "container_fifo.h"
 -#include "decode.h"
-+#include "libavcodec/container_fifo.h"
 +#include "libavcodec/decode.h"
  #include "hevc.h"
  #include "hevcdec.h"
 -#include "progressframe.h"
--#include "refstruct.h"
 +#include "libavcodec/progressframe.h"
-+#include "libavcodec/refstruct.h"
+ #include "libavutil/refstruct.h"
  
  void ff_hevc_unref_frame(HEVCFrame *frame, int flags)
- {
 diff --git a/libavcodec/hevc/sei.c b/libavcodec/hevc/sei.c
 index e11a33773c..aa6acfca6b 100644
 --- a/libavcodec/hevc/sei.c

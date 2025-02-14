@@ -52,7 +52,6 @@ const patches = [
     ffmpeg_c_sources: [
       'libavcodec/aom_film_grain.c',
       'libavcodec/bswapdsp.c',
-      'libavcodec/container_fifo.c',
       'libavcodec/dovi_rpu.c',
       'libavcodec/dovi_rpudec.c',
       'libavcodec/dynamic_hdr_vivid.c',
