@@ -1,6 +1,6 @@
-From b94e719fbc862e49c07d3686ed3b666af1d2d250 Mon Sep 17 00:00:00 2001
+From df284cfd4ed74a5cc8a4bd03354f51dcdcaf6a11 Mon Sep 17 00:00:00 2001
 From: Sta Zhu <zhusidayoyo@hotmail.com>
-Date: Fri, 14 Feb 2025 20:23:38 +0800
+Date: Mon, 17 Feb 2025 18:53:05 +0800
 Subject: [PATCH] Video: Add HEVC ffmpeg decoder & parser
 
 Add ffmpeg software decoder and parser for HEVC, this will make
@@ -158,7 +158,7 @@ profiles to have software HEVC decoding ability.
  create mode 100644 libavcodec/hevc/autorename_libavcodec_hevc_parser.c
 
 diff --git a/chromium/config/Chrome/android/arm64/config.h b/chromium/config/Chrome/android/arm64/config.h
-index bb709fbbc4..447a1a4e1b 100644
+index bb709fbbc4a..447a1a4e1b4 100644
 --- a/chromium/config/Chrome/android/arm64/config.h
 +++ b/chromium/config/Chrome/android/arm64/config.h
 @@ -1,7 +1,7 @@
@@ -191,7 +191,7 @@ index bb709fbbc4..447a1a4e1b 100644
  #define CONFIG_HUFFMAN 0
  #define CONFIG_HUFFYUVDSP 0
 diff --git a/chromium/config/Chrome/android/arm64/config_components.h b/chromium/config/Chrome/android/arm64/config_components.h
-index 84ac721299..ac238182a8 100644
+index 84ac7212994..ac238182a83 100644
 --- a/chromium/config/Chrome/android/arm64/config_components.h
 +++ b/chromium/config/Chrome/android/arm64/config_components.h
 @@ -136,7 +136,7 @@
@@ -213,7 +213,7 @@ index 84ac721299..ac238182a8 100644
  #define CONFIG_IPU_PARSER 0
  #define CONFIG_JPEG2000_PARSER 0
 diff --git a/chromium/config/Chrome/android/arm64/libavcodec/codec_list.c b/chromium/config/Chrome/android/arm64/libavcodec/codec_list.c
-index fe5adb0d92..c9666ae199 100644
+index fe5adb0d923..c9666ae1992 100644
 --- a/chromium/config/Chrome/android/arm64/libavcodec/codec_list.c
 +++ b/chromium/config/Chrome/android/arm64/libavcodec/codec_list.c
 @@ -14,4 +14,5 @@ static const FFCodec * const codec_list[] = {
@@ -223,7 +223,7 @@ index fe5adb0d92..c9666ae199 100644
 +    &ff_hevc_decoder,
      NULL };
 diff --git a/chromium/config/Chrome/android/arm64/libavcodec/parser_list.c b/chromium/config/Chrome/android/arm64/libavcodec/parser_list.c
-index 3e4fa9c320..c85087a596 100644
+index 3e4fa9c320e..c85087a5964 100644
 --- a/chromium/config/Chrome/android/arm64/libavcodec/parser_list.c
 +++ b/chromium/config/Chrome/android/arm64/libavcodec/parser_list.c
 @@ -6,4 +6,5 @@ static const AVCodecParser * const parser_list[] = {
@@ -233,7 +233,7 @@ index 3e4fa9c320..c85087a596 100644
 +    &ff_hevc_parser,
      NULL };
 diff --git a/chromium/config/Chrome/android/ia32/config.h b/chromium/config/Chrome/android/ia32/config.h
-index 8ad421a176..311edab45b 100644
+index 8ad421a1765..311edab45b4 100644
 --- a/chromium/config/Chrome/android/ia32/config.h
 +++ b/chromium/config/Chrome/android/ia32/config.h
 @@ -1,7 +1,7 @@
@@ -266,7 +266,7 @@ index 8ad421a176..311edab45b 100644
  #define CONFIG_HUFFMAN 0
  #define CONFIG_HUFFYUVDSP 0
 diff --git a/chromium/config/Chrome/android/ia32/config_components.h b/chromium/config/Chrome/android/ia32/config_components.h
-index 84ac721299..ac238182a8 100644
+index 84ac7212994..ac238182a83 100644
 --- a/chromium/config/Chrome/android/ia32/config_components.h
 +++ b/chromium/config/Chrome/android/ia32/config_components.h
 @@ -136,7 +136,7 @@
@@ -288,7 +288,7 @@ index 84ac721299..ac238182a8 100644
  #define CONFIG_IPU_PARSER 0
  #define CONFIG_JPEG2000_PARSER 0
 diff --git a/chromium/config/Chrome/android/ia32/libavcodec/codec_list.c b/chromium/config/Chrome/android/ia32/libavcodec/codec_list.c
-index fe5adb0d92..c9666ae199 100644
+index fe5adb0d923..c9666ae1992 100644
 --- a/chromium/config/Chrome/android/ia32/libavcodec/codec_list.c
 +++ b/chromium/config/Chrome/android/ia32/libavcodec/codec_list.c
 @@ -14,4 +14,5 @@ static const FFCodec * const codec_list[] = {
@@ -298,7 +298,7 @@ index fe5adb0d92..c9666ae199 100644
 +    &ff_hevc_decoder,
      NULL };
 diff --git a/chromium/config/Chrome/android/ia32/libavcodec/parser_list.c b/chromium/config/Chrome/android/ia32/libavcodec/parser_list.c
-index 3e4fa9c320..c85087a596 100644
+index 3e4fa9c320e..c85087a5964 100644
 --- a/chromium/config/Chrome/android/ia32/libavcodec/parser_list.c
 +++ b/chromium/config/Chrome/android/ia32/libavcodec/parser_list.c
 @@ -6,4 +6,5 @@ static const AVCodecParser * const parser_list[] = {
@@ -308,7 +308,7 @@ index 3e4fa9c320..c85087a596 100644
 +    &ff_hevc_parser,
      NULL };
 diff --git a/chromium/config/Chrome/android/x64/config.h b/chromium/config/Chrome/android/x64/config.h
-index d8e7b4cb99..56c59160e1 100644
+index d8e7b4cb999..56c59160e1f 100644
 --- a/chromium/config/Chrome/android/x64/config.h
 +++ b/chromium/config/Chrome/android/x64/config.h
 @@ -1,7 +1,7 @@
@@ -341,7 +341,7 @@ index d8e7b4cb99..56c59160e1 100644
  #define CONFIG_HUFFMAN 0
  #define CONFIG_HUFFYUVDSP 0
 diff --git a/chromium/config/Chrome/android/x64/config_components.h b/chromium/config/Chrome/android/x64/config_components.h
-index 84ac721299..ac238182a8 100644
+index 84ac7212994..ac238182a83 100644
 --- a/chromium/config/Chrome/android/x64/config_components.h
 +++ b/chromium/config/Chrome/android/x64/config_components.h
 @@ -136,7 +136,7 @@
@@ -363,7 +363,7 @@ index 84ac721299..ac238182a8 100644
  #define CONFIG_IPU_PARSER 0
  #define CONFIG_JPEG2000_PARSER 0
 diff --git a/chromium/config/Chrome/android/x64/libavcodec/codec_list.c b/chromium/config/Chrome/android/x64/libavcodec/codec_list.c
-index fe5adb0d92..c9666ae199 100644
+index fe5adb0d923..c9666ae1992 100644
 --- a/chromium/config/Chrome/android/x64/libavcodec/codec_list.c
 +++ b/chromium/config/Chrome/android/x64/libavcodec/codec_list.c
 @@ -14,4 +14,5 @@ static const FFCodec * const codec_list[] = {
@@ -373,7 +373,7 @@ index fe5adb0d92..c9666ae199 100644
 +    &ff_hevc_decoder,
      NULL };
 diff --git a/chromium/config/Chrome/android/x64/libavcodec/parser_list.c b/chromium/config/Chrome/android/x64/libavcodec/parser_list.c
-index 3e4fa9c320..c85087a596 100644
+index 3e4fa9c320e..c85087a5964 100644
 --- a/chromium/config/Chrome/android/x64/libavcodec/parser_list.c
 +++ b/chromium/config/Chrome/android/x64/libavcodec/parser_list.c
 @@ -6,4 +6,5 @@ static const AVCodecParser * const parser_list[] = {
@@ -383,7 +383,7 @@ index 3e4fa9c320..c85087a596 100644
 +    &ff_hevc_parser,
      NULL };
 diff --git a/chromium/config/Chrome/ios/arm64/config.h b/chromium/config/Chrome/ios/arm64/config.h
-index 63e3b1dfe0..e67e864955 100644
+index 63e3b1dfe0c..e67e8649554 100644
 --- a/chromium/config/Chrome/ios/arm64/config.h
 +++ b/chromium/config/Chrome/ios/arm64/config.h
 @@ -1,7 +1,7 @@
@@ -416,7 +416,7 @@ index 63e3b1dfe0..e67e864955 100644
  #define CONFIG_HUFFMAN 0
  #define CONFIG_HUFFYUVDSP 0
 diff --git a/chromium/config/Chrome/ios/arm64/config_components.h b/chromium/config/Chrome/ios/arm64/config_components.h
-index 84ac721299..ac238182a8 100644
+index 84ac7212994..ac238182a83 100644
 --- a/chromium/config/Chrome/ios/arm64/config_components.h
 +++ b/chromium/config/Chrome/ios/arm64/config_components.h
 @@ -136,7 +136,7 @@
@@ -438,7 +438,7 @@ index 84ac721299..ac238182a8 100644
  #define CONFIG_IPU_PARSER 0
  #define CONFIG_JPEG2000_PARSER 0
 diff --git a/chromium/config/Chrome/ios/arm64/libavcodec/codec_list.c b/chromium/config/Chrome/ios/arm64/libavcodec/codec_list.c
-index fe5adb0d92..c9666ae199 100644
+index fe5adb0d923..c9666ae1992 100644
 --- a/chromium/config/Chrome/ios/arm64/libavcodec/codec_list.c
 +++ b/chromium/config/Chrome/ios/arm64/libavcodec/codec_list.c
 @@ -14,4 +14,5 @@ static const FFCodec * const codec_list[] = {
@@ -448,7 +448,7 @@ index fe5adb0d92..c9666ae199 100644
 +    &ff_hevc_decoder,
      NULL };
 diff --git a/chromium/config/Chrome/ios/arm64/libavcodec/parser_list.c b/chromium/config/Chrome/ios/arm64/libavcodec/parser_list.c
-index 3e4fa9c320..c85087a596 100644
+index 3e4fa9c320e..c85087a5964 100644
 --- a/chromium/config/Chrome/ios/arm64/libavcodec/parser_list.c
 +++ b/chromium/config/Chrome/ios/arm64/libavcodec/parser_list.c
 @@ -6,4 +6,5 @@ static const AVCodecParser * const parser_list[] = {
@@ -458,7 +458,7 @@ index 3e4fa9c320..c85087a596 100644
 +    &ff_hevc_parser,
      NULL };
 diff --git a/chromium/config/Chrome/linux/arm-neon/config.h b/chromium/config/Chrome/linux/arm-neon/config.h
-index 0ed402bb14..aa409f59a4 100644
+index 0ed402bb142..aa409f59a42 100644
 --- a/chromium/config/Chrome/linux/arm-neon/config.h
 +++ b/chromium/config/Chrome/linux/arm-neon/config.h
 @@ -1,7 +1,7 @@
@@ -491,7 +491,7 @@ index 0ed402bb14..aa409f59a4 100644
  #define CONFIG_HUFFMAN 0
  #define CONFIG_HUFFYUVDSP 0
 diff --git a/chromium/config/Chrome/linux/arm-neon/config_components.h b/chromium/config/Chrome/linux/arm-neon/config_components.h
-index 84ac721299..ac238182a8 100644
+index 84ac7212994..ac238182a83 100644
 --- a/chromium/config/Chrome/linux/arm-neon/config_components.h
 +++ b/chromium/config/Chrome/linux/arm-neon/config_components.h
 @@ -136,7 +136,7 @@
@@ -513,7 +513,7 @@ index 84ac721299..ac238182a8 100644
  #define CONFIG_IPU_PARSER 0
  #define CONFIG_JPEG2000_PARSER 0
 diff --git a/chromium/config/Chrome/linux/arm-neon/libavcodec/codec_list.c b/chromium/config/Chrome/linux/arm-neon/libavcodec/codec_list.c
-index fe5adb0d92..c9666ae199 100644
+index fe5adb0d923..c9666ae1992 100644
 --- a/chromium/config/Chrome/linux/arm-neon/libavcodec/codec_list.c
 +++ b/chromium/config/Chrome/linux/arm-neon/libavcodec/codec_list.c
 @@ -14,4 +14,5 @@ static const FFCodec * const codec_list[] = {
@@ -523,7 +523,7 @@ index fe5adb0d92..c9666ae199 100644
 +    &ff_hevc_decoder,
      NULL };
 diff --git a/chromium/config/Chrome/linux/arm-neon/libavcodec/parser_list.c b/chromium/config/Chrome/linux/arm-neon/libavcodec/parser_list.c
-index 3e4fa9c320..c85087a596 100644
+index 3e4fa9c320e..c85087a5964 100644
 --- a/chromium/config/Chrome/linux/arm-neon/libavcodec/parser_list.c
 +++ b/chromium/config/Chrome/linux/arm-neon/libavcodec/parser_list.c
 @@ -6,4 +6,5 @@ static const AVCodecParser * const parser_list[] = {
@@ -533,7 +533,7 @@ index 3e4fa9c320..c85087a596 100644
 +    &ff_hevc_parser,
      NULL };
 diff --git a/chromium/config/Chrome/linux/arm/config.h b/chromium/config/Chrome/linux/arm/config.h
-index 4f865c5413..f3ada41d1d 100644
+index 4f865c54135..f3ada41d1df 100644
 --- a/chromium/config/Chrome/linux/arm/config.h
 +++ b/chromium/config/Chrome/linux/arm/config.h
 @@ -1,7 +1,7 @@
@@ -566,7 +566,7 @@ index 4f865c5413..f3ada41d1d 100644
  #define CONFIG_HUFFMAN 0
  #define CONFIG_HUFFYUVDSP 0
 diff --git a/chromium/config/Chrome/linux/arm/config_components.h b/chromium/config/Chrome/linux/arm/config_components.h
-index 84ac721299..ac238182a8 100644
+index 84ac7212994..ac238182a83 100644
 --- a/chromium/config/Chrome/linux/arm/config_components.h
 +++ b/chromium/config/Chrome/linux/arm/config_components.h
 @@ -136,7 +136,7 @@
@@ -588,7 +588,7 @@ index 84ac721299..ac238182a8 100644
  #define CONFIG_IPU_PARSER 0
  #define CONFIG_JPEG2000_PARSER 0
 diff --git a/chromium/config/Chrome/linux/arm/libavcodec/codec_list.c b/chromium/config/Chrome/linux/arm/libavcodec/codec_list.c
-index fe5adb0d92..c9666ae199 100644
+index fe5adb0d923..c9666ae1992 100644
 --- a/chromium/config/Chrome/linux/arm/libavcodec/codec_list.c
 +++ b/chromium/config/Chrome/linux/arm/libavcodec/codec_list.c
 @@ -14,4 +14,5 @@ static const FFCodec * const codec_list[] = {
@@ -598,7 +598,7 @@ index fe5adb0d92..c9666ae199 100644
 +    &ff_hevc_decoder,
      NULL };
 diff --git a/chromium/config/Chrome/linux/arm/libavcodec/parser_list.c b/chromium/config/Chrome/linux/arm/libavcodec/parser_list.c
-index 3e4fa9c320..c85087a596 100644
+index 3e4fa9c320e..c85087a5964 100644
 --- a/chromium/config/Chrome/linux/arm/libavcodec/parser_list.c
 +++ b/chromium/config/Chrome/linux/arm/libavcodec/parser_list.c
 @@ -6,4 +6,5 @@ static const AVCodecParser * const parser_list[] = {
@@ -608,7 +608,7 @@ index 3e4fa9c320..c85087a596 100644
 +    &ff_hevc_parser,
      NULL };
 diff --git a/chromium/config/Chrome/linux/arm64/config.h b/chromium/config/Chrome/linux/arm64/config.h
-index 304b639e92..e3ab2c576f 100644
+index 304b639e924..e3ab2c576fe 100644
 --- a/chromium/config/Chrome/linux/arm64/config.h
 +++ b/chromium/config/Chrome/linux/arm64/config.h
 @@ -1,7 +1,7 @@
@@ -641,7 +641,7 @@ index 304b639e92..e3ab2c576f 100644
  #define CONFIG_HUFFMAN 0
  #define CONFIG_HUFFYUVDSP 0
 diff --git a/chromium/config/Chrome/linux/arm64/config_components.h b/chromium/config/Chrome/linux/arm64/config_components.h
-index 84ac721299..ac238182a8 100644
+index 84ac7212994..ac238182a83 100644
 --- a/chromium/config/Chrome/linux/arm64/config_components.h
 +++ b/chromium/config/Chrome/linux/arm64/config_components.h
 @@ -136,7 +136,7 @@
@@ -663,7 +663,7 @@ index 84ac721299..ac238182a8 100644
  #define CONFIG_IPU_PARSER 0
  #define CONFIG_JPEG2000_PARSER 0
 diff --git a/chromium/config/Chrome/linux/arm64/libavcodec/codec_list.c b/chromium/config/Chrome/linux/arm64/libavcodec/codec_list.c
-index fe5adb0d92..c9666ae199 100644
+index fe5adb0d923..c9666ae1992 100644
 --- a/chromium/config/Chrome/linux/arm64/libavcodec/codec_list.c
 +++ b/chromium/config/Chrome/linux/arm64/libavcodec/codec_list.c
 @@ -14,4 +14,5 @@ static const FFCodec * const codec_list[] = {
@@ -673,7 +673,7 @@ index fe5adb0d92..c9666ae199 100644
 +    &ff_hevc_decoder,
      NULL };
 diff --git a/chromium/config/Chrome/linux/arm64/libavcodec/parser_list.c b/chromium/config/Chrome/linux/arm64/libavcodec/parser_list.c
-index 3e4fa9c320..c85087a596 100644
+index 3e4fa9c320e..c85087a5964 100644
 --- a/chromium/config/Chrome/linux/arm64/libavcodec/parser_list.c
 +++ b/chromium/config/Chrome/linux/arm64/libavcodec/parser_list.c
 @@ -6,4 +6,5 @@ static const AVCodecParser * const parser_list[] = {
@@ -683,7 +683,7 @@ index 3e4fa9c320..c85087a596 100644
 +    &ff_hevc_parser,
      NULL };
 diff --git a/chromium/config/Chrome/linux/ia32/config.h b/chromium/config/Chrome/linux/ia32/config.h
-index ca34eee2d3..b3cbec84a7 100644
+index ca34eee2d36..b3cbec84a7a 100644
 --- a/chromium/config/Chrome/linux/ia32/config.h
 +++ b/chromium/config/Chrome/linux/ia32/config.h
 @@ -1,7 +1,7 @@
@@ -716,7 +716,7 @@ index ca34eee2d3..b3cbec84a7 100644
  #define CONFIG_HUFFMAN 0
  #define CONFIG_HUFFYUVDSP 0
 diff --git a/chromium/config/Chrome/linux/ia32/config_components.h b/chromium/config/Chrome/linux/ia32/config_components.h
-index 84ac721299..ac238182a8 100644
+index 84ac7212994..ac238182a83 100644
 --- a/chromium/config/Chrome/linux/ia32/config_components.h
 +++ b/chromium/config/Chrome/linux/ia32/config_components.h
 @@ -136,7 +136,7 @@
@@ -738,7 +738,7 @@ index 84ac721299..ac238182a8 100644
  #define CONFIG_IPU_PARSER 0
  #define CONFIG_JPEG2000_PARSER 0
 diff --git a/chromium/config/Chrome/linux/ia32/libavcodec/codec_list.c b/chromium/config/Chrome/linux/ia32/libavcodec/codec_list.c
-index fe5adb0d92..c9666ae199 100644
+index fe5adb0d923..c9666ae1992 100644
 --- a/chromium/config/Chrome/linux/ia32/libavcodec/codec_list.c
 +++ b/chromium/config/Chrome/linux/ia32/libavcodec/codec_list.c
 @@ -14,4 +14,5 @@ static const FFCodec * const codec_list[] = {
@@ -748,7 +748,7 @@ index fe5adb0d92..c9666ae199 100644
 +    &ff_hevc_decoder,
      NULL };
 diff --git a/chromium/config/Chrome/linux/ia32/libavcodec/parser_list.c b/chromium/config/Chrome/linux/ia32/libavcodec/parser_list.c
-index 3e4fa9c320..c85087a596 100644
+index 3e4fa9c320e..c85087a5964 100644
 --- a/chromium/config/Chrome/linux/ia32/libavcodec/parser_list.c
 +++ b/chromium/config/Chrome/linux/ia32/libavcodec/parser_list.c
 @@ -6,4 +6,5 @@ static const AVCodecParser * const parser_list[] = {
@@ -758,7 +758,7 @@ index 3e4fa9c320..c85087a596 100644
 +    &ff_hevc_parser,
      NULL };
 diff --git a/chromium/config/Chrome/linux/x64/config.h b/chromium/config/Chrome/linux/x64/config.h
-index d88c7e521a..7ece52ef7c 100644
+index d88c7e521ab..7ece52ef7c7 100644
 --- a/chromium/config/Chrome/linux/x64/config.h
 +++ b/chromium/config/Chrome/linux/x64/config.h
 @@ -1,7 +1,7 @@
@@ -791,7 +791,7 @@ index d88c7e521a..7ece52ef7c 100644
  #define CONFIG_HUFFMAN 0
  #define CONFIG_HUFFYUVDSP 0
 diff --git a/chromium/config/Chrome/linux/x64/config_components.h b/chromium/config/Chrome/linux/x64/config_components.h
-index 84ac721299..ac238182a8 100644
+index 84ac7212994..ac238182a83 100644
 --- a/chromium/config/Chrome/linux/x64/config_components.h
 +++ b/chromium/config/Chrome/linux/x64/config_components.h
 @@ -136,7 +136,7 @@
@@ -813,7 +813,7 @@ index 84ac721299..ac238182a8 100644
  #define CONFIG_IPU_PARSER 0
  #define CONFIG_JPEG2000_PARSER 0
 diff --git a/chromium/config/Chrome/linux/x64/libavcodec/codec_list.c b/chromium/config/Chrome/linux/x64/libavcodec/codec_list.c
-index fe5adb0d92..c9666ae199 100644
+index fe5adb0d923..c9666ae1992 100644
 --- a/chromium/config/Chrome/linux/x64/libavcodec/codec_list.c
 +++ b/chromium/config/Chrome/linux/x64/libavcodec/codec_list.c
 @@ -14,4 +14,5 @@ static const FFCodec * const codec_list[] = {
@@ -823,7 +823,7 @@ index fe5adb0d92..c9666ae199 100644
 +    &ff_hevc_decoder,
      NULL };
 diff --git a/chromium/config/Chrome/linux/x64/libavcodec/parser_list.c b/chromium/config/Chrome/linux/x64/libavcodec/parser_list.c
-index 3e4fa9c320..c85087a596 100644
+index 3e4fa9c320e..c85087a5964 100644
 --- a/chromium/config/Chrome/linux/x64/libavcodec/parser_list.c
 +++ b/chromium/config/Chrome/linux/x64/libavcodec/parser_list.c
 @@ -6,4 +6,5 @@ static const AVCodecParser * const parser_list[] = {
@@ -833,7 +833,7 @@ index 3e4fa9c320..c85087a596 100644
 +    &ff_hevc_parser,
      NULL };
 diff --git a/chromium/config/Chrome/mac/arm64/config.h b/chromium/config/Chrome/mac/arm64/config.h
-index 63e3b1dfe0..e67e864955 100644
+index 63e3b1dfe0c..e67e8649554 100644
 --- a/chromium/config/Chrome/mac/arm64/config.h
 +++ b/chromium/config/Chrome/mac/arm64/config.h
 @@ -1,7 +1,7 @@
@@ -866,7 +866,7 @@ index 63e3b1dfe0..e67e864955 100644
  #define CONFIG_HUFFMAN 0
  #define CONFIG_HUFFYUVDSP 0
 diff --git a/chromium/config/Chrome/mac/arm64/config_components.h b/chromium/config/Chrome/mac/arm64/config_components.h
-index 84ac721299..ac238182a8 100644
+index 84ac7212994..ac238182a83 100644
 --- a/chromium/config/Chrome/mac/arm64/config_components.h
 +++ b/chromium/config/Chrome/mac/arm64/config_components.h
 @@ -136,7 +136,7 @@
@@ -888,7 +888,7 @@ index 84ac721299..ac238182a8 100644
  #define CONFIG_IPU_PARSER 0
  #define CONFIG_JPEG2000_PARSER 0
 diff --git a/chromium/config/Chrome/mac/arm64/libavcodec/codec_list.c b/chromium/config/Chrome/mac/arm64/libavcodec/codec_list.c
-index fe5adb0d92..c9666ae199 100644
+index fe5adb0d923..c9666ae1992 100644
 --- a/chromium/config/Chrome/mac/arm64/libavcodec/codec_list.c
 +++ b/chromium/config/Chrome/mac/arm64/libavcodec/codec_list.c
 @@ -14,4 +14,5 @@ static const FFCodec * const codec_list[] = {
@@ -898,7 +898,7 @@ index fe5adb0d92..c9666ae199 100644
 +    &ff_hevc_decoder,
      NULL };
 diff --git a/chromium/config/Chrome/mac/arm64/libavcodec/parser_list.c b/chromium/config/Chrome/mac/arm64/libavcodec/parser_list.c
-index 3e4fa9c320..c85087a596 100644
+index 3e4fa9c320e..c85087a5964 100644
 --- a/chromium/config/Chrome/mac/arm64/libavcodec/parser_list.c
 +++ b/chromium/config/Chrome/mac/arm64/libavcodec/parser_list.c
 @@ -6,4 +6,5 @@ static const AVCodecParser * const parser_list[] = {
@@ -908,7 +908,7 @@ index 3e4fa9c320..c85087a596 100644
 +    &ff_hevc_parser,
      NULL };
 diff --git a/chromium/config/Chrome/mac/x64/config.asm b/chromium/config/Chrome/mac/x64/config.asm
-index 95c17be1f0..d9a8a06c89 100644
+index 95c17be1f0b..d9a8a06c891 100644
 --- a/chromium/config/Chrome/mac/x64/config.asm
 +++ b/chromium/config/Chrome/mac/x64/config.asm
 @@ -679,7 +679,7 @@
@@ -932,7 +932,7 @@ index 95c17be1f0..d9a8a06c89 100644
  %define CONFIG_HUFFMAN 0
  %define CONFIG_HUFFYUVDSP 0
 diff --git a/chromium/config/Chrome/mac/x64/config.h b/chromium/config/Chrome/mac/x64/config.h
-index 9de78c34b5..a314300084 100644
+index 9de78c34b5a..a314300084c 100644
 --- a/chromium/config/Chrome/mac/x64/config.h
 +++ b/chromium/config/Chrome/mac/x64/config.h
 @@ -1,7 +1,7 @@
@@ -965,7 +965,7 @@ index 9de78c34b5..a314300084 100644
  #define CONFIG_HUFFMAN 0
  #define CONFIG_HUFFYUVDSP 0
 diff --git a/chromium/config/Chrome/mac/x64/config_components.h b/chromium/config/Chrome/mac/x64/config_components.h
-index 84ac721299..ac238182a8 100644
+index 84ac7212994..ac238182a83 100644
 --- a/chromium/config/Chrome/mac/x64/config_components.h
 +++ b/chromium/config/Chrome/mac/x64/config_components.h
 @@ -136,7 +136,7 @@
@@ -987,7 +987,7 @@ index 84ac721299..ac238182a8 100644
  #define CONFIG_IPU_PARSER 0
  #define CONFIG_JPEG2000_PARSER 0
 diff --git a/chromium/config/Chrome/mac/x64/libavcodec/codec_list.c b/chromium/config/Chrome/mac/x64/libavcodec/codec_list.c
-index fe5adb0d92..c9666ae199 100644
+index fe5adb0d923..c9666ae1992 100644
 --- a/chromium/config/Chrome/mac/x64/libavcodec/codec_list.c
 +++ b/chromium/config/Chrome/mac/x64/libavcodec/codec_list.c
 @@ -14,4 +14,5 @@ static const FFCodec * const codec_list[] = {
@@ -997,7 +997,7 @@ index fe5adb0d92..c9666ae199 100644
 +    &ff_hevc_decoder,
      NULL };
 diff --git a/chromium/config/Chrome/mac/x64/libavcodec/parser_list.c b/chromium/config/Chrome/mac/x64/libavcodec/parser_list.c
-index 3e4fa9c320..c85087a596 100644
+index 3e4fa9c320e..c85087a5964 100644
 --- a/chromium/config/Chrome/mac/x64/libavcodec/parser_list.c
 +++ b/chromium/config/Chrome/mac/x64/libavcodec/parser_list.c
 @@ -6,4 +6,5 @@ static const AVCodecParser * const parser_list[] = {
@@ -1007,7 +1007,7 @@ index 3e4fa9c320..c85087a596 100644
 +    &ff_hevc_parser,
      NULL };
 diff --git a/chromium/config/Chrome/win-msvc/ia32/config.asm b/chromium/config/Chrome/win-msvc/ia32/config.asm
-index ac13ddabdd..1305cdb704 100644
+index ac13ddabdd3..1305cdb704e 100644
 --- a/chromium/config/Chrome/win-msvc/ia32/config.asm
 +++ b/chromium/config/Chrome/win-msvc/ia32/config.asm
 @@ -563,7 +563,7 @@
@@ -1047,7 +1047,7 @@ index ac13ddabdd..1305cdb704 100644
  %define CONFIG_MLP_PARSER 0
  %define CONFIG_MPEG4VIDEO_PARSER 0
 diff --git a/chromium/config/Chrome/win-msvc/ia32/config.h b/chromium/config/Chrome/win-msvc/ia32/config.h
-index 90497d03b1..6af10413d6 100644
+index 90497d03b1c..6af10413d6b 100644
 --- a/chromium/config/Chrome/win-msvc/ia32/config.h
 +++ b/chromium/config/Chrome/win-msvc/ia32/config.h
 @@ -1,7 +1,7 @@
@@ -1096,7 +1096,7 @@ index 90497d03b1..6af10413d6 100644
  #define CONFIG_MLP_PARSER 0
  #define CONFIG_MPEG4VIDEO_PARSER 0
 diff --git a/chromium/config/Chrome/win-msvc/ia32/libavcodec/codec_list.c b/chromium/config/Chrome/win-msvc/ia32/libavcodec/codec_list.c
-index 49f757b2d8..5ca1e9958c 100644
+index 49f757b2d86..5ca1e9958c2 100644
 --- a/chromium/config/Chrome/win-msvc/ia32/libavcodec/codec_list.c
 +++ b/chromium/config/Chrome/win-msvc/ia32/libavcodec/codec_list.c
 @@ -17,4 +17,5 @@ static const AVCodec * const codec_list[] = {
@@ -1106,7 +1106,7 @@ index 49f757b2d8..5ca1e9958c 100644
 +    &ff_hevc_decoder,
      NULL };
 diff --git a/chromium/config/Chrome/win-msvc/ia32/libavcodec/parser_list.c b/chromium/config/Chrome/win-msvc/ia32/libavcodec/parser_list.c
-index 19d670aa24..f55c2ca459 100644
+index 19d670aa24b..f55c2ca459e 100644
 --- a/chromium/config/Chrome/win-msvc/ia32/libavcodec/parser_list.c
 +++ b/chromium/config/Chrome/win-msvc/ia32/libavcodec/parser_list.c
 @@ -7,4 +7,5 @@ static const AVCodecParser * const parser_list[] = {
@@ -1116,7 +1116,7 @@ index 19d670aa24..f55c2ca459 100644
 +    &ff_hevc_parser,
      NULL };
 diff --git a/chromium/config/Chrome/win-msvc/x64/config.asm b/chromium/config/Chrome/win-msvc/x64/config.asm
-index 49d66ac57d..c3e7f4de28 100644
+index 49d66ac57d1..c3e7f4de284 100644
 --- a/chromium/config/Chrome/win-msvc/x64/config.asm
 +++ b/chromium/config/Chrome/win-msvc/x64/config.asm
 @@ -563,7 +563,7 @@
@@ -1156,7 +1156,7 @@ index 49d66ac57d..c3e7f4de28 100644
  %define CONFIG_MLP_PARSER 0
  %define CONFIG_MPEG4VIDEO_PARSER 0
 diff --git a/chromium/config/Chrome/win-msvc/x64/config.h b/chromium/config/Chrome/win-msvc/x64/config.h
-index 359682176a..95e5b1bde2 100644
+index 359682176ab..95e5b1bde28 100644
 --- a/chromium/config/Chrome/win-msvc/x64/config.h
 +++ b/chromium/config/Chrome/win-msvc/x64/config.h
 @@ -1,7 +1,7 @@
@@ -1205,7 +1205,7 @@ index 359682176a..95e5b1bde2 100644
  #define CONFIG_MLP_PARSER 0
  #define CONFIG_MPEG4VIDEO_PARSER 0
 diff --git a/chromium/config/Chrome/win-msvc/x64/libavcodec/codec_list.c b/chromium/config/Chrome/win-msvc/x64/libavcodec/codec_list.c
-index 49f757b2d8..5ca1e9958c 100644
+index 49f757b2d86..5ca1e9958c2 100644
 --- a/chromium/config/Chrome/win-msvc/x64/libavcodec/codec_list.c
 +++ b/chromium/config/Chrome/win-msvc/x64/libavcodec/codec_list.c
 @@ -17,4 +17,5 @@ static const AVCodec * const codec_list[] = {
@@ -1215,7 +1215,7 @@ index 49f757b2d8..5ca1e9958c 100644
 +    &ff_hevc_decoder,
      NULL };
 diff --git a/chromium/config/Chrome/win-msvc/x64/libavcodec/parser_list.c b/chromium/config/Chrome/win-msvc/x64/libavcodec/parser_list.c
-index 19d670aa24..f55c2ca459 100644
+index 19d670aa24b..f55c2ca459e 100644
 --- a/chromium/config/Chrome/win-msvc/x64/libavcodec/parser_list.c
 +++ b/chromium/config/Chrome/win-msvc/x64/libavcodec/parser_list.c
 @@ -7,4 +7,5 @@ static const AVCodecParser * const parser_list[] = {
@@ -1225,7 +1225,7 @@ index 19d670aa24..f55c2ca459 100644
 +    &ff_hevc_parser,
      NULL };
 diff --git a/chromium/config/Chrome/win/arm64/config.h b/chromium/config/Chrome/win/arm64/config.h
-index f2c136b5f7..b3f9f29c7d 100644
+index f2c136b5f74..b3f9f29c7d0 100644
 --- a/chromium/config/Chrome/win/arm64/config.h
 +++ b/chromium/config/Chrome/win/arm64/config.h
 @@ -1,7 +1,7 @@
@@ -1258,7 +1258,7 @@ index f2c136b5f7..b3f9f29c7d 100644
  #define CONFIG_HUFFMAN 0
  #define CONFIG_HUFFYUVDSP 0
 diff --git a/chromium/config/Chrome/win/arm64/config_components.h b/chromium/config/Chrome/win/arm64/config_components.h
-index 84ac721299..ac238182a8 100644
+index 84ac7212994..ac238182a83 100644
 --- a/chromium/config/Chrome/win/arm64/config_components.h
 +++ b/chromium/config/Chrome/win/arm64/config_components.h
 @@ -136,7 +136,7 @@
@@ -1280,7 +1280,7 @@ index 84ac721299..ac238182a8 100644
  #define CONFIG_IPU_PARSER 0
  #define CONFIG_JPEG2000_PARSER 0
 diff --git a/chromium/config/Chrome/win/arm64/libavcodec/codec_list.c b/chromium/config/Chrome/win/arm64/libavcodec/codec_list.c
-index fe5adb0d92..c9666ae199 100644
+index fe5adb0d923..c9666ae1992 100644
 --- a/chromium/config/Chrome/win/arm64/libavcodec/codec_list.c
 +++ b/chromium/config/Chrome/win/arm64/libavcodec/codec_list.c
 @@ -14,4 +14,5 @@ static const FFCodec * const codec_list[] = {
@@ -1290,7 +1290,7 @@ index fe5adb0d92..c9666ae199 100644
 +    &ff_hevc_decoder,
      NULL };
 diff --git a/chromium/config/Chrome/win/arm64/libavcodec/parser_list.c b/chromium/config/Chrome/win/arm64/libavcodec/parser_list.c
-index 3e4fa9c320..c85087a596 100644
+index 3e4fa9c320e..c85087a5964 100644
 --- a/chromium/config/Chrome/win/arm64/libavcodec/parser_list.c
 +++ b/chromium/config/Chrome/win/arm64/libavcodec/parser_list.c
 @@ -6,4 +6,5 @@ static const AVCodecParser * const parser_list[] = {
@@ -1300,7 +1300,7 @@ index 3e4fa9c320..c85087a596 100644
 +    &ff_hevc_parser,
      NULL };
 diff --git a/chromium/config/Chrome/win/ia32/config.asm b/chromium/config/Chrome/win/ia32/config.asm
-index 0d5607b863..f9e397ffd5 100644
+index 0d5607b8630..f9e397ffd52 100644
 --- a/chromium/config/Chrome/win/ia32/config.asm
 +++ b/chromium/config/Chrome/win/ia32/config.asm
 @@ -679,7 +679,7 @@
@@ -1324,7 +1324,7 @@ index 0d5607b863..f9e397ffd5 100644
  %define CONFIG_HUFFMAN 0
  %define CONFIG_HUFFYUVDSP 0
 diff --git a/chromium/config/Chrome/win/ia32/config.h b/chromium/config/Chrome/win/ia32/config.h
-index 17c8ad1e7e..7d037106cc 100644
+index 17c8ad1e7ee..7d037106cce 100644
 --- a/chromium/config/Chrome/win/ia32/config.h
 +++ b/chromium/config/Chrome/win/ia32/config.h
 @@ -1,7 +1,7 @@
@@ -1357,7 +1357,7 @@ index 17c8ad1e7e..7d037106cc 100644
  #define CONFIG_HUFFMAN 0
  #define CONFIG_HUFFYUVDSP 0
 diff --git a/chromium/config/Chrome/win/ia32/config_components.h b/chromium/config/Chrome/win/ia32/config_components.h
-index 84ac721299..ac238182a8 100644
+index 84ac7212994..ac238182a83 100644
 --- a/chromium/config/Chrome/win/ia32/config_components.h
 +++ b/chromium/config/Chrome/win/ia32/config_components.h
 @@ -136,7 +136,7 @@
@@ -1379,7 +1379,7 @@ index 84ac721299..ac238182a8 100644
  #define CONFIG_IPU_PARSER 0
  #define CONFIG_JPEG2000_PARSER 0
 diff --git a/chromium/config/Chrome/win/ia32/libavcodec/codec_list.c b/chromium/config/Chrome/win/ia32/libavcodec/codec_list.c
-index fe5adb0d92..c9666ae199 100644
+index fe5adb0d923..c9666ae1992 100644
 --- a/chromium/config/Chrome/win/ia32/libavcodec/codec_list.c
 +++ b/chromium/config/Chrome/win/ia32/libavcodec/codec_list.c
 @@ -14,4 +14,5 @@ static const FFCodec * const codec_list[] = {
@@ -1389,7 +1389,7 @@ index fe5adb0d92..c9666ae199 100644
 +    &ff_hevc_decoder,
      NULL };
 diff --git a/chromium/config/Chrome/win/ia32/libavcodec/parser_list.c b/chromium/config/Chrome/win/ia32/libavcodec/parser_list.c
-index 3e4fa9c320..c85087a596 100644
+index 3e4fa9c320e..c85087a5964 100644
 --- a/chromium/config/Chrome/win/ia32/libavcodec/parser_list.c
 +++ b/chromium/config/Chrome/win/ia32/libavcodec/parser_list.c
 @@ -6,4 +6,5 @@ static const AVCodecParser * const parser_list[] = {
@@ -1399,7 +1399,7 @@ index 3e4fa9c320..c85087a596 100644
 +    &ff_hevc_parser,
      NULL };
 diff --git a/chromium/config/Chrome/win/x64/config.asm b/chromium/config/Chrome/win/x64/config.asm
-index 181dc5111e..efee75bf18 100644
+index 181dc5111eb..efee75bf183 100644
 --- a/chromium/config/Chrome/win/x64/config.asm
 +++ b/chromium/config/Chrome/win/x64/config.asm
 @@ -679,7 +679,7 @@
@@ -1423,7 +1423,7 @@ index 181dc5111e..efee75bf18 100644
  %define CONFIG_HUFFMAN 0
  %define CONFIG_HUFFYUVDSP 0
 diff --git a/chromium/config/Chrome/win/x64/config.h b/chromium/config/Chrome/win/x64/config.h
-index 9e9733639f..fcbb52b85c 100644
+index 9e9733639f0..fcbb52b85cc 100644
 --- a/chromium/config/Chrome/win/x64/config.h
 +++ b/chromium/config/Chrome/win/x64/config.h
 @@ -1,7 +1,7 @@
@@ -1456,7 +1456,7 @@ index 9e9733639f..fcbb52b85c 100644
  #define CONFIG_HUFFMAN 0
  #define CONFIG_HUFFYUVDSP 0
 diff --git a/chromium/config/Chrome/win/x64/config_components.h b/chromium/config/Chrome/win/x64/config_components.h
-index 84ac721299..ac238182a8 100644
+index 84ac7212994..ac238182a83 100644
 --- a/chromium/config/Chrome/win/x64/config_components.h
 +++ b/chromium/config/Chrome/win/x64/config_components.h
 @@ -136,7 +136,7 @@
@@ -1478,7 +1478,7 @@ index 84ac721299..ac238182a8 100644
  #define CONFIG_IPU_PARSER 0
  #define CONFIG_JPEG2000_PARSER 0
 diff --git a/chromium/config/Chrome/win/x64/libavcodec/codec_list.c b/chromium/config/Chrome/win/x64/libavcodec/codec_list.c
-index fe5adb0d92..c9666ae199 100644
+index fe5adb0d923..c9666ae1992 100644
 --- a/chromium/config/Chrome/win/x64/libavcodec/codec_list.c
 +++ b/chromium/config/Chrome/win/x64/libavcodec/codec_list.c
 @@ -14,4 +14,5 @@ static const FFCodec * const codec_list[] = {
@@ -1488,7 +1488,7 @@ index fe5adb0d92..c9666ae199 100644
 +    &ff_hevc_decoder,
      NULL };
 diff --git a/chromium/config/Chrome/win/x64/libavcodec/parser_list.c b/chromium/config/Chrome/win/x64/libavcodec/parser_list.c
-index 3e4fa9c320..c85087a596 100644
+index 3e4fa9c320e..c85087a5964 100644
 --- a/chromium/config/Chrome/win/x64/libavcodec/parser_list.c
 +++ b/chromium/config/Chrome/win/x64/libavcodec/parser_list.c
 @@ -6,4 +6,5 @@ static const AVCodecParser * const parser_list[] = {
@@ -1498,7 +1498,7 @@ index 3e4fa9c320..c85087a596 100644
 +    &ff_hevc_parser,
      NULL };
 diff --git a/chromium/config/Chromium/android/arm64/config.h b/chromium/config/Chromium/android/arm64/config.h
-index 9e3fa09a76..ed1b68d4b8 100644
+index 9e3fa09a762..ed1b68d4b83 100644
 --- a/chromium/config/Chromium/android/arm64/config.h
 +++ b/chromium/config/Chromium/android/arm64/config.h
 @@ -694,7 +694,7 @@
@@ -1522,7 +1522,7 @@ index 9e3fa09a76..ed1b68d4b8 100644
  #define CONFIG_HUFFMAN 0
  #define CONFIG_HUFFYUVDSP 0
 diff --git a/chromium/config/Chromium/android/arm64/config_components.h b/chromium/config/Chromium/android/arm64/config_components.h
-index 3cded95c5e..d9ce4ee3bd 100644
+index 3cded95c5ea..d9ce4ee3bd4 100644
 --- a/chromium/config/Chromium/android/arm64/config_components.h
 +++ b/chromium/config/Chromium/android/arm64/config_components.h
 @@ -136,7 +136,7 @@
@@ -1544,7 +1544,7 @@ index 3cded95c5e..d9ce4ee3bd 100644
  #define CONFIG_IPU_PARSER 0
  #define CONFIG_JPEG2000_PARSER 0
 diff --git a/chromium/config/Chromium/android/arm64/libavcodec/codec_list.c b/chromium/config/Chromium/android/arm64/libavcodec/codec_list.c
-index 7d9debfe61..f9faf1d332 100644
+index 7d9debfe612..f9faf1d3320 100644
 --- a/chromium/config/Chromium/android/arm64/libavcodec/codec_list.c
 +++ b/chromium/config/Chromium/android/arm64/libavcodec/codec_list.c
 @@ -12,4 +12,5 @@ static const FFCodec * const codec_list[] = {
@@ -1554,7 +1554,7 @@ index 7d9debfe61..f9faf1d332 100644
 +    &ff_hevc_decoder,
      NULL };
 diff --git a/chromium/config/Chromium/android/arm64/libavcodec/parser_list.c b/chromium/config/Chromium/android/arm64/libavcodec/parser_list.c
-index fdc533b38f..520472e237 100644
+index fdc533b38ff..520472e2373 100644
 --- a/chromium/config/Chromium/android/arm64/libavcodec/parser_list.c
 +++ b/chromium/config/Chromium/android/arm64/libavcodec/parser_list.c
 @@ -4,4 +4,5 @@ static const AVCodecParser * const parser_list[] = {
@@ -1564,7 +1564,7 @@ index fdc533b38f..520472e237 100644
 +    &ff_hevc_parser,
      NULL };
 diff --git a/chromium/config/Chromium/android/ia32/config.h b/chromium/config/Chromium/android/ia32/config.h
-index 049332a3c1..bbfd7b216c 100644
+index 049332a3c19..bbfd7b216c2 100644
 --- a/chromium/config/Chromium/android/ia32/config.h
 +++ b/chromium/config/Chromium/android/ia32/config.h
 @@ -693,7 +693,7 @@
@@ -1588,7 +1588,7 @@ index 049332a3c1..bbfd7b216c 100644
  #define CONFIG_HUFFMAN 0
  #define CONFIG_HUFFYUVDSP 0
 diff --git a/chromium/config/Chromium/android/ia32/config_components.h b/chromium/config/Chromium/android/ia32/config_components.h
-index 3cded95c5e..d9ce4ee3bd 100644
+index 3cded95c5ea..d9ce4ee3bd4 100644
 --- a/chromium/config/Chromium/android/ia32/config_components.h
 +++ b/chromium/config/Chromium/android/ia32/config_components.h
 @@ -136,7 +136,7 @@
@@ -1610,7 +1610,7 @@ index 3cded95c5e..d9ce4ee3bd 100644
  #define CONFIG_IPU_PARSER 0
  #define CONFIG_JPEG2000_PARSER 0
 diff --git a/chromium/config/Chromium/android/ia32/libavcodec/codec_list.c b/chromium/config/Chromium/android/ia32/libavcodec/codec_list.c
-index 7d9debfe61..f9faf1d332 100644
+index 7d9debfe612..f9faf1d3320 100644
 --- a/chromium/config/Chromium/android/ia32/libavcodec/codec_list.c
 +++ b/chromium/config/Chromium/android/ia32/libavcodec/codec_list.c
 @@ -12,4 +12,5 @@ static const FFCodec * const codec_list[] = {
@@ -1620,7 +1620,7 @@ index 7d9debfe61..f9faf1d332 100644
 +    &ff_hevc_decoder,
      NULL };
 diff --git a/chromium/config/Chromium/android/ia32/libavcodec/parser_list.c b/chromium/config/Chromium/android/ia32/libavcodec/parser_list.c
-index fdc533b38f..520472e237 100644
+index fdc533b38ff..520472e2373 100644
 --- a/chromium/config/Chromium/android/ia32/libavcodec/parser_list.c
 +++ b/chromium/config/Chromium/android/ia32/libavcodec/parser_list.c
 @@ -4,4 +4,5 @@ static const AVCodecParser * const parser_list[] = {
@@ -1630,7 +1630,7 @@ index fdc533b38f..520472e237 100644
 +    &ff_hevc_parser,
      NULL };
 diff --git a/chromium/config/Chromium/android/x64/config.h b/chromium/config/Chromium/android/x64/config.h
-index 58bb38a5c4..219b2f312c 100644
+index 58bb38a5c47..219b2f312c0 100644
 --- a/chromium/config/Chromium/android/x64/config.h
 +++ b/chromium/config/Chromium/android/x64/config.h
 @@ -693,7 +693,7 @@
@@ -1654,7 +1654,7 @@ index 58bb38a5c4..219b2f312c 100644
  #define CONFIG_HUFFMAN 0
  #define CONFIG_HUFFYUVDSP 0
 diff --git a/chromium/config/Chromium/android/x64/config_components.h b/chromium/config/Chromium/android/x64/config_components.h
-index 3cded95c5e..d9ce4ee3bd 100644
+index 3cded95c5ea..d9ce4ee3bd4 100644
 --- a/chromium/config/Chromium/android/x64/config_components.h
 +++ b/chromium/config/Chromium/android/x64/config_components.h
 @@ -136,7 +136,7 @@
@@ -1676,7 +1676,7 @@ index 3cded95c5e..d9ce4ee3bd 100644
  #define CONFIG_IPU_PARSER 0
  #define CONFIG_JPEG2000_PARSER 0
 diff --git a/chromium/config/Chromium/android/x64/libavcodec/codec_list.c b/chromium/config/Chromium/android/x64/libavcodec/codec_list.c
-index 7d9debfe61..f9faf1d332 100644
+index 7d9debfe612..f9faf1d3320 100644
 --- a/chromium/config/Chromium/android/x64/libavcodec/codec_list.c
 +++ b/chromium/config/Chromium/android/x64/libavcodec/codec_list.c
 @@ -12,4 +12,5 @@ static const FFCodec * const codec_list[] = {
@@ -1686,7 +1686,7 @@ index 7d9debfe61..f9faf1d332 100644
 +    &ff_hevc_decoder,
      NULL };
 diff --git a/chromium/config/Chromium/android/x64/libavcodec/parser_list.c b/chromium/config/Chromium/android/x64/libavcodec/parser_list.c
-index fdc533b38f..520472e237 100644
+index fdc533b38ff..520472e2373 100644
 --- a/chromium/config/Chromium/android/x64/libavcodec/parser_list.c
 +++ b/chromium/config/Chromium/android/x64/libavcodec/parser_list.c
 @@ -4,4 +4,5 @@ static const AVCodecParser * const parser_list[] = {
@@ -1696,7 +1696,7 @@ index fdc533b38f..520472e237 100644
 +    &ff_hevc_parser,
      NULL };
 diff --git a/chromium/config/Chromium/ios/arm64/config.h b/chromium/config/Chromium/ios/arm64/config.h
-index 7e77f86f34..64d831a738 100644
+index 7e77f86f34d..64d831a738f 100644
 --- a/chromium/config/Chromium/ios/arm64/config.h
 +++ b/chromium/config/Chromium/ios/arm64/config.h
 @@ -694,7 +694,7 @@
@@ -1720,7 +1720,7 @@ index 7e77f86f34..64d831a738 100644
  #define CONFIG_HUFFMAN 0
  #define CONFIG_HUFFYUVDSP 0
 diff --git a/chromium/config/Chromium/ios/arm64/config_components.h b/chromium/config/Chromium/ios/arm64/config_components.h
-index 3cded95c5e..d9ce4ee3bd 100644
+index 3cded95c5ea..d9ce4ee3bd4 100644
 --- a/chromium/config/Chromium/ios/arm64/config_components.h
 +++ b/chromium/config/Chromium/ios/arm64/config_components.h
 @@ -136,7 +136,7 @@
@@ -1742,7 +1742,7 @@ index 3cded95c5e..d9ce4ee3bd 100644
  #define CONFIG_IPU_PARSER 0
  #define CONFIG_JPEG2000_PARSER 0
 diff --git a/chromium/config/Chromium/ios/arm64/libavcodec/codec_list.c b/chromium/config/Chromium/ios/arm64/libavcodec/codec_list.c
-index 7d9debfe61..f9faf1d332 100644
+index 7d9debfe612..f9faf1d3320 100644
 --- a/chromium/config/Chromium/ios/arm64/libavcodec/codec_list.c
 +++ b/chromium/config/Chromium/ios/arm64/libavcodec/codec_list.c
 @@ -12,4 +12,5 @@ static const FFCodec * const codec_list[] = {
@@ -1752,7 +1752,7 @@ index 7d9debfe61..f9faf1d332 100644
 +    &ff_hevc_decoder,
      NULL };
 diff --git a/chromium/config/Chromium/ios/arm64/libavcodec/parser_list.c b/chromium/config/Chromium/ios/arm64/libavcodec/parser_list.c
-index fdc533b38f..520472e237 100644
+index fdc533b38ff..520472e2373 100644
 --- a/chromium/config/Chromium/ios/arm64/libavcodec/parser_list.c
 +++ b/chromium/config/Chromium/ios/arm64/libavcodec/parser_list.c
 @@ -4,4 +4,5 @@ static const AVCodecParser * const parser_list[] = {
@@ -1762,7 +1762,7 @@ index fdc533b38f..520472e237 100644
 +    &ff_hevc_parser,
      NULL };
 diff --git a/chromium/config/Chromium/linux-noasm/x64/config.h b/chromium/config/Chromium/linux-noasm/x64/config.h
-index 118a919d4f..5e4cbefad7 100644
+index 118a919d4f1..5e4cbefad72 100644
 --- a/chromium/config/Chromium/linux-noasm/x64/config.h
 +++ b/chromium/config/Chromium/linux-noasm/x64/config.h
 @@ -693,7 +693,7 @@
@@ -1786,7 +1786,7 @@ index 118a919d4f..5e4cbefad7 100644
  #define CONFIG_HUFFMAN 0
  #define CONFIG_HUFFYUVDSP 0
 diff --git a/chromium/config/Chromium/linux-noasm/x64/config_components.h b/chromium/config/Chromium/linux-noasm/x64/config_components.h
-index 3cded95c5e..d9ce4ee3bd 100644
+index 3cded95c5ea..d9ce4ee3bd4 100644
 --- a/chromium/config/Chromium/linux-noasm/x64/config_components.h
 +++ b/chromium/config/Chromium/linux-noasm/x64/config_components.h
 @@ -136,7 +136,7 @@
@@ -1808,7 +1808,7 @@ index 3cded95c5e..d9ce4ee3bd 100644
  #define CONFIG_IPU_PARSER 0
  #define CONFIG_JPEG2000_PARSER 0
 diff --git a/chromium/config/Chromium/linux-noasm/x64/libavcodec/codec_list.c b/chromium/config/Chromium/linux-noasm/x64/libavcodec/codec_list.c
-index 7d9debfe61..f9faf1d332 100644
+index 7d9debfe612..f9faf1d3320 100644
 --- a/chromium/config/Chromium/linux-noasm/x64/libavcodec/codec_list.c
 +++ b/chromium/config/Chromium/linux-noasm/x64/libavcodec/codec_list.c
 @@ -12,4 +12,5 @@ static const FFCodec * const codec_list[] = {
@@ -1818,7 +1818,7 @@ index 7d9debfe61..f9faf1d332 100644
 +    &ff_hevc_decoder,
      NULL };
 diff --git a/chromium/config/Chromium/linux-noasm/x64/libavcodec/parser_list.c b/chromium/config/Chromium/linux-noasm/x64/libavcodec/parser_list.c
-index fdc533b38f..520472e237 100644
+index fdc533b38ff..520472e2373 100644
 --- a/chromium/config/Chromium/linux-noasm/x64/libavcodec/parser_list.c
 +++ b/chromium/config/Chromium/linux-noasm/x64/libavcodec/parser_list.c
 @@ -4,4 +4,5 @@ static const AVCodecParser * const parser_list[] = {
@@ -1828,7 +1828,7 @@ index fdc533b38f..520472e237 100644
 +    &ff_hevc_parser,
      NULL };
 diff --git a/chromium/config/Chromium/linux/arm-neon/config.h b/chromium/config/Chromium/linux/arm-neon/config.h
-index 059ab28097..2900e4c0fe 100644
+index 059ab280971..2900e4c0fec 100644
 --- a/chromium/config/Chromium/linux/arm-neon/config.h
 +++ b/chromium/config/Chromium/linux/arm-neon/config.h
 @@ -693,7 +693,7 @@
@@ -1852,7 +1852,7 @@ index 059ab28097..2900e4c0fe 100644
  #define CONFIG_HUFFMAN 0
  #define CONFIG_HUFFYUVDSP 0
 diff --git a/chromium/config/Chromium/linux/arm-neon/config_components.h b/chromium/config/Chromium/linux/arm-neon/config_components.h
-index 3cded95c5e..d9ce4ee3bd 100644
+index 3cded95c5ea..d9ce4ee3bd4 100644
 --- a/chromium/config/Chromium/linux/arm-neon/config_components.h
 +++ b/chromium/config/Chromium/linux/arm-neon/config_components.h
 @@ -136,7 +136,7 @@
@@ -1874,7 +1874,7 @@ index 3cded95c5e..d9ce4ee3bd 100644
  #define CONFIG_IPU_PARSER 0
  #define CONFIG_JPEG2000_PARSER 0
 diff --git a/chromium/config/Chromium/linux/arm-neon/libavcodec/codec_list.c b/chromium/config/Chromium/linux/arm-neon/libavcodec/codec_list.c
-index 7d9debfe61..f9faf1d332 100644
+index 7d9debfe612..f9faf1d3320 100644
 --- a/chromium/config/Chromium/linux/arm-neon/libavcodec/codec_list.c
 +++ b/chromium/config/Chromium/linux/arm-neon/libavcodec/codec_list.c
 @@ -12,4 +12,5 @@ static const FFCodec * const codec_list[] = {
@@ -1884,7 +1884,7 @@ index 7d9debfe61..f9faf1d332 100644
 +    &ff_hevc_decoder,
      NULL };
 diff --git a/chromium/config/Chromium/linux/arm-neon/libavcodec/parser_list.c b/chromium/config/Chromium/linux/arm-neon/libavcodec/parser_list.c
-index fdc533b38f..520472e237 100644
+index fdc533b38ff..520472e2373 100644
 --- a/chromium/config/Chromium/linux/arm-neon/libavcodec/parser_list.c
 +++ b/chromium/config/Chromium/linux/arm-neon/libavcodec/parser_list.c
 @@ -4,4 +4,5 @@ static const AVCodecParser * const parser_list[] = {
@@ -1894,7 +1894,7 @@ index fdc533b38f..520472e237 100644
 +    &ff_hevc_parser,
      NULL };
 diff --git a/chromium/config/Chromium/linux/arm/config.h b/chromium/config/Chromium/linux/arm/config.h
-index 537e879629..f022731a14 100644
+index 537e879629b..f022731a147 100644
 --- a/chromium/config/Chromium/linux/arm/config.h
 +++ b/chromium/config/Chromium/linux/arm/config.h
 @@ -693,7 +693,7 @@
@@ -1918,7 +1918,7 @@ index 537e879629..f022731a14 100644
  #define CONFIG_HUFFMAN 0
  #define CONFIG_HUFFYUVDSP 0
 diff --git a/chromium/config/Chromium/linux/arm/config_components.h b/chromium/config/Chromium/linux/arm/config_components.h
-index 3cded95c5e..d9ce4ee3bd 100644
+index 3cded95c5ea..d9ce4ee3bd4 100644
 --- a/chromium/config/Chromium/linux/arm/config_components.h
 +++ b/chromium/config/Chromium/linux/arm/config_components.h
 @@ -136,7 +136,7 @@
@@ -1940,7 +1940,7 @@ index 3cded95c5e..d9ce4ee3bd 100644
  #define CONFIG_IPU_PARSER 0
  #define CONFIG_JPEG2000_PARSER 0
 diff --git a/chromium/config/Chromium/linux/arm/libavcodec/codec_list.c b/chromium/config/Chromium/linux/arm/libavcodec/codec_list.c
-index 7d9debfe61..f9faf1d332 100644
+index 7d9debfe612..f9faf1d3320 100644
 --- a/chromium/config/Chromium/linux/arm/libavcodec/codec_list.c
 +++ b/chromium/config/Chromium/linux/arm/libavcodec/codec_list.c
 @@ -12,4 +12,5 @@ static const FFCodec * const codec_list[] = {
@@ -1950,7 +1950,7 @@ index 7d9debfe61..f9faf1d332 100644
 +    &ff_hevc_decoder,
      NULL };
 diff --git a/chromium/config/Chromium/linux/arm/libavcodec/parser_list.c b/chromium/config/Chromium/linux/arm/libavcodec/parser_list.c
-index fdc533b38f..520472e237 100644
+index fdc533b38ff..520472e2373 100644
 --- a/chromium/config/Chromium/linux/arm/libavcodec/parser_list.c
 +++ b/chromium/config/Chromium/linux/arm/libavcodec/parser_list.c
 @@ -4,4 +4,5 @@ static const AVCodecParser * const parser_list[] = {
@@ -1960,7 +1960,7 @@ index fdc533b38f..520472e237 100644
 +    &ff_hevc_parser,
      NULL };
 diff --git a/chromium/config/Chromium/linux/arm64/config.h b/chromium/config/Chromium/linux/arm64/config.h
-index b487a78e6b..28265ee2a8 100644
+index b487a78e6b3..28265ee2a81 100644
 --- a/chromium/config/Chromium/linux/arm64/config.h
 +++ b/chromium/config/Chromium/linux/arm64/config.h
 @@ -694,7 +694,7 @@
@@ -1984,7 +1984,7 @@ index b487a78e6b..28265ee2a8 100644
  #define CONFIG_HUFFMAN 0
  #define CONFIG_HUFFYUVDSP 0
 diff --git a/chromium/config/Chromium/linux/arm64/config_components.h b/chromium/config/Chromium/linux/arm64/config_components.h
-index 3cded95c5e..d9ce4ee3bd 100644
+index 3cded95c5ea..d9ce4ee3bd4 100644
 --- a/chromium/config/Chromium/linux/arm64/config_components.h
 +++ b/chromium/config/Chromium/linux/arm64/config_components.h
 @@ -136,7 +136,7 @@
@@ -2006,7 +2006,7 @@ index 3cded95c5e..d9ce4ee3bd 100644
  #define CONFIG_IPU_PARSER 0
  #define CONFIG_JPEG2000_PARSER 0
 diff --git a/chromium/config/Chromium/linux/arm64/libavcodec/codec_list.c b/chromium/config/Chromium/linux/arm64/libavcodec/codec_list.c
-index 7d9debfe61..f9faf1d332 100644
+index 7d9debfe612..f9faf1d3320 100644
 --- a/chromium/config/Chromium/linux/arm64/libavcodec/codec_list.c
 +++ b/chromium/config/Chromium/linux/arm64/libavcodec/codec_list.c
 @@ -12,4 +12,5 @@ static const FFCodec * const codec_list[] = {
@@ -2016,7 +2016,7 @@ index 7d9debfe61..f9faf1d332 100644
 +    &ff_hevc_decoder,
      NULL };
 diff --git a/chromium/config/Chromium/linux/arm64/libavcodec/parser_list.c b/chromium/config/Chromium/linux/arm64/libavcodec/parser_list.c
-index fdc533b38f..520472e237 100644
+index fdc533b38ff..520472e2373 100644
 --- a/chromium/config/Chromium/linux/arm64/libavcodec/parser_list.c
 +++ b/chromium/config/Chromium/linux/arm64/libavcodec/parser_list.c
 @@ -4,4 +4,5 @@ static const AVCodecParser * const parser_list[] = {
@@ -2026,7 +2026,7 @@ index fdc533b38f..520472e237 100644
 +    &ff_hevc_parser,
      NULL };
 diff --git a/chromium/config/Chromium/linux/ia32/config.h b/chromium/config/Chromium/linux/ia32/config.h
-index c1c00ea28e..e7c5953228 100644
+index c1c00ea28e9..e7c59532283 100644
 --- a/chromium/config/Chromium/linux/ia32/config.h
 +++ b/chromium/config/Chromium/linux/ia32/config.h
 @@ -693,7 +693,7 @@
@@ -2050,7 +2050,7 @@ index c1c00ea28e..e7c5953228 100644
  #define CONFIG_HUFFMAN 0
  #define CONFIG_HUFFYUVDSP 0
 diff --git a/chromium/config/Chromium/linux/ia32/config_components.h b/chromium/config/Chromium/linux/ia32/config_components.h
-index 3cded95c5e..d9ce4ee3bd 100644
+index 3cded95c5ea..d9ce4ee3bd4 100644
 --- a/chromium/config/Chromium/linux/ia32/config_components.h
 +++ b/chromium/config/Chromium/linux/ia32/config_components.h
 @@ -136,7 +136,7 @@
@@ -2072,7 +2072,7 @@ index 3cded95c5e..d9ce4ee3bd 100644
  #define CONFIG_IPU_PARSER 0
  #define CONFIG_JPEG2000_PARSER 0
 diff --git a/chromium/config/Chromium/linux/ia32/libavcodec/codec_list.c b/chromium/config/Chromium/linux/ia32/libavcodec/codec_list.c
-index 7d9debfe61..f9faf1d332 100644
+index 7d9debfe612..f9faf1d3320 100644
 --- a/chromium/config/Chromium/linux/ia32/libavcodec/codec_list.c
 +++ b/chromium/config/Chromium/linux/ia32/libavcodec/codec_list.c
 @@ -12,4 +12,5 @@ static const FFCodec * const codec_list[] = {
@@ -2082,7 +2082,7 @@ index 7d9debfe61..f9faf1d332 100644
 +    &ff_hevc_decoder,
      NULL };
 diff --git a/chromium/config/Chromium/linux/ia32/libavcodec/parser_list.c b/chromium/config/Chromium/linux/ia32/libavcodec/parser_list.c
-index fdc533b38f..520472e237 100644
+index fdc533b38ff..520472e2373 100644
 --- a/chromium/config/Chromium/linux/ia32/libavcodec/parser_list.c
 +++ b/chromium/config/Chromium/linux/ia32/libavcodec/parser_list.c
 @@ -4,4 +4,5 @@ static const AVCodecParser * const parser_list[] = {
@@ -2092,7 +2092,7 @@ index fdc533b38f..520472e237 100644
 +    &ff_hevc_parser,
      NULL };
 diff --git a/chromium/config/Chromium/linux/x64/config.h b/chromium/config/Chromium/linux/x64/config.h
-index f5326e13ba..80d8f757a2 100644
+index f5326e13bac..80d8f757a21 100644
 --- a/chromium/config/Chromium/linux/x64/config.h
 +++ b/chromium/config/Chromium/linux/x64/config.h
 @@ -693,7 +693,7 @@
@@ -2116,7 +2116,7 @@ index f5326e13ba..80d8f757a2 100644
  #define CONFIG_HUFFMAN 0
  #define CONFIG_HUFFYUVDSP 0
 diff --git a/chromium/config/Chromium/linux/x64/config_components.h b/chromium/config/Chromium/linux/x64/config_components.h
-index 3cded95c5e..d9ce4ee3bd 100644
+index 3cded95c5ea..d9ce4ee3bd4 100644
 --- a/chromium/config/Chromium/linux/x64/config_components.h
 +++ b/chromium/config/Chromium/linux/x64/config_components.h
 @@ -136,7 +136,7 @@
@@ -2138,7 +2138,7 @@ index 3cded95c5e..d9ce4ee3bd 100644
  #define CONFIG_IPU_PARSER 0
  #define CONFIG_JPEG2000_PARSER 0
 diff --git a/chromium/config/Chromium/linux/x64/libavcodec/codec_list.c b/chromium/config/Chromium/linux/x64/libavcodec/codec_list.c
-index 7d9debfe61..f9faf1d332 100644
+index 7d9debfe612..f9faf1d3320 100644
 --- a/chromium/config/Chromium/linux/x64/libavcodec/codec_list.c
 +++ b/chromium/config/Chromium/linux/x64/libavcodec/codec_list.c
 @@ -12,4 +12,5 @@ static const FFCodec * const codec_list[] = {
@@ -2148,7 +2148,7 @@ index 7d9debfe61..f9faf1d332 100644
 +    &ff_hevc_decoder,
      NULL };
 diff --git a/chromium/config/Chromium/linux/x64/libavcodec/parser_list.c b/chromium/config/Chromium/linux/x64/libavcodec/parser_list.c
-index fdc533b38f..520472e237 100644
+index fdc533b38ff..520472e2373 100644
 --- a/chromium/config/Chromium/linux/x64/libavcodec/parser_list.c
 +++ b/chromium/config/Chromium/linux/x64/libavcodec/parser_list.c
 @@ -4,4 +4,5 @@ static const AVCodecParser * const parser_list[] = {
@@ -2158,7 +2158,7 @@ index fdc533b38f..520472e237 100644
 +    &ff_hevc_parser,
      NULL };
 diff --git a/chromium/config/Chromium/mac/arm64/config.h b/chromium/config/Chromium/mac/arm64/config.h
-index 7e77f86f34..64d831a738 100644
+index 7e77f86f34d..64d831a738f 100644
 --- a/chromium/config/Chromium/mac/arm64/config.h
 +++ b/chromium/config/Chromium/mac/arm64/config.h
 @@ -694,7 +694,7 @@
@@ -2182,7 +2182,7 @@ index 7e77f86f34..64d831a738 100644
  #define CONFIG_HUFFMAN 0
  #define CONFIG_HUFFYUVDSP 0
 diff --git a/chromium/config/Chromium/mac/arm64/config_components.h b/chromium/config/Chromium/mac/arm64/config_components.h
-index 3cded95c5e..d9ce4ee3bd 100644
+index 3cded95c5ea..d9ce4ee3bd4 100644
 --- a/chromium/config/Chromium/mac/arm64/config_components.h
 +++ b/chromium/config/Chromium/mac/arm64/config_components.h
 @@ -136,7 +136,7 @@
@@ -2204,7 +2204,7 @@ index 3cded95c5e..d9ce4ee3bd 100644
  #define CONFIG_IPU_PARSER 0
  #define CONFIG_JPEG2000_PARSER 0
 diff --git a/chromium/config/Chromium/mac/arm64/libavcodec/codec_list.c b/chromium/config/Chromium/mac/arm64/libavcodec/codec_list.c
-index 7d9debfe61..f9faf1d332 100644
+index 7d9debfe612..f9faf1d3320 100644
 --- a/chromium/config/Chromium/mac/arm64/libavcodec/codec_list.c
 +++ b/chromium/config/Chromium/mac/arm64/libavcodec/codec_list.c
 @@ -12,4 +12,5 @@ static const FFCodec * const codec_list[] = {
@@ -2214,7 +2214,7 @@ index 7d9debfe61..f9faf1d332 100644
 +    &ff_hevc_decoder,
      NULL };
 diff --git a/chromium/config/Chromium/mac/arm64/libavcodec/parser_list.c b/chromium/config/Chromium/mac/arm64/libavcodec/parser_list.c
-index fdc533b38f..520472e237 100644
+index fdc533b38ff..520472e2373 100644
 --- a/chromium/config/Chromium/mac/arm64/libavcodec/parser_list.c
 +++ b/chromium/config/Chromium/mac/arm64/libavcodec/parser_list.c
 @@ -4,4 +4,5 @@ static const AVCodecParser * const parser_list[] = {
@@ -2224,7 +2224,7 @@ index fdc533b38f..520472e237 100644
 +    &ff_hevc_parser,
      NULL };
 diff --git a/chromium/config/Chromium/mac/x64/config.asm b/chromium/config/Chromium/mac/x64/config.asm
-index e7248e79b8..ba69bae73d 100644
+index e7248e79b8c..ba69bae73d7 100644
 --- a/chromium/config/Chromium/mac/x64/config.asm
 +++ b/chromium/config/Chromium/mac/x64/config.asm
 @@ -679,7 +679,7 @@
@@ -2248,7 +2248,7 @@ index e7248e79b8..ba69bae73d 100644
  %define CONFIG_HUFFMAN 0
  %define CONFIG_HUFFYUVDSP 0
 diff --git a/chromium/config/Chromium/mac/x64/config.h b/chromium/config/Chromium/mac/x64/config.h
-index 0538a6a9ef..bca3285947 100644
+index 0538a6a9ef4..bca32859474 100644
 --- a/chromium/config/Chromium/mac/x64/config.h
 +++ b/chromium/config/Chromium/mac/x64/config.h
 @@ -693,7 +693,7 @@
@@ -2272,7 +2272,7 @@ index 0538a6a9ef..bca3285947 100644
  #define CONFIG_HUFFMAN 0
  #define CONFIG_HUFFYUVDSP 0
 diff --git a/chromium/config/Chromium/mac/x64/config_components.h b/chromium/config/Chromium/mac/x64/config_components.h
-index 3cded95c5e..d9ce4ee3bd 100644
+index 3cded95c5ea..d9ce4ee3bd4 100644
 --- a/chromium/config/Chromium/mac/x64/config_components.h
 +++ b/chromium/config/Chromium/mac/x64/config_components.h
 @@ -136,7 +136,7 @@
@@ -2294,7 +2294,7 @@ index 3cded95c5e..d9ce4ee3bd 100644
  #define CONFIG_IPU_PARSER 0
  #define CONFIG_JPEG2000_PARSER 0
 diff --git a/chromium/config/Chromium/mac/x64/libavcodec/codec_list.c b/chromium/config/Chromium/mac/x64/libavcodec/codec_list.c
-index 7d9debfe61..f9faf1d332 100644
+index 7d9debfe612..f9faf1d3320 100644
 --- a/chromium/config/Chromium/mac/x64/libavcodec/codec_list.c
 +++ b/chromium/config/Chromium/mac/x64/libavcodec/codec_list.c
 @@ -12,4 +12,5 @@ static const FFCodec * const codec_list[] = {
@@ -2304,7 +2304,7 @@ index 7d9debfe61..f9faf1d332 100644
 +    &ff_hevc_decoder,
      NULL };
 diff --git a/chromium/config/Chromium/mac/x64/libavcodec/parser_list.c b/chromium/config/Chromium/mac/x64/libavcodec/parser_list.c
-index fdc533b38f..520472e237 100644
+index fdc533b38ff..520472e2373 100644
 --- a/chromium/config/Chromium/mac/x64/libavcodec/parser_list.c
 +++ b/chromium/config/Chromium/mac/x64/libavcodec/parser_list.c
 @@ -4,4 +4,5 @@ static const AVCodecParser * const parser_list[] = {
@@ -2314,7 +2314,7 @@ index fdc533b38f..520472e237 100644
 +    &ff_hevc_parser,
      NULL };
 diff --git a/chromium/config/Chromium/win-msvc/ia32/config.asm b/chromium/config/Chromium/win-msvc/ia32/config.asm
-index e425512ab2..99eeb26c7f 100644
+index e425512ab28..99eeb26c7f0 100644
 --- a/chromium/config/Chromium/win-msvc/ia32/config.asm
 +++ b/chromium/config/Chromium/win-msvc/ia32/config.asm
 @@ -563,7 +563,7 @@
@@ -2354,7 +2354,7 @@ index e425512ab2..99eeb26c7f 100644
  %define CONFIG_MLP_PARSER 0
  %define CONFIG_MPEG4VIDEO_PARSER 0
 diff --git a/chromium/config/Chromium/win-msvc/ia32/config.h b/chromium/config/Chromium/win-msvc/ia32/config.h
-index a23d3a6089..b1fb82acc2 100644
+index a23d3a60898..b1fb82acc2e 100644
 --- a/chromium/config/Chromium/win-msvc/ia32/config.h
 +++ b/chromium/config/Chromium/win-msvc/ia32/config.h
 @@ -578,7 +578,7 @@
@@ -2394,7 +2394,7 @@ index a23d3a6089..b1fb82acc2 100644
  #define CONFIG_MLP_PARSER 0
  #define CONFIG_MPEG4VIDEO_PARSER 0
 diff --git a/chromium/config/Chromium/win-msvc/ia32/libavcodec/codec_list.c b/chromium/config/Chromium/win-msvc/ia32/libavcodec/codec_list.c
-index 9407bd2775..069f0f61bd 100644
+index 9407bd2775e..069f0f61bda 100644
 --- a/chromium/config/Chromium/win-msvc/ia32/libavcodec/codec_list.c
 +++ b/chromium/config/Chromium/win-msvc/ia32/libavcodec/codec_list.c
 @@ -15,4 +15,5 @@ static const AVCodec * const codec_list[] = {
@@ -2404,7 +2404,7 @@ index 9407bd2775..069f0f61bd 100644
 +    &ff_hevc_decoder,
      NULL };
 diff --git a/chromium/config/Chromium/win-msvc/ia32/libavcodec/parser_list.c b/chromium/config/Chromium/win-msvc/ia32/libavcodec/parser_list.c
-index 4c59b89cdf..8629776838 100644
+index 4c59b89cdf8..86297768385 100644
 --- a/chromium/config/Chromium/win-msvc/ia32/libavcodec/parser_list.c
 +++ b/chromium/config/Chromium/win-msvc/ia32/libavcodec/parser_list.c
 @@ -5,4 +5,5 @@ static const AVCodecParser * const parser_list[] = {
@@ -2414,7 +2414,7 @@ index 4c59b89cdf..8629776838 100644
 +    &ff_hevc_parser,
      NULL };
 diff --git a/chromium/config/Chromium/win-msvc/x64/config.asm b/chromium/config/Chromium/win-msvc/x64/config.asm
-index 3c9bd63728..71c73ca09b 100644
+index 3c9bd63728f..71c73ca09b0 100644
 --- a/chromium/config/Chromium/win-msvc/x64/config.asm
 +++ b/chromium/config/Chromium/win-msvc/x64/config.asm
 @@ -563,7 +563,7 @@
@@ -2454,7 +2454,7 @@ index 3c9bd63728..71c73ca09b 100644
  %define CONFIG_MLP_PARSER 0
  %define CONFIG_MPEG4VIDEO_PARSER 0
 diff --git a/chromium/config/Chromium/win-msvc/x64/config.h b/chromium/config/Chromium/win-msvc/x64/config.h
-index 89d69e4734..81ff36df32 100644
+index 89d69e47347..81ff36df327 100644
 --- a/chromium/config/Chromium/win-msvc/x64/config.h
 +++ b/chromium/config/Chromium/win-msvc/x64/config.h
 @@ -578,7 +578,7 @@
@@ -2494,7 +2494,7 @@ index 89d69e4734..81ff36df32 100644
  #define CONFIG_MLP_PARSER 0
  #define CONFIG_MPEG4VIDEO_PARSER 0
 diff --git a/chromium/config/Chromium/win-msvc/x64/libavcodec/codec_list.c b/chromium/config/Chromium/win-msvc/x64/libavcodec/codec_list.c
-index 9407bd2775..069f0f61bd 100644
+index 9407bd2775e..069f0f61bda 100644
 --- a/chromium/config/Chromium/win-msvc/x64/libavcodec/codec_list.c
 +++ b/chromium/config/Chromium/win-msvc/x64/libavcodec/codec_list.c
 @@ -15,4 +15,5 @@ static const AVCodec * const codec_list[] = {
@@ -2504,7 +2504,7 @@ index 9407bd2775..069f0f61bd 100644
 +    &ff_hevc_decoder,
      NULL };
 diff --git a/chromium/config/Chromium/win-msvc/x64/libavcodec/parser_list.c b/chromium/config/Chromium/win-msvc/x64/libavcodec/parser_list.c
-index 4c59b89cdf..8629776838 100644
+index 4c59b89cdf8..86297768385 100644
 --- a/chromium/config/Chromium/win-msvc/x64/libavcodec/parser_list.c
 +++ b/chromium/config/Chromium/win-msvc/x64/libavcodec/parser_list.c
 @@ -5,4 +5,5 @@ static const AVCodecParser * const parser_list[] = {
@@ -2514,7 +2514,7 @@ index 4c59b89cdf..8629776838 100644
 +    &ff_hevc_parser,
      NULL };
 diff --git a/chromium/config/Chromium/win/arm64/config.h b/chromium/config/Chromium/win/arm64/config.h
-index 1d21db1a56..ed2db36046 100644
+index 1d21db1a56d..ed2db360465 100644
 --- a/chromium/config/Chromium/win/arm64/config.h
 +++ b/chromium/config/Chromium/win/arm64/config.h
 @@ -694,7 +694,7 @@
@@ -2538,7 +2538,7 @@ index 1d21db1a56..ed2db36046 100644
  #define CONFIG_HUFFMAN 0
  #define CONFIG_HUFFYUVDSP 0
 diff --git a/chromium/config/Chromium/win/arm64/config_components.h b/chromium/config/Chromium/win/arm64/config_components.h
-index 3cded95c5e..d9ce4ee3bd 100644
+index 3cded95c5ea..d9ce4ee3bd4 100644
 --- a/chromium/config/Chromium/win/arm64/config_components.h
 +++ b/chromium/config/Chromium/win/arm64/config_components.h
 @@ -136,7 +136,7 @@
@@ -2560,7 +2560,7 @@ index 3cded95c5e..d9ce4ee3bd 100644
  #define CONFIG_IPU_PARSER 0
  #define CONFIG_JPEG2000_PARSER 0
 diff --git a/chromium/config/Chromium/win/arm64/libavcodec/codec_list.c b/chromium/config/Chromium/win/arm64/libavcodec/codec_list.c
-index 7d9debfe61..f9faf1d332 100644
+index 7d9debfe612..f9faf1d3320 100644
 --- a/chromium/config/Chromium/win/arm64/libavcodec/codec_list.c
 +++ b/chromium/config/Chromium/win/arm64/libavcodec/codec_list.c
 @@ -12,4 +12,5 @@ static const FFCodec * const codec_list[] = {
@@ -2570,7 +2570,7 @@ index 7d9debfe61..f9faf1d332 100644
 +    &ff_hevc_decoder,
      NULL };
 diff --git a/chromium/config/Chromium/win/arm64/libavcodec/parser_list.c b/chromium/config/Chromium/win/arm64/libavcodec/parser_list.c
-index fdc533b38f..520472e237 100644
+index fdc533b38ff..520472e2373 100644
 --- a/chromium/config/Chromium/win/arm64/libavcodec/parser_list.c
 +++ b/chromium/config/Chromium/win/arm64/libavcodec/parser_list.c
 @@ -4,4 +4,5 @@ static const AVCodecParser * const parser_list[] = {
@@ -2580,7 +2580,7 @@ index fdc533b38f..520472e237 100644
 +    &ff_hevc_parser,
      NULL };
 diff --git a/chromium/config/Chromium/win/ia32/config.asm b/chromium/config/Chromium/win/ia32/config.asm
-index 4231966cc7..a66ebb8430 100644
+index 4231966cc74..a66ebb8430e 100644
 --- a/chromium/config/Chromium/win/ia32/config.asm
 +++ b/chromium/config/Chromium/win/ia32/config.asm
 @@ -679,7 +679,7 @@
@@ -2604,7 +2604,7 @@ index 4231966cc7..a66ebb8430 100644
  %define CONFIG_HUFFMAN 0
  %define CONFIG_HUFFYUVDSP 0
 diff --git a/chromium/config/Chromium/win/ia32/config.h b/chromium/config/Chromium/win/ia32/config.h
-index 4c4b4a77ad..1790e9ca33 100644
+index 4c4b4a77ad6..1790e9ca335 100644
 --- a/chromium/config/Chromium/win/ia32/config.h
 +++ b/chromium/config/Chromium/win/ia32/config.h
 @@ -693,7 +693,7 @@
@@ -2628,7 +2628,7 @@ index 4c4b4a77ad..1790e9ca33 100644
  #define CONFIG_HUFFMAN 0
  #define CONFIG_HUFFYUVDSP 0
 diff --git a/chromium/config/Chromium/win/ia32/config_components.h b/chromium/config/Chromium/win/ia32/config_components.h
-index 3cded95c5e..d9ce4ee3bd 100644
+index 3cded95c5ea..d9ce4ee3bd4 100644
 --- a/chromium/config/Chromium/win/ia32/config_components.h
 +++ b/chromium/config/Chromium/win/ia32/config_components.h
 @@ -136,7 +136,7 @@
@@ -2650,7 +2650,7 @@ index 3cded95c5e..d9ce4ee3bd 100644
  #define CONFIG_IPU_PARSER 0
  #define CONFIG_JPEG2000_PARSER 0
 diff --git a/chromium/config/Chromium/win/ia32/libavcodec/codec_list.c b/chromium/config/Chromium/win/ia32/libavcodec/codec_list.c
-index 7d9debfe61..f9faf1d332 100644
+index 7d9debfe612..f9faf1d3320 100644
 --- a/chromium/config/Chromium/win/ia32/libavcodec/codec_list.c
 +++ b/chromium/config/Chromium/win/ia32/libavcodec/codec_list.c
 @@ -12,4 +12,5 @@ static const FFCodec * const codec_list[] = {
@@ -2660,7 +2660,7 @@ index 7d9debfe61..f9faf1d332 100644
 +    &ff_hevc_decoder,
      NULL };
 diff --git a/chromium/config/Chromium/win/ia32/libavcodec/parser_list.c b/chromium/config/Chromium/win/ia32/libavcodec/parser_list.c
-index fdc533b38f..520472e237 100644
+index fdc533b38ff..520472e2373 100644
 --- a/chromium/config/Chromium/win/ia32/libavcodec/parser_list.c
 +++ b/chromium/config/Chromium/win/ia32/libavcodec/parser_list.c
 @@ -4,4 +4,5 @@ static const AVCodecParser * const parser_list[] = {
@@ -2670,7 +2670,7 @@ index fdc533b38f..520472e237 100644
 +    &ff_hevc_parser,
      NULL };
 diff --git a/chromium/config/Chromium/win/x64/config.asm b/chromium/config/Chromium/win/x64/config.asm
-index 833bdf4d8c..da89d8cfaf 100644
+index 833bdf4d8c7..da89d8cfaf8 100644
 --- a/chromium/config/Chromium/win/x64/config.asm
 +++ b/chromium/config/Chromium/win/x64/config.asm
 @@ -679,7 +679,7 @@
@@ -2694,7 +2694,7 @@ index 833bdf4d8c..da89d8cfaf 100644
  %define CONFIG_HUFFMAN 0
  %define CONFIG_HUFFYUVDSP 0
 diff --git a/chromium/config/Chromium/win/x64/config.h b/chromium/config/Chromium/win/x64/config.h
-index 9be44f0b20..2338a6ecff 100644
+index 9be44f0b20e..2338a6ecff3 100644
 --- a/chromium/config/Chromium/win/x64/config.h
 +++ b/chromium/config/Chromium/win/x64/config.h
 @@ -693,7 +693,7 @@
@@ -2718,7 +2718,7 @@ index 9be44f0b20..2338a6ecff 100644
  #define CONFIG_HUFFMAN 0
  #define CONFIG_HUFFYUVDSP 0
 diff --git a/chromium/config/Chromium/win/x64/config_components.h b/chromium/config/Chromium/win/x64/config_components.h
-index 3cded95c5e..d9ce4ee3bd 100644
+index 3cded95c5ea..d9ce4ee3bd4 100644
 --- a/chromium/config/Chromium/win/x64/config_components.h
 +++ b/chromium/config/Chromium/win/x64/config_components.h
 @@ -136,7 +136,7 @@
@@ -2740,7 +2740,7 @@ index 3cded95c5e..d9ce4ee3bd 100644
  #define CONFIG_IPU_PARSER 0
  #define CONFIG_JPEG2000_PARSER 0
 diff --git a/chromium/config/Chromium/win/x64/libavcodec/codec_list.c b/chromium/config/Chromium/win/x64/libavcodec/codec_list.c
-index 7d9debfe61..f9faf1d332 100644
+index 7d9debfe612..f9faf1d3320 100644
 --- a/chromium/config/Chromium/win/x64/libavcodec/codec_list.c
 +++ b/chromium/config/Chromium/win/x64/libavcodec/codec_list.c
 @@ -12,4 +12,5 @@ static const FFCodec * const codec_list[] = {
@@ -2750,7 +2750,7 @@ index 7d9debfe61..f9faf1d332 100644
 +    &ff_hevc_decoder,
      NULL };
 diff --git a/chromium/config/Chromium/win/x64/libavcodec/parser_list.c b/chromium/config/Chromium/win/x64/libavcodec/parser_list.c
-index fdc533b38f..520472e237 100644
+index fdc533b38ff..520472e2373 100644
 --- a/chromium/config/Chromium/win/x64/libavcodec/parser_list.c
 +++ b/chromium/config/Chromium/win/x64/libavcodec/parser_list.c
 @@ -4,4 +4,5 @@ static const AVCodecParser * const parser_list[] = {
@@ -2760,7 +2760,7 @@ index fdc533b38f..520472e237 100644
 +    &ff_hevc_parser,
      NULL };
 diff --git a/ffmpeg_generated.gni b/ffmpeg_generated.gni
-index b46d316b44..388eabbde4 100644
+index b46d316b445..d27fd181544 100644
 --- a/ffmpeg_generated.gni
 +++ b/ffmpeg_generated.gni
 @@ -221,6 +221,27 @@ if ((current_cpu == "arm64" && ffmpeg_branding == "Chrome") ||
@@ -2830,18 +2830,18 @@ index b46d316b44..388eabbde4 100644
 +
 +  ffmpeg_c_sources += [
 +    "libavcodec/x86/bswapdsp_init.c",
-+    "libavcodec/x86/hevcdsp_init.c",
++    "libavcodec/x86/hevc/dsp_init.c",
 +    "libavcodec/x86/h26x/h2656dsp.c"
 +  ]
 +
 +  ffmpeg_asm_sources += [
 +    "libavcodec/x86/bswapdsp.asm",
-+    "libavcodec/x86/hevc_add_res.asm",
-+    "libavcodec/x86/hevc_deblock.asm",
-+    "libavcodec/x86/hevc_idct.asm",
-+    "libavcodec/x86/hevc_mc.asm",
-+    "libavcodec/x86/hevc_sao.asm",
-+    "libavcodec/x86/hevc_sao_10bit.asm",
++    "libavcodec/x86/hevc/add_res.asm",
++    "libavcodec/x86/hevc/deblock.asm",
++    "libavcodec/x86/hevc/idct.asm",
++    "libavcodec/x86/hevc/mc.asm",
++    "libavcodec/x86/hevc/sao.asm",
++    "libavcodec/x86/hevc/sao_10bit.asm",
 +    "libavcodec/x86/h26x/h2656_inter.asm"
 +  ]
 +
@@ -2869,7 +2869,7 @@ index b46d316b44..388eabbde4 100644
      "libavcodec/arm/h264dsp_neon.S",
 diff --git a/libavcodec/aarch64/autorename_libavcodec_aarch64_hevcdsp_idct_neon.S b/libavcodec/aarch64/autorename_libavcodec_aarch64_hevcdsp_idct_neon.S
 new file mode 100644
-index 0000000000..26b255b3a2
+index 00000000000..26b255b3a2f
 --- /dev/null
 +++ b/libavcodec/aarch64/autorename_libavcodec_aarch64_hevcdsp_idct_neon.S
 @@ -0,0 +1,2 @@
@@ -2878,7 +2878,7 @@ index 0000000000..26b255b3a2
 \ No newline at end of file
 diff --git a/libavcodec/hevc/autorename_libavcodec_hevc_cabac.c b/libavcodec/hevc/autorename_libavcodec_hevc_cabac.c
 new file mode 100644
-index 0000000000..cba1eac9ce
+index 00000000000..cba1eac9ce1
 --- /dev/null
 +++ b/libavcodec/hevc/autorename_libavcodec_hevc_cabac.c
 @@ -0,0 +1,2 @@
@@ -2887,7 +2887,7 @@ index 0000000000..cba1eac9ce
 \ No newline at end of file
 diff --git a/libavcodec/hevc/autorename_libavcodec_hevc_parse.c b/libavcodec/hevc/autorename_libavcodec_hevc_parse.c
 new file mode 100644
-index 0000000000..daa90f6047
+index 00000000000..daa90f60476
 --- /dev/null
 +++ b/libavcodec/hevc/autorename_libavcodec_hevc_parse.c
 @@ -0,0 +1,2 @@
@@ -2896,7 +2896,7 @@ index 0000000000..daa90f6047
 \ No newline at end of file
 diff --git a/libavcodec/hevc/autorename_libavcodec_hevc_parser.c b/libavcodec/hevc/autorename_libavcodec_hevc_parser.c
 new file mode 100644
-index 0000000000..d46820091a
+index 00000000000..d46820091a1
 --- /dev/null
 +++ b/libavcodec/hevc/autorename_libavcodec_hevc_parser.c
 @@ -0,0 +1,2 @@
@@ -2904,5 +2904,5 @@ index 0000000000..d46820091a
 +#include "parser.c"
 \ No newline at end of file
 -- 
-2.47.1
+2.47.1.windows.2
 
