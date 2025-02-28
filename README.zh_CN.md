@@ -520,6 +520,8 @@ Electron >= v33.0.0 已集成好 macOS, Windows 平台的 HEVC 硬编码功能�
 
 ## 更新历史
 
+`2025-02-19` macOS 平台新增 Per-Frame QP H.264/HEVC WebCodecs 编码支持 (Chrome >= `135.0.7024.0`)
+
 `2025-01-16` Windows 平台新增 Per-Frame QP HEVC WebCodecs 编码支持 (Chrome >= `134.0.6961.0`)
 
 `2025-01-07` 修复 macOS 11, 12 HEVC Rext profile 解码 8b/10b 4:4:4 内容会产生花条纹的问题 (Chrome >= `133.0.6943.0`)

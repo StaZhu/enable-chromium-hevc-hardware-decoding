@@ -558,6 +558,8 @@ If Electron >= v33.0.0, the HEVC HW encoding feature for macOS, Windows should h
 
 ## Change Log
 
+`2025-02-19` Add WebCodecs Per-Frame QP H.264/HEVC encoding support for macOS (Chrome >= `135.0.7024.0`)
+
 `2025-01-16` Add WebCodecs Per-Frame QP HEVC encoding support for Windows (Chrome >= `134.0.6961.0`)
 
 `2025-01-07` Fixed HEVC Rext profile 8b/10b 4:4:4 decoding artifact issue on macOS 11, 12 (Chrome >= `133.0.6943.0`)
