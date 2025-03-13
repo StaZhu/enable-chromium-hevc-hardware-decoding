@@ -63,7 +63,7 @@ Linux (Chrome version >= `108.0.5354.0`, and only supports GPUs that support VAA
 
 Video Decode: File, Media Source Extensions, WebCodec (8Bit requires >= `107.0.5272.0`, 10Bit + HEVC with Alpha requires >= `108.0.5343.0`), Clearkey and Widevine L1 (HW only) Encrypted Media Extensions, WebRTC (experimental, need to use Chrome Canary passing `--enable-features=PlatformHEVCEncoderSupport,WebRtcAllowH265Send,WebRtcAllowH265Receive --force-fieldtrials=WebRTC-Video-H26xPacketBuffer/Enabled` to enable the feature, or use the Chromium binary provided by this repo, some useful sites here: [Media Capabilities](https://webrtc.internaut.com/mc/), [Demo](https://webrtc.github.io/samples/src/content/peerconnection/change-codecs/)) are supported.
 
-Video Encode: WebCodec (Windows, macOS, and Android, requires Chrome >= `130.0.6703.0`), WebRTC (same description as above), and MediaRecorder (Windows, macOS, and Android, requires Chrome >=`133.0.6878.0`, need to passing `--enable-features=MediaRecorderHEVCSupport`, [Demo](https://webrtc.github.io/samples/src/content/getusermedia/record/)) are supported.
+Video Encode: WebCodec (Windows, macOS, and Android, requires Chrome >= `130.0.6703.0`), WebRTC (same description as above), and MediaRecorder (Windows, macOS, and Android, Enabled by default in Chrome 136, need to pass `--enable-features=MediaRecorderHEVCSupport` in Chrome 133 ~ 135, [Demo](https://webrtc.github.io/samples/src/content/getusermedia/record/)) are supported.
 
 ## What's the HW decoding GPU requirement?
 
@@ -379,7 +379,7 @@ try {
 
 ### MediaRecorder
 
-The feature has been supported in Chromium >= 133 (need to passing `--enable-features=MediaRecorderHEVCSupport`), supports three platforms including `Windows`, `macOS`, and `Android`, supports two formats, namely `hvc1` and `hev1`, as well as two muxer formats, `mkv` and `mp4`.
+The feature has been supported in Chromium >= 133 (Enabled by default in 136, need to pass `--enable-features=MediaRecorderHEVCSupport` in 133 ~ 135), supports three platforms including `Windows`, `macOS`, and `Android`, supports two formats, namely `hvc1` and `hev1`, as well as two muxer formats, `mkv` and `mp4`.
 
 ```javascript
 /**
@@ -557,6 +557,8 @@ If Electron >= v22.0.0, the HEVC HW decoding feature for macOS, Windows, and Lin
 If Electron >= v33.0.0, the HEVC HW encoding feature for macOS, Windows should have already been integrated.
 
 ## Change Log
+
+`2025-03-13` Enable MediaRecorder HEVC support by default (Chrome >= `136.0.7064.0`)
 
 `2025-02-19` Add WebCodecs Per-Frame QP H.264/HEVC encoding support for macOS (Chrome >= `135.0.7024.0`)
 
