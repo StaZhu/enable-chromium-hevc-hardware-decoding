@@ -61,9 +61,9 @@ Linux (版本号须 >= `108.0.5354.0`, 仅支持 VAAPI 接口支持的 GPU，比
 
 ## 支持哪些 API？
 
-视频解码：支持 File, Media Source Extensions, WebCodec (8Bit >= `107.0.5272.0`, 10Bit + HEVC with Alpha >= `108.0.5343.0`), Clearkey 以及 Widevine L1 (不支持L3) Encrypted Media Extensions, WebRTC (实验性功能，需使用 Chrome Canary 传入 `--enable-features=PlatformHEVCEncoderSupport,WebRtcAllowH265Send,WebRtcAllowH265Receive --force-fieldtrials=WebRTC-Video-H26xPacketBuffer/Enabled` 开启，或直接使用本仓库提供的 Chromium 测试，一些可用的测试地址供参考：[Media Capabilities](https://webrtc.internaut.com/mc/), [Demo](https://webrtc.github.io/samples/src/content/peerconnection/change-codecs/))。
+视频解码：支持 File, Media Source Extensions, WebCodec (8Bit >= `107.0.5272.0`, 10Bit + HEVC with Alpha >= `108.0.5343.0`), Clearkey 以及 Widevine L1 (不支持L3) Encrypted Media Extensions, WebRTC (Chrome >= `136.0.7077.0` 默认开启，一些可用的测试地址供参考：[Media Capabilities](https://webrtc.internaut.com/mc/), [Demo](https://webrtc.github.io/samples/src/content/peerconnection/change-codecs/))。
 
-视频编码：支持 WebCodec (支持 macOS, Windows, Android, Chrome >= `130.0.6703.0` 版本默认启用), WebRTC (测试方式见视频解码部分描述)，MediaRecorder (Windows, macOS, and Android, Chrome 136 默认启用，Chrome 133 ~ 135 版本，需传入 `--enable-features=MediaRecorderHEVCSupport` 启用，[Demo](https://webrtc.github.io/samples/src/content/getusermedia/record/))。
+视频编码：支持 WebCodec (支持 macOS, Windows, Android, Chrome >= `130.0.6703.0` 版本默认启用), WebRTC (支持 macOS, Windows, Android, Chrome >= `136.0.7077.0` 版本默认启用)，MediaRecorder (Windows, macOS, and Android, Chrome >= `136.0.7064.0` 版本默认启用，Chrome 133 ~ 135 版本，需传入 `--enable-features=MediaRecorderHEVCSupport` 启用，[Demo](https://webrtc.github.io/samples/src/content/getusermedia/record/))。
 
 ## 解码 GPU 要求？
 
@@ -195,9 +195,7 @@ Edge 125 解决了 Windows 平台 `VDAVideoDecoder` 解码 HEVC Main10 10bit 视
 const mediaConfig = {
   /**
    * 这里写 `file` 或 `media-source` 都可以, 结果一致。当要检测 `webrtc`
-   * 可用性时，`contentType` 应该被替换为 `video/h265` (注意: `webrtc` 功能 
-   * 仅用于测试目的, Chrome 官方可能未来不会默认启用该功能, 你可以传入命令行开启，
-   * 或在本仓库使用自定义 Chromium 二进制测试)
+   * 可用性时，`contentType` 应该被替换为 `video/h265`
    */
   type: 'file',
   video: {
@@ -506,11 +504,10 @@ Safari 和 Chrome 二者均使用 `VideoToolbox` 解码器完成解码，如果�
 
 1. 请参考 [官方 Chromium 编译手册](https://www.chromium.org/developers/how-tos/get-the-code/) 配置环境并拉取 `main` 分支（硬解代码已合入）的代码。
 2. (可选) 支持 HEVC 软解：切换到 `src/third_party/ffmpeg` 目录，执行 `git am /path/to/add-hevc-ffmpeg-decoder-parser.patch` 。如果有冲突，也可尝试使用 `node /path/to/add-hevc-ffmpeg-decoder-parser.js` 直接修改代码（需要确保Node.js已安装再执行该命令）, 然后继续执行 `git am /path/to/change-libavcodec-header.patch` (如果本仓库同步上游不及时，这条命令也可能失败，如遇失败可提 Issue 反馈，或直接提交修复的 Merge Request)，最后切换回 `src` 目录，执行 `git am /path/to/enable-hevc-ffmpeg-decoding.patch`。
-3. (可选) 默认启用 HEVC WebRTC 功能，切换到 `src` 目录，执行 `git am /path/to/enable-hevc-webrtc-send-receive-by-default.patch`。
-4. (可选) 集成 Widevine CDM，以支持 EME 加密视频 (例：Netflix) 播放：切换到 `src` 目录，执行 `cp -R /path/to/widevine/* third_party/widevine/cdm` (Windows 请执行: `xcopy /path/to/widevine third_party\widevine\cdm /E/H`)。
-5. 假设你想编译 `Mac` + `x64` 架构（其他可选的架构有：`x86`, `arm64`, `arm`）+ 支持 CDM 的 Chromium，请执行 `gn gen out/Release64 --args="is_component_build = false is_official_build = true is_debug = false ffmpeg_branding = \"Chrome\" target_cpu = \"x64\" proprietary_codecs = true media_use_ffmpeg = true enable_widevine = true bundle_widevine_cdm = true"`，如果想编译 `Windows`，请额外添加 `enable_media_foundation_widevine_cdm = true`。
-6. 执行 `autoninja -C out/Release64 chrome` 以开始编译。
-7. 双击打开 Chromium。
+3. (可选) 集成 Widevine CDM，以支持 EME 加密视频 (例：Netflix) 播放：切换到 `src` 目录，执行 `cp -R /path/to/widevine/* third_party/widevine/cdm` (Windows 请执行: `xcopy /path/to/widevine third_party\widevine\cdm /E/H`)。
+4. 假设你想编译 `Mac` + `x64` 架构（其他可选的架构有：`x86`, `arm64`, `arm`）+ 支持 CDM 的 Chromium，请执行 `gn gen out/Release64 --args="is_component_build = false is_official_build = true is_debug = false ffmpeg_branding = \"Chrome\" target_cpu = \"x64\" proprietary_codecs = true media_use_ffmpeg = true enable_widevine = true bundle_widevine_cdm = true"`，如果想编译 `Windows`，请额外添加 `enable_media_foundation_widevine_cdm = true`。
+5. 执行 `autoninja -C out/Release64 chrome` 以开始编译。
+6. 双击打开 Chromium。
 
 ## 如何集成到 Electron 等基于 Chromium 的项目？
 
@@ -519,6 +516,8 @@ Electron >= v22.0.0 已集成好 macOS, Windows, 和 Linux (仅 VAAPI) 平台的
 Electron >= v33.0.0 已集成好 macOS, Windows 平台的 HEVC 硬编码功能，且开箱即用。
 
 ## 更新历史
+
+`2025-03-19` 默认启用 WebRTC HEVC 支持 (Chrome >= `136.0.7077.0`)
 
 `2025-03-13` 默认启用 MediaRecorder HEVC 支持 (Chrome >= `136.0.7064.0`)
 
