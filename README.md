@@ -14,11 +14,14 @@ HEVC Main Still Picture (up to 8192x8192 pixels)
 
 HEVC Rext (partially supported, see the table below for details, up to 8192x8192 pixels)
 
-|        GPU             | 8b 420 |     8b 422     |      8b 444    | 10b 420  | 10b 422 | 10b 444 | 12b 420 |    12b 422    |    12b 444     |
-| :--------------------- | :----- | :------------- | :------------- | :------- | :------ | :------ | :------ | :------------ | :------------- |
-|  Apple Silicon (macOS) |   ✅    |       ✅       |       ✅       |    ✅    |    ✅    |    ✅   |    ❌   |       ❌       |       ❌       |
-| Intel ICL ~ TGLx (Win) |   ✅    |✅<sup>[5]</sup>|✅<sup>[4]</sup>|    ✅    |    ✅    |    ✅   |    ❌   |       ❌       |       ❌       |
-|    Intel TGLx+ (Win)   |   ✅    |✅<sup>[5]</sup>|✅<sup>[4]</sup>|    ✅    |    ✅    |    ✅   |    ✅   |✅<sup>[4]</sup>|✅<sup>[4]</sup>|
+| GPU                          | 8b 420           |   8b 422       | 8b 444           | 10b 420          | 10b 422         | 10b 444         | 12b 420         | 12b 422         | 12b 444          |
+|:-----------------------------|:-----------------|:---------------|:-----------------|:---------------- |:----------------|:----------------|:----------------|:----------------|:-----------------|
+| Apple Silicon (macOS)        | ✅               | ✅              | ✅               | ✅               | ✅               | ✅              | ❌              | ❌               | ❌               |
+| Intel ICL ~ TGLx (Win)       | ✅               | ✅<sup>[4]</sup>| ✅<sup>[3]</sup> | ✅               | ✅               | ✅              | ❌              | ❌               | ❌               |
+| Intel TGLx+ (Win)            | ✅               | ✅<sup>[4]</sup>| ✅<sup>[3]</sup> | ✅               | ✅               | ✅              | ✅              | ✅<sup>[3]</sup> | ✅<sup>[3]</sup> |
+| NVIDIA Turing ~ Ada (Win)    | ✅<sup>[6]</sup> | ❌              | ✅<sup>[6]</sup> | ✅<sup>[6]</sup> | ❌               | ✅<sup>[6]</sup>| ✅<sup>[6]</sup>| ❌               | ✅<sup>[6]</sup> |
+| NVIDIA Blackwell (Win)       | ✅<sup>[6]</sup> | ✅<sup>[6]</sup>| ✅<sup>[6]</sup> | ✅<sup>[6]</sup> | ✅<sup>[6]</sup> | ✅<sup>[6]</sup>| ✅<sup>[6]</sup>| ✅<sup>[6]</sup> | ✅<sup>[6]</sup> |
+
 
 ✅: GPU + software support
 ❌: GPU not support
@@ -27,13 +30,13 @@ HEVC Rext (partially supported, see the table below for details, up to 8192x8192
 
 *Note 2: Intel Gen10 GPUs support HEVC Rext hardware decoding of 8b 420, 8b 422, 8b 444, 10b 420, 10b 422, 10b 444 contents on Windows. Gen11+ GPUs additionally support HEVC Rext hardware decoding of 12b 420, 12b 422, 12b 444 contents.*
 
-*Note 3: Although NVIDIA GPUs support HEVC Rext hardware decoding of 8 ~ 12b non-422 contents via CUVID or NVDEC, but because they did not provide a D3D11 interface, thus Chromium will not support it in the future.*
+*Note 3: HEVC 8b 444, 12b 422, 12b 444 support requires Chrome >= `117.0.5866.0`.*
 
-*Note 4: HEVC 8b 444, 12b 422, 12b 444 support requires Chrome >= `117.0.5866.0`.*
+*Note 4: HEVC 8b 422 support requires Chrome >= `118.0.5956.0`.*
 
-*Note 5: HEVC 8b 422 support requires Chrome >= `118.0.5956.0`.*
+*Note 5: To retain the original 4:2:2/4:4:4 chroma sampling, requires Chrome >= `125.0.6408.0`.*
 
-*Note 6: To retain the original 4:2:2/4:4:4 chroma sampling, requires Chrome >= `125.0.6408.0`.*
+*Note 6: Starting from Chrome 137, NVIDIA GPUs support HEVC Rext hardware decoding of 8 ~ 12b contents. (Requires NVIDIA Driver >= `572.16`)*
 
 ## What's the hardware encoding supported HEVC profile?
 
