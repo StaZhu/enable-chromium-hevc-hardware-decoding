@@ -558,6 +558,8 @@ If Electron >= v33.0.0, the HEVC HW encoding feature for macOS, Windows should h
 
 ## Change Log
 
+`2025-04-05` Add HEVC Rext profile 8/10/12b 4:2:0/4:2:2/4:4:4 decode support for NVIDIA 16/20 ~ 50 Series (Chrome >= `137.0.7111.0`)
+
 `2025-03-19` Enable WebRTC HEVC support by default (Chrome >= `136.0.7077.0`)
 
 `2025-03-13` Enable MediaRecorder HEVC support by default (Chrome >= `136.0.7064.0`)
