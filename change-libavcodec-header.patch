@@ -1,6 +1,6 @@
-From 0213b4b5cec448375e8c806241f1b04f80998adb Mon Sep 17 00:00:00 2001
+From 7acfe3eb565bc9ba2ac9dfa351b1cc74aa4bed96 Mon Sep 17 00:00:00 2001
 From: Sta Zhu <zhusidayoyo@hotmail.com>
-Date: Fri, 14 Feb 2025 20:08:58 +0800
+Date: Fri, 11 Apr 2025 23:30:36 +0800
 Subject: [PATCH] Video: Update `libavcodec` header
 
 The recent ffmpeg changes doesn't match with chromium include
@@ -9,7 +9,7 @@ configs, need to change the header manually to fix this.
  libavcodec/hevc/cabac.c         |  2 +-
  libavcodec/hevc/dsp_template.c  | 10 +++++-----
  libavcodec/hevc/filter.c        |  2 +-
- libavcodec/hevc/hevcdec.c       | 29 ++++++++++++++---------------
+ libavcodec/hevc/hevcdec.c       | 26 +++++++++++++-------------
  libavcodec/hevc/mvs.c           |  2 +-
  libavcodec/hevc/parse.c         |  4 ++--
  libavcodec/hevc/parser.c        |  6 +++---
@@ -18,7 +18,7 @@ configs, need to change the header manually to fix this.
  libavcodec/hevc/ps_enc.c        |  4 ++--
  libavcodec/hevc/refs.c          |  4 ++--
  libavcodec/hevc/sei.c           |  4 ++--
- 12 files changed, 37 insertions(+), 38 deletions(-)
+ 12 files changed, 36 insertions(+), 36 deletions(-)
 
 diff --git a/libavcodec/hevc/cabac.c b/libavcodec/hevc/cabac.c
 index 892dd1c215..362dda6beb 100644
@@ -78,7 +78,7 @@ index 68ae0e9ef6..e897ad5d58 100644
  #define LUMA 0
  #define CB 1
 diff --git a/libavcodec/hevc/hevcdec.c b/libavcodec/hevc/hevcdec.c
-index 5d0adb2f07..12d84fbdb0 100644
+index 3007741600..3566a823be 100644
 --- a/libavcodec/hevc/hevcdec.c
 +++ b/libavcodec/hevc/hevcdec.c
 @@ -38,23 +38,23 @@
@@ -117,16 +117,6 @@ index 5d0adb2f07..12d84fbdb0 100644
 +#include "libavcodec/threadprogress.h"
  
  static const uint8_t hevc_pel_weight[65] = { [2] = 0, [4] = 1, [6] = 2, [8] = 3, [12] = 4, [16] = 5, [24] = 6, [32] = 7, [48] = 8, [64] = 9 };
- 
-@@ -3275,8 +3275,7 @@ static int hevc_frame_start(HEVCContext *s, HEVCLayerContext *l,
-     s->cur_frame->needs_fg =
-         ((s->sei.common.film_grain_characteristics &&
-           s->sei.common.film_grain_characteristics->present) ||
--         (s->sei.common.aom_film_grain &&
--          s->sei.common.aom_film_grain->enable)) &&
-+         (s->sei.common.aom_film_grain.enable)) &&
-         !(s->avctx->export_side_data & AV_CODEC_EXPORT_DATA_FILM_GRAIN) &&
-         !s->avctx->hwaccel;
  
 diff --git a/libavcodec/hevc/mvs.c b/libavcodec/hevc/mvs.c
 index 55f115ad0c..61c9e4e086 100644
@@ -191,7 +181,7 @@ index b4c2fcf506..d873c1c5b6 100644
  
  #define POS(x, y) src[(x) + stride * (y)]
 diff --git a/libavcodec/hevc/ps.c b/libavcodec/hevc/ps.c
-index 285084685b..da26dfc749 100644
+index 24f4218931..6713f42013 100644
 --- a/libavcodec/hevc/ps.c
 +++ b/libavcodec/hevc/ps.c
 @@ -25,11 +25,11 @@
@@ -226,7 +216,7 @@ index 7fbcb3ba4e..4e44f849ba 100644
  static void write_ptl_layer(PutBitContext *pb, PTLCommon *ptl)
  {
 diff --git a/libavcodec/hevc/refs.c b/libavcodec/hevc/refs.c
-index dd7f7f95a8..56842fd993 100644
+index 6f291bbf79..dcd425d908 100644
 --- a/libavcodec/hevc/refs.c
 +++ b/libavcodec/hevc/refs.c
 @@ -25,10 +25,10 @@
@@ -243,7 +233,7 @@ index dd7f7f95a8..56842fd993 100644
  
  void ff_hevc_unref_frame(HEVCFrame *frame, int flags)
 diff --git a/libavcodec/hevc/sei.c b/libavcodec/hevc/sei.c
-index e11a33773c..aa6acfca6b 100644
+index b8e98cde89..0a54c442d5 100644
 --- a/libavcodec/hevc/sei.c
 +++ b/libavcodec/hevc/sei.c
 @@ -22,8 +22,8 @@
@@ -258,5 +248,5 @@ index e11a33773c..aa6acfca6b 100644
  #include "sei.h"
  
 -- 
-2.47.1
+2.45.2.windows.1
 
