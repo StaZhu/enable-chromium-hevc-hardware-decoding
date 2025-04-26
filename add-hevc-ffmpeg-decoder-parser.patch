@@ -1,6 +1,6 @@
-From d5308bd6026031591346d05ff0a3a465eb64e4b0 Mon Sep 17 00:00:00 2001
+From a646f8b01842198f443163abe9e7b48cf66cb07c Mon Sep 17 00:00:00 2001
 From: Sta Zhu <zhusidayoyo@hotmail.com>
-Date: Fri, 11 Apr 2025 23:30:36 +0800
+Date: Sat, 26 Apr 2025 11:58:12 +0800
 Subject: [PATCH] Video: Add HEVC ffmpeg decoder & parser
 
 Add ffmpeg software decoder and parser for HEVC, this will make
@@ -2760,10 +2760,10 @@ index fdc533b38f..520472e237 100644
 +    &ff_hevc_parser,
      NULL };
 diff --git a/ffmpeg_generated.gni b/ffmpeg_generated.gni
-index 9fe3c98fb2..09129bec30 100644
+index 6c4cc405aa..5bf75a9d93 100644
 --- a/ffmpeg_generated.gni
 +++ b/ffmpeg_generated.gni
-@@ -223,6 +223,27 @@ if ((current_cpu == "arm64" && ffmpeg_branding == "Chrome") ||
+@@ -224,6 +224,27 @@ if (((current_cpu == "arm64" || current_cpu == "arm64e") &&
      (is_apple && ffmpeg_branding == "Chrome") ||
      (is_win && ffmpeg_branding == "Chrome") ||
      (use_linux_config && ffmpeg_branding == "Chrome")) {
@@ -2791,10 +2791,10 @@ index 9fe3c98fb2..09129bec30 100644
    ffmpeg_c_sources += [
      "libavcodec/atsc_a53.c",
      "libavcodec/autorename_libavcodec_videodsp.c",
-@@ -313,6 +334,19 @@ if ((current_cpu == "x64" && ffmpeg_branding == "Chrome") ||
- }
+@@ -316,6 +337,19 @@ if ((current_cpu == "x64" && ffmpeg_branding == "Chrome") ||
  
- if (current_cpu == "arm64" && ffmpeg_branding == "Chrome") {
+ if ((current_cpu == "arm64" || current_cpu == "arm64e") &&
+     ffmpeg_branding == "Chrome") {
 +
 +  ffmpeg_c_sources += [
 +    "libavcodec/aarch64/hevcdsp_init_aarch64.c"
@@ -2811,7 +2811,7 @@ index 9fe3c98fb2..09129bec30 100644
    ffmpeg_c_sources += [
      "libavcodec/aarch64/aacpsdsp_init_aarch64.c",
      "libavcodec/aarch64/autorename_libavcodec_aarch64_videodsp_init.c",
-@@ -407,6 +441,11 @@ if ((is_android && current_cpu == "arm" && arm_use_neon) ||
+@@ -410,6 +444,11 @@ if ((is_android && current_cpu == "arm" && arm_use_neon) ||
  if ((use_linux_config && current_cpu == "arm" && arm_use_neon &&
       ffmpeg_branding == "Chrome") ||
      (use_linux_config && current_cpu == "arm" && ffmpeg_branding == "Chrome")) {
@@ -2823,7 +2823,7 @@ index 9fe3c98fb2..09129bec30 100644
    ffmpeg_c_sources += [
      "libavcodec/arm/h264chroma_init_arm.c",
      "libavcodec/arm/h264dsp_init_arm.c",
-@@ -425,6 +464,24 @@ if ((current_cpu == "x64" && ffmpeg_branding == "Chrome") ||
+@@ -428,6 +467,24 @@ if ((current_cpu == "x64" && ffmpeg_branding == "Chrome") ||
      (is_android && current_cpu == "x86" && ffmpeg_branding == "Chrome") ||
      (is_win && current_cpu == "x86" && ffmpeg_branding == "Chrome") ||
      (use_linux_config && current_cpu == "x86" && ffmpeg_branding == "Chrome")) {
@@ -2848,7 +2848,7 @@ index 9fe3c98fb2..09129bec30 100644
    ffmpeg_c_sources += [
      "libavcodec/x86/aacpsdsp_init.c",
      "libavcodec/x86/h264_intrapred_init.c",
-@@ -438,6 +495,18 @@ if ((current_cpu == "x64" && ffmpeg_branding == "Chrome") ||
+@@ -441,6 +498,18 @@ if ((current_cpu == "x64" && ffmpeg_branding == "Chrome") ||
  
  if (use_linux_config && current_cpu == "arm" && arm_use_neon &&
      ffmpeg_branding == "Chrome") {

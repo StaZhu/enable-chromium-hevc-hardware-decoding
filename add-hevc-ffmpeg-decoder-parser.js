@@ -42,7 +42,8 @@ const encodingConfig = { encoding: 'utf8' };
 const patches = [
   {
     condition: [
-      'if ((current_cpu == "arm64" && ffmpeg_branding == "Chrome") ||',
+      'if (((current_cpu == "arm64" || current_cpu == "arm64e") &&',
+      '     ffmpeg_branding == "Chrome") ||',
       '    (current_cpu == "x64" && ffmpeg_branding == "Chrome") ||',
       '    (is_android && current_cpu == "x86" && ffmpeg_branding == "Chrome") ||',
       '    (is_apple && ffmpeg_branding == "Chrome") ||',
@@ -94,7 +95,8 @@ const patches = [
   },
   {
     condition: [
-      'if (current_cpu == "arm64" && ffmpeg_branding == "Chrome") {',
+      'if ((current_cpu == "arm64" || current_cpu == "arm64e") &&',
+      '    ffmpeg_branding == "Chrome") {',
     ].join('\n'),
     ffmpeg_c_sources: ['libavcodec/aarch64/hevcdsp_init_aarch64.c'],
     ffmpeg_gas_sources: [
