@@ -1,6 +1,6 @@
-From 7acfe3eb565bc9ba2ac9dfa351b1cc74aa4bed96 Mon Sep 17 00:00:00 2001
+From 4fdafc8267ae9842f070bfba5ac94faaea14535e Mon Sep 17 00:00:00 2001
 From: Sta Zhu <zhusidayoyo@hotmail.com>
-Date: Fri, 11 Apr 2025 23:30:36 +0800
+Date: Sun, 11 May 2025 21:10:06 +0800
 Subject: [PATCH] Video: Update `libavcodec` header
 
 The recent ffmpeg changes doesn't match with chromium include
@@ -16,9 +16,9 @@ configs, need to change the header manually to fix this.
  libavcodec/hevc/pred_template.c |  2 +-
  libavcodec/hevc/ps.c            |  6 +++---
  libavcodec/hevc/ps_enc.c        |  4 ++--
- libavcodec/hevc/refs.c          |  4 ++--
+ libavcodec/hevc/refs.c          |  6 +++---
  libavcodec/hevc/sei.c           |  4 ++--
- 12 files changed, 36 insertions(+), 36 deletions(-)
+ 12 files changed, 37 insertions(+), 37 deletions(-)
 
 diff --git a/libavcodec/hevc/cabac.c b/libavcodec/hevc/cabac.c
 index 892dd1c215..362dda6beb 100644
@@ -78,7 +78,7 @@ index 68ae0e9ef6..e897ad5d58 100644
  #define LUMA 0
  #define CB 1
 diff --git a/libavcodec/hevc/hevcdec.c b/libavcodec/hevc/hevcdec.c
-index 3007741600..3566a823be 100644
+index 636c024b9a..cf63028fc4 100644
 --- a/libavcodec/hevc/hevcdec.c
 +++ b/libavcodec/hevc/hevcdec.c
 @@ -38,23 +38,23 @@
@@ -216,10 +216,10 @@ index 7fbcb3ba4e..4e44f849ba 100644
  static void write_ptl_layer(PutBitContext *pb, PTLCommon *ptl)
  {
 diff --git a/libavcodec/hevc/refs.c b/libavcodec/hevc/refs.c
-index 6f291bbf79..dcd425d908 100644
+index ab2e075af0..404e45ecbb 100644
 --- a/libavcodec/hevc/refs.c
 +++ b/libavcodec/hevc/refs.c
-@@ -25,10 +25,10 @@
+@@ -25,11 +25,11 @@
  #include "libavutil/mem.h"
  #include "libavutil/stereo3d.h"
  
@@ -228,7 +228,9 @@ index 6f291bbf79..dcd425d908 100644
  #include "hevc.h"
  #include "hevcdec.h"
 -#include "progressframe.h"
+-#include "thread.h"
 +#include "libavcodec/progressframe.h"
++#include "libavcodec/thread.h"
  #include "libavutil/refstruct.h"
  
  void ff_hevc_unref_frame(HEVCFrame *frame, int flags)
