@@ -1,6 +1,6 @@
-From 4fdafc8267ae9842f070bfba5ac94faaea14535e Mon Sep 17 00:00:00 2001
+From bbb0baa97bebff5b5426edcdc851fd3e75276afd Mon Sep 17 00:00:00 2001
 From: Sta Zhu <zhusidayoyo@hotmail.com>
-Date: Sun, 11 May 2025 21:10:06 +0800
+Date: Sat, 19 Jul 2025 22:24:16 +0800
 Subject: [PATCH] Video: Update `libavcodec` header
 
 The recent ffmpeg changes doesn't match with chromium include
@@ -78,11 +78,11 @@ index 68ae0e9ef6..e897ad5d58 100644
  #define LUMA 0
  #define CB 1
 diff --git a/libavcodec/hevc/hevcdec.c b/libavcodec/hevc/hevcdec.c
-index 636c024b9a..cf63028fc4 100644
+index f982b4e5c5..989aefb35a 100644
 --- a/libavcodec/hevc/hevcdec.c
 +++ b/libavcodec/hevc/hevcdec.c
-@@ -38,23 +38,23 @@
- #include "libavutil/stereo3d.h"
+@@ -39,23 +39,23 @@
+ #include "libavutil/tdrdi.h"
  #include "libavutil/timecode.h"
  
 -#include "aom_film_grain.h"
@@ -181,7 +181,7 @@ index b4c2fcf506..d873c1c5b6 100644
  
  #define POS(x, y) src[(x) + stride * (y)]
 diff --git a/libavcodec/hevc/ps.c b/libavcodec/hevc/ps.c
-index 24f4218931..6713f42013 100644
+index 57125d59c1..9c0ee8008d 100644
 --- a/libavcodec/hevc/ps.c
 +++ b/libavcodec/hevc/ps.c
 @@ -25,11 +25,11 @@
