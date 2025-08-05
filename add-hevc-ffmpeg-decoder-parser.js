@@ -193,6 +193,10 @@ function enableFFMPEGHevc(brand, os, arch) {
 
 function modifyFFMPEGGenerated(filename) {
   let content = fs.readFileSync(filename, encodingConfig);
+
+  // ✅ Normalize line endings for cross-platform compatibility
+  content = content.replace(/\r\n/g, '\n');
+
   for (const patch of patches) {
     if (!content.includes(patch.condition)) {
       console.error(
@@ -201,29 +205,28 @@ function modifyFFMPEGGenerated(filename) {
       );
       process.exit(1);
     }
+
     let toAdd = '';
     for (const [field, sources] of Object.entries(patch)) {
-      if (field === 'condition') {
-        continue;
-      }
+      if (field === 'condition') continue;
+
       toAdd += `
   ${field} += [
 ${sources.map(source => `    "${source}"`).join(',\n')}
   ]
 `;
     }
+
     if (!content.includes(toAdd)) {
-      content = content.replace(
-        patch.condition,
-        patch.condition + '\n' + toAdd,
-      );
+      content = content.replace(patch.condition, patch.condition + '\n' + toAdd);
     }
   }
+
   fs.writeFileSync(filename, content, encodingConfig);
 }
 
 function enableSoftwareDecodeHEVC() {
-  // 1. Add hevc decoder param for ffmpeg
+  // All original function calls here...
   enableFFMPEGHevc('Chrome', 'win', 'ia32');
   enableFFMPEGHevc('Chrome', 'win', 'x64');
   enableFFMPEGHevc('Chrome', 'win', 'arm64');
@@ -259,12 +262,9 @@ function enableSoftwareDecodeHEVC() {
   enableFFMPEGHevc('Chromium', 'android', 'ia32');
   enableFFMPEGHevc('Chromium', 'android', 'x64');
 
-  // 2. Create auto rename file
   const prefix = '// File automatically generated. See crbug.com/495833.';
   writeAutoRenameFile(
-    genPath(
-      `./libavcodec/aarch64/autorename_libavcodec_aarch64_hevcdsp_idct_neon.S`,
-    ),
+    genPath(`./libavcodec/aarch64/autorename_libavcodec_aarch64_hevcdsp_idct_neon.S`),
     [prefix, '#include "hevcdsp_idct_neon.S"'].join('\n'),
   );
   writeAutoRenameFile(
@@ -280,25 +280,18 @@ function enableSoftwareDecodeHEVC() {
     [prefix, '#include "cabac.c"'].join('\n'),
   );
 
-  // 3. Modify ffmpeg_generated.gni
   modifyFFMPEGGenerated(genPath(`./ffmpeg_generated.gni`));
 
-  // 4. Commit the code then `git format-patch HEAD^ -o /path/to/export/patch`
-  // if you want to generate the `.patch` file.
   if (genPatch) {
-    // Commit the code.
     try {
       const msg = [
         'Video: Add HEVC ffmpeg decoder & parser',
         'Add ffmpeg software decoder and parser for HEVC to enable SW HEVC decoding',
-      ]
-        .map(v => `-m "${v}" `)
-        .join('');
+      ].map(v => `-m "${v}" `).join('');
       childProcess.execSync(`git add -A && git commit ${msg}`, {
         cwd: ffmpegRoot,
       });
     } catch (e) {}
-    // Gen patch.
     try {
       childProcess.execSync(`git format-patch HEAD"^" -o "${output}"`, {
         cwd: ffmpegRoot,
