@@ -1,4 +1,4 @@
-From bbb0baa97bebff5b5426edcdc851fd3e75276afd Mon Sep 17 00:00:00 2001
+From a0ab1f0d2366ee123f3256660d075e07cd154a1c Mon Sep 17 00:00:00 2001
 From: Sta Zhu <zhusidayoyo@hotmail.com>
 Date: Sat, 19 Jul 2025 22:24:16 +0800
 Subject: [PATCH] Video: Update `libavcodec` header
@@ -9,19 +9,19 @@ configs, need to change the header manually to fix this.
  libavcodec/hevc/cabac.c         |  2 +-
  libavcodec/hevc/dsp_template.c  | 10 +++++-----
  libavcodec/hevc/filter.c        |  2 +-
- libavcodec/hevc/hevcdec.c       | 26 +++++++++++++-------------
+ libavcodec/hevc/hevcdec.c       | 28 ++++++++++++++--------------
  libavcodec/hevc/mvs.c           |  2 +-
  libavcodec/hevc/parse.c         |  4 ++--
- libavcodec/hevc/parser.c        |  6 +++---
+ libavcodec/hevc/parser.c        |  8 ++++----
  libavcodec/hevc/pred_template.c |  2 +-
  libavcodec/hevc/ps.c            |  6 +++---
  libavcodec/hevc/ps_enc.c        |  4 ++--
  libavcodec/hevc/refs.c          |  6 +++---
  libavcodec/hevc/sei.c           |  4 ++--
- 12 files changed, 37 insertions(+), 37 deletions(-)
+ 12 files changed, 39 insertions(+), 39 deletions(-)
 
 diff --git a/libavcodec/hevc/cabac.c b/libavcodec/hevc/cabac.c
-index 892dd1c215..362dda6beb 100644
+index 55d5741f87..f6bde3028f 100644
 --- a/libavcodec/hevc/cabac.c
 +++ b/libavcodec/hevc/cabac.c
 @@ -24,7 +24,7 @@
@@ -78,10 +78,10 @@ index 68ae0e9ef6..e897ad5d58 100644
  #define LUMA 0
  #define CB 1
 diff --git a/libavcodec/hevc/hevcdec.c b/libavcodec/hevc/hevcdec.c
-index f982b4e5c5..989aefb35a 100644
+index d071d4504e..f40dcd5ceb 100644
 --- a/libavcodec/hevc/hevcdec.c
 +++ b/libavcodec/hevc/hevcdec.c
-@@ -39,23 +39,23 @@
+@@ -39,24 +39,24 @@
  #include "libavutil/tdrdi.h"
  #include "libavutil/timecode.h"
  
@@ -91,12 +91,14 @@ index f982b4e5c5..989aefb35a 100644
 -#include "codec_internal.h"
 -#include "decode.h"
 -#include "golomb.h"
+-#include "h274.h"
 +#include "libavcodec/aom_film_grain.h"
 +#include "libavcodec/bswapdsp.h"
 +#include "libavcodec/cabac_functions.h"
 +#include "libavcodec/codec_internal.h"
 +#include "libavcodec/decode.h"
 +#include "libavcodec/golomb.h"
++#include "libavcodec/h274.h"
  #include "hevc.h"
  #include "parse.h"
  #include "hevcdec.h"
@@ -147,16 +149,18 @@ index 29f21a5966..2f519380fb 100644
  #include "parse.h"
  
 diff --git a/libavcodec/hevc/parser.c b/libavcodec/hevc/parser.c
-index 16b40e2b10..e94b6905c9 100644
+index 62bcd91172..af03925bad 100644
 --- a/libavcodec/hevc/parser.c
 +++ b/libavcodec/hevc/parser.c
-@@ -23,13 +23,13 @@
+@@ -23,14 +23,14 @@
  #include "libavutil/common.h"
  #include "libavutil/mem.h"
  
 -#include "golomb.h"
 +#include "libavcodec/golomb.h"
  #include "hevc.h"
+-#include "parser_internal.h"
++#include "libavcodec/parser_internal.h"
  #include "parse.h"
  #include "ps.h"
  #include "sei.h"
@@ -181,7 +185,7 @@ index b4c2fcf506..d873c1c5b6 100644
  
  #define POS(x, y) src[(x) + stride * (y)]
 diff --git a/libavcodec/hevc/ps.c b/libavcodec/hevc/ps.c
-index 57125d59c1..9c0ee8008d 100644
+index 7b9dbbcff8..32a0e628b6 100644
 --- a/libavcodec/hevc/ps.c
 +++ b/libavcodec/hevc/ps.c
 @@ -25,11 +25,11 @@
@@ -216,7 +220,7 @@ index 7fbcb3ba4e..4e44f849ba 100644
  static void write_ptl_layer(PutBitContext *pb, PTLCommon *ptl)
  {
 diff --git a/libavcodec/hevc/refs.c b/libavcodec/hevc/refs.c
-index ab2e075af0..404e45ecbb 100644
+index ccf7258ec4..797e789e61 100644
 --- a/libavcodec/hevc/refs.c
 +++ b/libavcodec/hevc/refs.c
 @@ -25,11 +25,11 @@
@@ -235,7 +239,7 @@ index ab2e075af0..404e45ecbb 100644
  
  void ff_hevc_unref_frame(HEVCFrame *frame, int flags)
 diff --git a/libavcodec/hevc/sei.c b/libavcodec/hevc/sei.c
-index b8e98cde89..0a54c442d5 100644
+index 5fd4e763b3..d5ca376b38 100644
 --- a/libavcodec/hevc/sei.c
 +++ b/libavcodec/hevc/sei.c
 @@ -22,8 +22,8 @@
@@ -250,5 +254,5 @@ index b8e98cde89..0a54c442d5 100644
  #include "sei.h"
  
 -- 
-2.45.2.windows.1
+2.51.0
 
