@@ -73,7 +73,6 @@ const patches = [
   {
     condition: [
       'if ((current_cpu == "x64" && ffmpeg_branding == "Chrome") ||',
-      '    (is_android && current_cpu == "x86" && ffmpeg_branding == "Chrome") ||',
       '    (is_win && current_cpu == "x86" && ffmpeg_branding == "Chrome") ||',
       '    (use_linux_config && current_cpu == "x86" && ffmpeg_branding == "Chrome")) {',
     ].join('\n'),
