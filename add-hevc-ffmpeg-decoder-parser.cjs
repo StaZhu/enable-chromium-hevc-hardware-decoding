@@ -85,6 +85,7 @@ const patches = [
       'libavcodec/x86/bswapdsp.asm',
       'libavcodec/x86/hevc/add_res.asm',
       'libavcodec/x86/hevc/deblock.asm',
+      "libavcodec/x86/hevc/dequant.asm",
       'libavcodec/x86/hevc/idct.asm',
       'libavcodec/x86/hevc/mc.asm',
       'libavcodec/x86/hevc/sao.asm',
@@ -101,6 +102,7 @@ const patches = [
     ffmpeg_gas_sources: [
       'libavcodec/aarch64/autorename_libavcodec_aarch64_hevcdsp_idct_neon.S',
       'libavcodec/aarch64/hevcdsp_deblock_neon.S',
+      'libavcodec/aarch64/hevcdsp_dequant_neon.S',
       'libavcodec/aarch64/h26x/epel_neon.S',
       'libavcodec/aarch64/h26x/qpel_neon.S',
       'libavcodec/aarch64/h26x/sao_neon.S',
