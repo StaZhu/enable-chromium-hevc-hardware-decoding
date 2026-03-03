@@ -129,6 +129,14 @@ const patches = [
       'libavcodec/arm/hevcdsp_sao_neon.S',
     ],
   },
+  {
+    condition: [
+      'if (use_linux_config && current_cpu == "riscv64" &&',
+      '    ffmpeg_branding == "Chrome") {',
+    ].join('\n'),
+    ffmpeg_c_sources: ['libavcodec/riscv/hevcdsp_init.c'],
+    ffmpeg_gas_sources: ['libavcodec/riscv/h26x/h2656_inter_rvv.S'],
+  },
 ];
 
 function genPath(subPath) {
@@ -159,7 +167,7 @@ function enableHevcConfig(filename) {
     .replace('define CONFIG_HEVCPARSE 0', 'define CONFIG_HEVCPARSE 1')
     .replace('define CONFIG_HEVC_SEI 0', 'define CONFIG_HEVC_SEI 1')
     .replace('define CONFIG_BSWAPDSP 0', 'define CONFIG_BSWAPDSP 1')
-    .replace('define CONFIG_DOVI_RPU 0', 'define CONFIG_DOVI_RPU 1')
+    .replace('define CONFIG_DOVI_RPUDEC 0', 'define CONFIG_DOVI_RPUDEC 1')
     .replace("--enable-decoder='aac,h264'", "--enable-decoder='aac,h264,hevc'")
     .replace("--enable-parser='aac,h264'", "--enable-parser='aac,h264,hevc'");
   fs.writeFileSync(filename, content, encodingConfig);
@@ -232,33 +240,18 @@ function enableSoftwareDecodeHEVC() {
   enableFFMPEGHevc('Chrome', 'win-msvc', 'x64');
   enableFFMPEGHevc('Chrome', 'mac', 'x64');
   enableFFMPEGHevc('Chrome', 'mac', 'arm64');
+  enableFFMPEGHevc('Chrome', 'ios', 'x64');
   enableFFMPEGHevc('Chrome', 'ios', 'arm64');
   enableFFMPEGHevc('Chrome', 'linux', 'x64');
   enableFFMPEGHevc('Chrome', 'linux', 'ia32');
   enableFFMPEGHevc('Chrome', 'linux', 'arm64');
   enableFFMPEGHevc('Chrome', 'linux', 'arm');
   enableFFMPEGHevc('Chrome', 'linux', 'arm-neon');
+  enableFFMPEGHevc('Chrome', 'linux', 'riscv64');
+  enableFFMPEGHevc('Chrome', 'linux-noasm', 'x64');
   enableFFMPEGHevc('Chrome', 'android', 'arm64');
   enableFFMPEGHevc('Chrome', 'android', 'ia32');
   enableFFMPEGHevc('Chrome', 'android', 'x64');
-
-  enableFFMPEGHevc('Chromium', 'win', 'ia32');
-  enableFFMPEGHevc('Chromium', 'win', 'x64');
-  enableFFMPEGHevc('Chromium', 'win', 'arm64');
-  enableFFMPEGHevc('Chromium', 'win-msvc', 'ia32');
-  enableFFMPEGHevc('Chromium', 'win-msvc', 'x64');
-  enableFFMPEGHevc('Chromium', 'mac', 'x64');
-  enableFFMPEGHevc('Chromium', 'mac', 'arm64');
-  enableFFMPEGHevc('Chromium', 'ios', 'arm64');
-  enableFFMPEGHevc('Chromium', 'linux', 'x64');
-  enableFFMPEGHevc('Chromium', 'linux', 'ia32');
-  enableFFMPEGHevc('Chromium', 'linux', 'arm64');
-  enableFFMPEGHevc('Chromium', 'linux', 'arm');
-  enableFFMPEGHevc('Chromium', 'linux', 'arm-neon');
-  enableFFMPEGHevc('Chromium', 'linux-noasm', 'x64');
-  enableFFMPEGHevc('Chromium', 'android', 'arm64');
-  enableFFMPEGHevc('Chromium', 'android', 'ia32');
-  enableFFMPEGHevc('Chromium', 'android', 'x64');
 
   // 2. Create auto rename file
   const prefix = '// File automatically generated. See crbug.com/495833.';
