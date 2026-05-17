@@ -1,6 +1,6 @@
-From 7c2459b5939748605310b3659ed28287f5a16773 Mon Sep 17 00:00:00 2001
+From c3fe0aa3b655e9d8b7fb5a961f7e794bcd764e32 Mon Sep 17 00:00:00 2001
 From: Sta Zhu <zhusidayoyo@hotmail.com>
-Date: Sun, 12 Apr 2026 22:39:30 +0800
+Date: Sun, 17 May 2026 21:21:00 +0800
 Subject: [PATCH] Video: Add HEVC ffmpeg decoder & parser
 
 Add ffmpeg software decoder and parser for HEVC, this will make
@@ -2006,5 +2006,5 @@ index 0000000000..d46820091a
 +#include "parser.c"
 \ No newline at end of file
 -- 
-2.53.0.windows.2
+2.51.0
 
