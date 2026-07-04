@@ -1,4 +1,4 @@
-From a0ab1f0d2366ee123f3256660d075e07cd154a1c Mon Sep 17 00:00:00 2001
+From e9cd2be0856ba2d1a3820e74a849fef78ebc4290 Mon Sep 17 00:00:00 2001
 From: Sta Zhu <zhusidayoyo@hotmail.com>
 Date: Sat, 19 Jul 2025 22:24:16 +0800
 Subject: [PATCH] Video: Update `libavcodec` header
@@ -34,7 +34,7 @@ index 55d5741f87..f6bde3028f 100644
  #include "hevc.h"
  #include "hevcdec.h"
 diff --git a/libavcodec/hevc/dsp_template.c b/libavcodec/hevc/dsp_template.c
-index a0f79c2673..b4f37237d7 100644
+index e7b21127ba..d902a0ca6b 100644
 --- a/libavcodec/hevc/dsp_template.c
 +++ b/libavcodec/hevc/dsp_template.c
 @@ -20,13 +20,13 @@
@@ -55,7 +55,7 @@ index a0f79c2673..b4f37237d7 100644
  
  static void FUNC(put_pcm)(uint8_t *_dst, ptrdiff_t stride, int width, int height,
                            GetBitContext *gb, int pcm_bit_depth)
-@@ -817,7 +817,7 @@ static void FUNC(put_hevc_epel_bi_w_hv)(uint8_t *_dst, ptrdiff_t _dststride,
+@@ -836,7 +836,7 @@ static void FUNC(put_hevc_epel_bi_w_hv)(uint8_t *_dst, ptrdiff_t _dststride,
  #define TQ2 pix[2  * xstride + 3 * ystride]
  #define TQ3 pix[3  * xstride + 3 * ystride]
  
@@ -78,7 +78,7 @@ index 68ae0e9ef6..e897ad5d58 100644
  #define LUMA 0
  #define CB 1
 diff --git a/libavcodec/hevc/hevcdec.c b/libavcodec/hevc/hevcdec.c
-index d071d4504e..f40dcd5ceb 100644
+index 473899abc5..a0bc2537fb 100644
 --- a/libavcodec/hevc/hevcdec.c
 +++ b/libavcodec/hevc/hevcdec.c
 @@ -39,24 +39,24 @@
@@ -172,7 +172,7 @@ index 62bcd91172..af03925bad 100644
  #define START_CODE 0x000001 ///< start_code_prefix_one_3bytes
  
 diff --git a/libavcodec/hevc/pred_template.c b/libavcodec/hevc/pred_template.c
-index b4c2fcf506..d873c1c5b6 100644
+index e6069fd267..86870ed681 100644
 --- a/libavcodec/hevc/pred_template.c
 +++ b/libavcodec/hevc/pred_template.c
 @@ -22,7 +22,7 @@
@@ -183,9 +183,9 @@ index b4c2fcf506..d873c1c5b6 100644
 +#include "libavcodec/bit_depth_template.c"
  #include "pred.h"
  
- #define POS(x, y) src[(x) + stride * (y)]
+ static void FUNC(ref_filter_3tap)(uint8_t *filtered_left,
 diff --git a/libavcodec/hevc/ps.c b/libavcodec/hevc/ps.c
-index 7b9dbbcff8..32a0e628b6 100644
+index f090a31803..6d3791ac9d 100644
 --- a/libavcodec/hevc/ps.c
 +++ b/libavcodec/hevc/ps.c
 @@ -25,11 +25,11 @@
@@ -220,7 +220,7 @@ index 7fbcb3ba4e..4e44f849ba 100644
  static void write_ptl_layer(PutBitContext *pb, PTLCommon *ptl)
  {
 diff --git a/libavcodec/hevc/refs.c b/libavcodec/hevc/refs.c
-index ccf7258ec4..797e789e61 100644
+index 55db706a8a..248061fad7 100644
 --- a/libavcodec/hevc/refs.c
 +++ b/libavcodec/hevc/refs.c
 @@ -25,11 +25,11 @@
@@ -239,7 +239,7 @@ index ccf7258ec4..797e789e61 100644
  
  void ff_hevc_unref_frame(HEVCFrame *frame, int flags)
 diff --git a/libavcodec/hevc/sei.c b/libavcodec/hevc/sei.c
-index 5fd4e763b3..d5ca376b38 100644
+index e12803f1d3..83c726a217 100644
 --- a/libavcodec/hevc/sei.c
 +++ b/libavcodec/hevc/sei.c
 @@ -22,8 +22,8 @@
@@ -254,5 +254,5 @@ index 5fd4e763b3..d5ca376b38 100644
  #include "sei.h"
  
 -- 
-2.51.0
+2.54.0
 

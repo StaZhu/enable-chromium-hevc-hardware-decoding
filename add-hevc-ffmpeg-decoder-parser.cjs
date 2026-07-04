@@ -98,11 +98,15 @@ const patches = [
       'if ((current_cpu == "arm64" || current_cpu == "arm64e") &&',
       '    ffmpeg_branding == "Chrome") {',
     ].join('\n'),
-    ffmpeg_c_sources: ['libavcodec/aarch64/hevcdsp_init_aarch64.c'],
+    ffmpeg_c_sources: [
+      'libavcodec/aarch64/hevcdsp_init_aarch64.c',
+      'libavcodec/aarch64/hevcpred_init_aarch64.c',
+    ],
     ffmpeg_gas_sources: [
       'libavcodec/aarch64/autorename_libavcodec_aarch64_hevcdsp_idct_neon.S',
       'libavcodec/aarch64/hevcdsp_deblock_neon.S',
       'libavcodec/aarch64/hevcdsp_dequant_neon.S',
+      'libavcodec/aarch64/hevcpred_neon.S',
       'libavcodec/aarch64/h26x/epel_neon.S',
       'libavcodec/aarch64/h26x/qpel_neon.S',
       'libavcodec/aarch64/h26x/sao_neon.S',
@@ -110,16 +114,13 @@ const patches = [
   },
   {
     condition: [
-      'if ((use_linux_config && current_cpu == "arm" && arm_use_neon &&',
-      '     ffmpeg_branding == "Chrome") ||',
-      '    (use_linux_config && current_cpu == "arm" && ffmpeg_branding == "Chrome")) {',
+      'if (use_linux_config && current_cpu == "arm" && ffmpeg_branding == "Chrome") {',
     ].join('\n'),
     ffmpeg_c_sources: ['libavcodec/arm/hevcdsp_init_arm.c'],
   },
   {
     condition: [
-      'if (use_linux_config && current_cpu == "arm" && arm_use_neon &&',
-      '    ffmpeg_branding == "Chrome") {',
+      'if (use_linux_config && current_cpu == "arm" && ffmpeg_branding == "Chrome") {',
     ].join('\n'),
     ffmpeg_c_sources: ['libavcodec/arm/hevcdsp_init_neon.c'],
     ffmpeg_gas_sources: [
