@@ -51,11 +51,7 @@ const patches = [
       '    (use_linux_config && ffmpeg_branding == "Chrome")) {',
     ].join('\n'),
     ffmpeg_c_sources: [
-      'libavcodec/aom_film_grain.c',
       'libavcodec/bswapdsp.c',
-      'libavcodec/dovi_rpu.c',
-      'libavcodec/dovi_rpudec.c',
-      'libavcodec/dynamic_hdr_vivid.c',
       'libavcodec/hevc/autorename_libavcodec_hevc_parse.c',
       'libavcodec/hevc/autorename_libavcodec_hevc_parser.c',
       'libavcodec/hevc/autorename_libavcodec_hevc_cabac.c',
