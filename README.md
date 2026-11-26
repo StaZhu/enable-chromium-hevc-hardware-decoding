@@ -64,7 +64,7 @@ Linux (Chrome version >= `108.0.5354.0`, and only supports GPUs that support VAA
 
 ## What's the API supported?
 
-Video Decode: File, Media Source Extensions, WebCodec (8Bit requires >= `107.0.5272.0`, 10Bit + HEVC with Alpha requires >= `108.0.5343.0`), Clearkey and Widevine L1 (HW only) Encrypted Media Extensions, WebRTC (requires >= `136.0.7077.0`, some useful sites here: [Media Capabilities](https://webrtc.internaut.com/mc/), [Demo](https://webrtc.github.io/samples/src/content/peerconnection/change-codecs/)) are supported.
+Video Decode: File, Media Source Extensions, WebCodec (8Bit requires >= `107.0.5272.0`, 10Bit + HEVC with Alpha requires >= `108.0.5343.0`), Clearkey and Hardware-Secure Encrypted Media Extensions (PlayReady SL3000 on Windows 11 x64 for Chrome >= `143.0.7487.1`; Widevine L1 for Chrome < `146.0.7674.0`; SW L3 is not supported), WebRTC (requires >= `136.0.7077.0`, some useful sites here: [Media Capabilities](https://webrtc.internaut.com/mc/), [Demo](https://webrtc.github.io/samples/src/content/peerconnection/change-codecs/)) are supported.
 
 Video Encode: WebCodec (Windows, macOS, and Android, requires Chrome >= `130.0.6703.0`), WebRTC (Windows, macOS, and Android, requires >= `136.0.7077.0`), and MediaRecorder (Windows, macOS, and Android, requires Chrome >= `136.0.7064.0`, need to pass `--enable-features=MediaRecorderHEVCSupport` in Chrome 133 ~ 135, [Demo](https://webrtc.github.io/samples/src/content/getusermedia/record/)) are supported.
 
@@ -121,7 +121,7 @@ There are two type of support type here:
 1. Type 1: Supports RPU dynamic metadata and Profile 5 (IPTPQc2).
 2. Type 2: Supports profiles like Profile 8/9 that has cross-compatible HDR10/HLG/SDR support.
 
-For the first type, currently only Chromecast and Windows platforms have very limited support. On Windows platform, Chrome supports encrypted Dolby Vision content, for versions of Chrome >= 110, when manually passing `--enable-features=PlatformEncryptedDolbyVision` switch and launch Chrome and when the system has installed the Dolby Vision extension and HEVC video extension, Profile 4/5/8 will be supported, "Supported" will be returned when querying the API (Note: For external HDR displays, if HDR mode is turned on, Microsoft's MediaFoundation has a bug and will not return "Supported" results).
+For the first type, currently only Chromecast and Windows platforms have very limited support. On Windows platform, Chrome supports encrypted Dolby Vision content (via PlayReady SL3000 on Windows 11 x64 in Chrome >= `143.0.7487.1`; Widevine L1 was disabled on Windows starting from Chrome `146.0.7674.0`). `PlatformEncryptedDolbyVision` is enabled by default on Windows in newer versions of Chrome (older versions >= 110 required manually passing `--enable-features=PlatformEncryptedDolbyVision`). When the system has installed the Dolby Vision Extensions and HEVC Video Extensions (and HDR display output is active, which is always checked since Chrome >= `152.0.7964.0`), Profile 4/5/8 will be supported and "Supported" will be returned when querying the EME API.
 
 For the second type, Profile 8/9 with cross-compatibility such as HLG, HDR10, SDR, using API to query with `dvh1`, `dvhe`, `dva1`, `dvav` will return "not supported" (for example :`MediaSource.isTypeSupported('video/mp4;codecs="dvh1.08.07"')`), while when querying with `hvc1`, `hev1`, `avc1`, `avc3`, "supported" will be returned. The specific version of Chrome has different implementation details:
 
@@ -326,10 +326,60 @@ try {
 
 ### Encrypted Content
 
+#### Version History (Windows Hardware DRM)
+
+- **Chrome >= `143.0.7487.1` (Windows 11 x64) & Edge**: Direct **Microsoft PlayReady SL3000** (`com.microsoft.playready.recommendation.3000`, or `com.microsoft.playready.recommendation` with `robustness: '3000'`) is enabled by default via `MediaFoundationCdm`. You can inspect registered hardware CDMs at `chrome://media-internals#cdms`.
+- **Chrome >= `146.0.7674.0`**: Windows Widevine L1 (`MediaFoundationWidevineCdm`) has been **disabled** in favor of PlayReady SL3000, and `HardwareSecureDecryptionExperiment` (`com.widevine.alpha.experiment`) was removed in Chrome >= `151.0.7887.0`. Querying `com.widevine.alpha` with `robustness: 'HW_SECURE_ALL'` will return `NotSupportedError` on Chrome >= 146.
+- **Encrypted Dolby Vision**: `PlatformEncryptedDolbyVision` is enabled by default on Windows in newer Chromium versions (older versions >= 110 required `--enable-features=PlatformEncryptedDolbyVision`). Starting from Chrome >= `152.0.7964.0`, capability queries always verify active HDR display support (`hdr=1`).
+
 #### requestMediaKeySystemAccess
 
 ```javascript
-/** Detect HEVC Widevine L1 support (only Windows is supported). */
+/**
+ * Detect PlayReady SL3000 hardware DRM support for HEVC & Dolby Vision
+ * (Windows 11 x64, Chrome >= 143.0.7487.1 & Edge).
+ *
+ * Robustness rules in Chromium `PlayReadyKeySystemInfo`:
+ * - `'com.microsoft.playready.recommendation.3000'`: omit `robustness` (or pass `''` / `'3000'`).
+ * - `'com.microsoft.playready.recommendation'`: must pass `robustness: '3000'`.
+ * (Passing Widevine's `'HW_SECURE_ALL'` to PlayReady will be rejected.)
+ */
+(async () => {
+  const ks3000 = 'com.microsoft.playready.recommendation.3000';
+  const ksRec = 'com.microsoft.playready.recommendation';
+  const tests = [
+    ['PlayReady SL3000 - HEVC Main (hev1)', ks3000, '',     'hev1.1.6.L120.90'],
+    ['PlayReady SL3000 - HEVC Main (hvc1)', ks3000, '',     'hvc1.1.6.L120.90'],
+    ['PlayReady SL3000 - HEVC Main 10',     ks3000, '',     'hvc1.2.4.L120.90'],
+    ['PlayReady SL3000 - Dolby Vision P5',  ks3000, '',     'dvhe.05.07'],
+    ['PlayReady SL3000 - Dolby Vision P8',  ks3000, '',     'dvhe.08.07'],
+    ['PlayReady Rec    - DV P5 (rob=3000)', ksRec,  '3000', 'dvhe.05.07'],
+  ];
+
+  for (const [name, keySystem, robustness, codec] of tests) {
+    const videoCap = { contentType: `video/mp4; codecs="${codec}"` };
+    if (robustness) videoCap.robustness = robustness;
+    try {
+      const access = await navigator.requestMediaKeySystemAccess(keySystem, [
+        {
+          initDataTypes: ['cenc'],
+          distinctiveIdentifier: 'required',
+          persistentState: 'required',
+          sessionTypes: ['temporary'],
+          videoCapabilities: [videoCap],
+        },
+      ]);
+      console.log(`SUPPORTED: ${name}`, access.getConfiguration());
+    } catch (e) {
+      console.log(`NOT SUPPORTED: ${name} (${e.message})`);
+    }
+  }
+})();
+
+/**
+ * Legacy Windows Widevine L1 detection (only for Chrome < 146.0.7674.0;
+ * very old versions required `'com.widevine.alpha.experiment'`).
+ */
 try {
   await navigator.requestMediaKeySystemAccess('com.widevine.alpha', [
     {
@@ -345,34 +395,9 @@ try {
       ],
     },
   ]);
-  console.log('Widevine L1 HEVC main profile is supported!');
+  console.log('Legacy Widevine L1 HEVC main profile is supported!');
 } catch (e) {
-  console.log('Widevine L1 HEVC main profile is not supported!');
-}
-
-
-/**
- * Detect Dolby Vision Widevine L1 support (only Windows is supported, and only if
- * `--enable-features=PlatformEncryptedDolbyVision` switch has been passed).
- */
-try {
-  await navigator.requestMediaKeySystemAccess('com.widevine.alpha', [
-    {
-      initDataTypes: ['cenc'],
-      distinctiveIdentifier: 'required',
-      persistentState: 'required',
-      sessionTypes: ['temporary'],
-      videoCapabilities: [
-        {
-          robustness: 'HW_SECURE_ALL',
-          contentType: 'video/mp4; codecs="dvhe.05.07"',
-        },
-      ],
-    },
-  ]);
-  console.log('Widevine L1 DV profile 5 is supported!');
-} catch (e) {
-  console.log('Widevine L1 DV profile 5 is not supported!');
+  console.log('Legacy Widevine L1 HEVC main profile is not supported!');
 }
 ```
 
@@ -557,6 +582,12 @@ If Electron >= v22.0.0, the HEVC HW decoding feature for macOS, Windows, and Lin
 If Electron >= v33.0.0, the HEVC HW encoding feature for macOS, Windows should have already been integrated.
 
 ## Change Log
+
+`2026-07-21` Always validate HDR display status when querying encrypted Dolby Vision capability on Windows (Chrome >= `152.0.7964.0`)
+
+`2026-02-07` Disable Windows Widevine L1 (`MediaFoundationWidevineCdm`) in favor of PlayReady SL3000, update encrypted HEVC / Dolby Vision detection methods (Chrome >= `146.0.7674.0`)
+
+`2025-10-21` Enable direct Microsoft PlayReady SL3000 hardware DRM (`com.microsoft.playready.recommendation.3000`) by default on Windows 11 x64 (Chrome >= `143.0.7487.1`)
 
 `2025-05-20` Fixed HEVC 1080P resolution enumeration for NVIDIA GT600/700 Series (Chrome >= `138.0.7191.0`)
 
