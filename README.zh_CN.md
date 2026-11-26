@@ -65,7 +65,7 @@ Linux (版本号须 >= `108.0.5354.0`, 仅支持 VAAPI 接口支持的 GPU，比
 
 ## 支持哪些 API？
 
-视频解码：支持 File, Media Source Extensions, WebCodec (8Bit >= `107.0.5272.0`, 10Bit + HEVC with Alpha >= `108.0.5343.0`), Clearkey 以及 Widevine L1 (不支持L3) Encrypted Media Extensions, WebRTC (Chrome >= `136.0.7077.0` 默认开启，一些可用的测试地址供参考：[Media Capabilities](https://webrtc.internaut.com/mc/), [Demo](https://webrtc.github.io/samples/src/content/peerconnection/change-codecs/))。
+视频解码：支持 File, Media Source Extensions, WebCodec (8Bit >= `107.0.5272.0`, 10Bit + HEVC with Alpha >= `108.0.5343.0`), Clearkey 以及硬件级 Encrypted Media Extensions (Windows 11 x64 平台 Chrome >= `143.0.7487.1` 支持 PlayReady SL3000；Chrome < `146.0.7674.0` 为 Widevine L1，不支持 L3 软解), WebRTC (Chrome >= `136.0.7077.0` 默认开启，一些可用的测试地址供参考：[Media Capabilities](https://webrtc.internaut.com/mc/), [Demo](https://webrtc.github.io/samples/src/content/peerconnection/change-codecs/))。
 
 视频编码：支持 WebCodec (支持 macOS, Windows, Android, Chrome >= `130.0.6703.0` 版本默认启用), WebRTC (支持 macOS, Windows, Android, Chrome >= `136.0.7077.0` 版本默认启用)，MediaRecorder (Windows, macOS, and Android, Chrome >= `136.0.7064.0` 版本默认启用，Chrome 133 ~ 135 版本，需传入 `--enable-features=MediaRecorderHEVCSupport` 启用，[Demo](https://webrtc.github.io/samples/src/content/getusermedia/record/))。
 
@@ -122,7 +122,7 @@ Qualcomm Adreno 618 及以上
 1. 第一种：支持 RPU 动态元数据，支持 Profile 5（IPTPQc2）播放。
 2. 第二种：支持 Profile 8/9 等 Cross-compatible Profile，以 HDR10/HLG/SDR 渲染播放。
 
-对于第一种，目前仅 Chromecast 和 Windows 平台具有有限的支持，在 Windows 平台，Chrome 支持加密杜比视界内容。Chrome >= 110 的版本，手动传入 `--enable-features=PlatformEncryptedDolbyVision` 启动参数，在系统已安装杜比视界插件 + HEVC视频扩展插件的情况下，支持 Profile 4/5/8，使用 API 查询时会返回“支持”（注：对于外置 HDR 显示器，如果开启 HDR 模式，微软的 MediaFoundation 存在Bug，不会返回“支持” 结果）。
+对于第一种，目前仅 Chromecast 和 Windows 平台具有有限的支持。在 Windows 平台，Chrome 支持加密杜比视界内容（Windows 11 x64 平台 Chrome >= `143.0.7487.1` 通过 PlayReady SL3000 支持；Chrome >= `146.0.7674.0` 已在 Windows 禁用原有的 Widevine L1）。新版 Chrome 已在 Windows 默认启用 `PlatformEncryptedDolbyVision`（旧版 Chrome >= 110 需手动传入 `--enable-features=PlatformEncryptedDolbyVision` 启动参数），在系统已安装杜比视界扩展（Dolby Vision Extensions）+ HEVC 视频扩展且显示器处于 HDR 输出状态（Chrome >= `152.0.7964.0` 起默认校验 HDR 显示状态）的情况下，支持 Profile 4/5/8，使用 EME API 查询时会返回“支持”。
 
 对于第二种，例如具有 HLG, HDR10, SDR 兼容性的 Profile 8/9，在使用 API 以 `dvh1`, `dvhe`, `dva1`, `dvav` 查询时会返回 "不支持"（例如：`MediaSource.isTypeSupported('video/mp4;codecs="dvh1.08.07"')`），以 `hvc1`, `hev1`, `avc1`, `avc3` 查询时会返回"支持"，具体版本的 Chrome，实现细节有所不同：
 
@@ -319,10 +319,60 @@ try {
 
 ### 加密内容
 
+#### Windows 硬件 DRM 版本演进说明
+
+- **Chrome >= `143.0.7487.1` (Windows 11 x64) 及 Edge**：默认通过 `MediaFoundationCdm` 启用原生 **Microsoft PlayReady SL3000**（`com.microsoft.playready.recommendation.3000`，或 `com.microsoft.playready.recommendation` 搭配 `robustness: '3000'`）。可在地址栏打开 `chrome://media-internals#cdms` 查看已注册的硬件 CDM 能力列表。
+- **Chrome >= `146.0.7674.0`**：Windows 平台已正式**禁用 Widevine L1**（`MediaFoundationWidevineCdm`）并全面转向 PlayReady SL3000；`HardwareSecureDecryptionExperiment`（`com.widevine.alpha.experiment`）亦已在 Chrome >= `151.0.7887.0` 中彻底移除。因此在新版 Chrome 中以 `com.widevine.alpha` + `HW_SECURE_ALL` 查询加密 HEVC / 杜比视界会始终返回不支持。
+- **加密杜比视界开关与 HDR 校验**：新版 Chromium 在 Windows 平台已默认启用 `PlatformEncryptedDolbyVision`（旧版 >= 110 需传入 `--enable-features=PlatformEncryptedDolbyVision`）；自 Chrome >= `152.0.7964.0` 起，查询加密杜比视界能力时默认开启显示器 HDR 状态校验（`hdr=1`）。
+
 #### requestMediaKeySystemAccess
 
 ```javascript
-/** Detect HEVC Widevine L1 support (only Windows is supported). */
+/**
+ * 检测 Windows 硬件 DRM (PlayReady SL3000) 对 HEVC 与杜比视界的支持
+ * (适用于 Windows 11 x64, Chrome >= 143.0.7487.1 及 Edge)。
+ *
+ * Chromium `PlayReadyKeySystemInfo` 的 robustness 校验规则：
+ * - 使用 `'com.microsoft.playready.recommendation.3000'` 时：省略 `robustness`（或传 `''` / `'3000'`）。
+ * - 使用 `'com.microsoft.playready.recommendation'` 时：必须传 `robustness: '3000'`。
+ * （注意：向 PlayReady 传入 Widevine 的 `'HW_SECURE_ALL'` 会被直接拒绝。）
+ */
+(async () => {
+  const ks3000 = 'com.microsoft.playready.recommendation.3000';
+  const ksRec = 'com.microsoft.playready.recommendation';
+  const tests = [
+    ['PlayReady SL3000 - HEVC Main (hev1)', ks3000, '',     'hev1.1.6.L120.90'],
+    ['PlayReady SL3000 - HEVC Main (hvc1)', ks3000, '',     'hvc1.1.6.L120.90'],
+    ['PlayReady SL3000 - HEVC Main 10',     ks3000, '',     'hvc1.2.4.L120.90'],
+    ['PlayReady SL3000 - Dolby Vision P5',  ks3000, '',     'dvhe.05.07'],
+    ['PlayReady SL3000 - Dolby Vision P8',  ks3000, '',     'dvhe.08.07'],
+    ['PlayReady Rec    - DV P5 (rob=3000)', ksRec,  '3000', 'dvhe.05.07'],
+  ];
+
+  for (const [name, keySystem, robustness, codec] of tests) {
+    const videoCap = { contentType: `video/mp4; codecs="${codec}"` };
+    if (robustness) videoCap.robustness = robustness;
+    try {
+      const access = await navigator.requestMediaKeySystemAccess(keySystem, [
+        {
+          initDataTypes: ['cenc'],
+          distinctiveIdentifier: 'required',
+          persistentState: 'required',
+          sessionTypes: ['temporary'],
+          videoCapabilities: [videoCap],
+        },
+      ]);
+      console.log(`SUPPORTED: ${name}`, access.getConfiguration());
+    } catch (e) {
+      console.log(`NOT SUPPORTED: ${name} (${e.message})`);
+    }
+  }
+})();
+
+/**
+ * 旧版 Windows Widevine L1 检测方法 (仅适用于 Chrome < 146.0.7674.0；
+ * 更早期版本需将 keySystem 替换为 `'com.widevine.alpha.experiment'`)。
+ */
 try {
   await navigator.requestMediaKeySystemAccess('com.widevine.alpha', [
     {
@@ -338,33 +388,9 @@ try {
       ],
     },
   ]);
-  console.log('Widevine L1 HEVC main profile is supported!');
+  console.log('Legacy Widevine L1 HEVC main profile is supported!');
 } catch (e) {
-  console.log('Widevine L1 HEVC main profile is not supported!');
-}
-
-/**
- * Detect Dolby Vision Widevine L1 support (only Windows is supported, and only if
- * `--enable-features=PlatformEncryptedDolbyVision` switch has been passed).
- */
-try {
-  await navigator.requestMediaKeySystemAccess('com.widevine.alpha', [
-    {
-      initDataTypes: ['cenc'],
-      distinctiveIdentifier: 'required',
-      persistentState: 'required',
-      sessionTypes: ['temporary'],
-      videoCapabilities: [
-        {
-          robustness: 'HW_SECURE_ALL',
-          contentType: 'video/mp4; codecs="dvhe.05.07"',
-        },
-      ],
-    },
-  ]);
-  console.log('Widevine L1 DV profile 5 is supported!');
-} catch (e) {
-  console.log('Widevine L1 DV profile 5 is not supported!');
+  console.log('Legacy Widevine L1 HEVC main profile is not supported!');
 }
 ```
 
@@ -520,6 +546,12 @@ Electron >= v22.0.0 已集成好 macOS, Windows, 和 Linux (仅 VAAPI) 平台的
 Electron >= v33.0.0 已集成好 macOS, Windows 平台的 HEVC 硬编码功能，且开箱即用。
 
 ## 更新历史
+
+`2026-07-21` Windows 平台查询加密杜比视界能力时默认开启显示器 HDR 状态校验 (Chrome >= `152.0.7964.0`)
+
+`2026-02-07` Windows 平台禁用 Widevine L1 (`MediaFoundationWidevineCdm`) 并全面转向 PlayReady SL3000，更新加密 HEVC / 杜比视界检测方法 (Chrome >= `146.0.7674.0`)
+
+`2025-10-21` Windows 11 x64 平台默认启用原生 Microsoft PlayReady SL3000 硬件 DRM (`com.microsoft.playready.recommendation.3000`, Chrome >= `143.0.7487.1`)
 
 `2025-05-20` 为 NVIDIA GT600/700 系列 GPU 修复 HEVC 1080P 分辨率枚举问题 (Chrome >= `138.0.7191.0`)
 
