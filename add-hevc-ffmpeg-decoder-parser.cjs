@@ -23,7 +23,7 @@ for (const [idx, argv] of process.argv.entries()) {
       }
       break;
     case '-o':
-      output = process.argv[idx + 1];
+      output = path.resolve(process.argv[idx + 1]);
       if (!fs.existsSync(output)) {
         fs.mkdirSync(output, {
           recursive: true,
@@ -39,6 +39,7 @@ for (const [idx, argv] of process.argv.entries()) {
 }
 
 const encodingConfig = { encoding: 'utf8' };
+const patchFiles = new Set();
 const patches = [
   {
     condition: [
@@ -51,7 +52,6 @@ const patches = [
       '    (use_linux_config && ffmpeg_branding == "Chrome")) {',
     ].join('\n'),
     ffmpeg_c_sources: [
-      'libavcodec/bswapdsp.c',
       'libavcodec/hevc/autorename_libavcodec_hevc_parse.c',
       'libavcodec/hevc/autorename_libavcodec_hevc_parser.c',
       'libavcodec/hevc/autorename_libavcodec_hevc_cabac.c',
@@ -60,7 +60,7 @@ const patches = [
       'libavcodec/hevc/filter.c',
       'libavcodec/hevc/hevcdec.c',
       'libavcodec/hevc/mvs.c',
-      'libavcodec/hevc/pred.c',
+      'libavcodec/hevc/autorename_libavcodec_hevc_pred.c',
       'libavcodec/hevc/ps.c',
       'libavcodec/hevc/refs.c',
       'libavcodec/hevc/sei.c',
@@ -73,17 +73,17 @@ const patches = [
       '    (use_linux_config && current_cpu == "x86" && ffmpeg_branding == "Chrome")) {',
     ].join('\n'),
     ffmpeg_c_sources: [
-      'libavcodec/x86/bswapdsp_init.c',
       'libavcodec/x86/hevc/dsp_init.c',
+      'libavcodec/x86/hevc/pred_init.c',
       'libavcodec/x86/h26x/h2656dsp.c',
     ],
     ffmpeg_asm_sources: [
-      'libavcodec/x86/bswapdsp.asm',
       'libavcodec/x86/hevc/add_res.asm',
       'libavcodec/x86/hevc/deblock.asm',
-      "libavcodec/x86/hevc/dequant.asm",
+      'libavcodec/x86/hevc/dequant.asm',
       'libavcodec/x86/hevc/idct.asm',
       'libavcodec/x86/hevc/mc.asm',
+      'libavcodec/x86/hevc/pred.asm',
       'libavcodec/x86/hevc/sao.asm',
       'libavcodec/x86/hevc/sao_10bit.asm',
       'libavcodec/x86/h26x/h2656_inter.asm',
@@ -118,6 +118,7 @@ const patches = [
     condition: [
       'if (use_linux_config && current_cpu == "arm" && ffmpeg_branding == "Chrome") {',
     ].join('\n'),
+    guard: 'arm_version >= 7 && arm_use_neon',
     ffmpeg_c_sources: ['libavcodec/arm/hevcdsp_init_neon.c'],
     ffmpeg_gas_sources: [
       'libavcodec/arm/hevcdsp_deblock_neon.S',
@@ -132,7 +133,10 @@ const patches = [
       '    ffmpeg_branding == "Chrome") {',
     ].join('\n'),
     ffmpeg_c_sources: ['libavcodec/riscv/hevcdsp_init.c'],
-    ffmpeg_gas_sources: ['libavcodec/riscv/h26x/h2656_inter_rvv.S'],
+    ffmpeg_gas_sources: [
+      'libavcodec/riscv/h26x/h2656_inter_rvv.S',
+      'libavcodec/riscv/hevcdsp_idct_rvv.S',
+    ],
   },
 ];
 
@@ -140,20 +144,23 @@ function genPath(subPath) {
   return path.resolve(ffmpegRoot, subPath);
 }
 
+function writePatchFile(filename, content) {
+  patchFiles.add(path.relative(ffmpegRoot, filename));
+  fs.writeFileSync(filename, content, encodingConfig);
+}
+
 function modifyAVCodec(filename, value) {
   const content = fs.readFileSync(filename, encodingConfig);
-  if (content.includes(value)) {
-    return;
-  }
-  fs.writeFileSync(
+  writePatchFile(
     filename,
-    content.replace('NULL };', `${value},\n    NULL };`),
-    encodingConfig,
+    content.includes(value)
+      ? content
+      : content.replace('NULL };', `${value},\n    NULL };`),
   );
 }
 
 function writeAutoRenameFile(filename, content) {
-  fs.writeFileSync(filename, content, encodingConfig);
+  writePatchFile(filename, content);
 }
 
 function enableHevcConfig(filename) {
@@ -167,7 +174,7 @@ function enableHevcConfig(filename) {
     .replace('define CONFIG_DOVI_RPUDEC 0', 'define CONFIG_DOVI_RPUDEC 1')
     .replace("--enable-decoder='aac,h264'", "--enable-decoder='aac,h264,hevc'")
     .replace("--enable-parser='aac,h264'", "--enable-parser='aac,h264,hevc'");
-  fs.writeFileSync(filename, content, encodingConfig);
+  writePatchFile(filename, content);
 }
 
 function enableFFMPEGHevc(brand, os, arch) {
@@ -181,51 +188,54 @@ function enableFFMPEGHevc(brand, os, arch) {
     ),
     '&ff_hevc_parser',
   );
-  if (os !== 'win-msvc') {
-    enableHevcConfig(
-      genPath(`./chromium/config/${brand}/${os}/${arch}/config_components.h`),
-    );
+  const configDir = genPath(`chromium/config/${brand}/${os}/${arch}`);
+  for (const config of ['config.h', 'config_components.h']) {
+    enableHevcConfig(path.join(configDir, config));
   }
-  enableHevcConfig(genPath(`chromium/config/${brand}/${os}/${arch}/config.h`));
-  if (
-    (arch === 'x64' || arch === 'ia32') &&
-    (os === 'win' || os == 'win-msvc' || os == 'mac')
-  ) {
-    enableHevcConfig(
-      genPath(`chromium/config/${brand}/${os}/${arch}/config.asm`),
-    );
+  for (const config of ['config.asm', 'config_components.asm']) {
+    const filename = path.join(configDir, config);
+    if (fs.existsSync(filename)) {
+      enableHevcConfig(filename);
+    }
   }
 }
 
 function modifyFFMPEGGenerated(filename) {
   let content = fs.readFileSync(filename, encodingConfig);
-  for (const patch of patches) {
-    if (!content.includes(patch.condition)) {
+  const deps = 'ffmpeg_c_deps += [';
+  const predSource = '\n  "libavcodec/hevc/pred.c",';
+  if (!content.includes(deps)) {
+    throw new Error('Cannot find ffmpeg_c_deps in ffmpeg_generated.gni');
+  }
+  if (!content.includes(predSource)) {
+    content = content.replace(deps, deps + predSource);
+  }
+  for (const { condition, guard, ...sourceLists } of patches) {
+    if (!content.includes(condition)) {
       console.error(
         `Failed to modify ffmpeg_generated.gni, please upgrade the script!`,
-        patch,
+        condition,
       );
       process.exit(1);
     }
-    let toAdd = '';
-    for (const [field, sources] of Object.entries(patch)) {
-      if (field === 'condition') {
-        continue;
-      }
-      toAdd += `
-  ${field} += [
-${sources.map(source => `    "${source}"`).join(',\n')}
-  ]
-`;
+    const indent = guard ? '    ' : '  ';
+    let toAdd = '\n';
+    if (guard) {
+      toAdd += `  if (${guard}) {\n`;
+    }
+    for (const [field, sources] of Object.entries(sourceLists)) {
+      toAdd += `${indent}${field} += [\n`;
+      toAdd += sources.map(source => `${indent}  "${source}",\n`).join('');
+      toAdd += `${indent}]\n`;
+    }
+    if (guard) {
+      toAdd += '  }\n';
     }
     if (!content.includes(toAdd)) {
-      content = content.replace(
-        patch.condition,
-        patch.condition + '\n' + toAdd,
-      );
+      content = content.replace(condition, condition + '\n' + toAdd);
     }
   }
-  fs.writeFileSync(filename, content, encodingConfig);
+  writePatchFile(filename, content);
 }
 
 function enableSoftwareDecodeHEVC() {
@@ -233,8 +243,6 @@ function enableSoftwareDecodeHEVC() {
   enableFFMPEGHevc('Chrome', 'win', 'ia32');
   enableFFMPEGHevc('Chrome', 'win', 'x64');
   enableFFMPEGHevc('Chrome', 'win', 'arm64');
-  enableFFMPEGHevc('Chrome', 'win-msvc', 'ia32');
-  enableFFMPEGHevc('Chrome', 'win-msvc', 'x64');
   enableFFMPEGHevc('Chrome', 'mac', 'x64');
   enableFFMPEGHevc('Chrome', 'mac', 'arm64');
   enableFFMPEGHevc('Chrome', 'ios', 'x64');
@@ -270,6 +278,10 @@ function enableSoftwareDecodeHEVC() {
     genPath(`./libavcodec/hevc/autorename_libavcodec_hevc_cabac.c`),
     [prefix, '#include "cabac.c"'].join('\n'),
   );
+  writeAutoRenameFile(
+    genPath('./libavcodec/hevc/autorename_libavcodec_hevc_pred.c'),
+    [prefix, '#include "pred.c"', ''].join('\n'),
+  );
 
   // 3. Modify ffmpeg_generated.gni
   modifyFFMPEGGenerated(genPath(`./ffmpeg_generated.gni`));
@@ -277,25 +289,22 @@ function enableSoftwareDecodeHEVC() {
   // 4. Commit the code then `git format-patch HEAD^ -o /path/to/export/patch`
   // if you want to generate the `.patch` file.
   if (genPatch) {
-    // Commit the code.
-    try {
-      const msg = [
-        'Video: Add HEVC ffmpeg decoder & parser',
-        'Add ffmpeg software decoder and parser for HEVC to enable SW HEVC decoding',
-      ]
-        .map(v => `-m "${v}" `)
-        .join('');
-      childProcess.execSync(`git add -A && git commit ${msg}`, {
-        cwd: ffmpegRoot,
-      });
-    } catch (e) {}
-    // Gen patch.
-    try {
-      childProcess.execSync(`git format-patch HEAD"^" -o "${output}"`, {
-        cwd: ffmpegRoot,
-      });
-      console.log('Generate patch success!');
-    } catch (e) {}
+    const gitOptions = { cwd: ffmpegRoot, stdio: 'inherit' };
+    const files = [...patchFiles];
+    childProcess.execFileSync('git', ['add', '--', ...files], gitOptions);
+    childProcess.execFileSync('git', [
+      'commit', '--only',
+      '-m', 'Video: Add HEVC ffmpeg decoder & parser',
+      '-m', [
+        'Add ffmpeg software decoder and parser for HEVC, this will make',
+        'sure those users using macOS version < 11 or Windows < 8 or those',
+        'users who disabled gpu acceleration or hardware not supported',
+        'profiles to have software HEVC decoding ability.',
+      ].join('\n'),
+      '--', ...files,
+    ], gitOptions);
+    childProcess.execFileSync('git', ['format-patch', '-1', 'HEAD', '-o', output], gitOptions);
+    console.log('Generate patch success!');
   }
 }
 
